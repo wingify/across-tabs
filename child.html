@@ -5,12 +5,21 @@
 	<title>Document</title>
 </head>
 <body>
-	i'm a child, opened by <script>document.write(window.top.opener.name)</script>, my id is <script>document.write(window.top.opener.newlyTabOpened.id)</script>
+	<div id="info"></div>
 	<script type="text/javascript">
-		var id = window.top.opener.newlyTabOpened.id;
 
-		console.log(window.top.opener.name, window.top.opener.childTabs)
-		window.top.opener.postMessage(id, '*');
+		window.top.opener.postMessage('loaded', '*');
+
+		function onHandShake (message) {
+			var data =  message.data;
+			data = JSON.parse(data)
+			window.top.opener.postMessage('custom' + data.id, '*');
+
+			document.getElementById('info').innerHTML = 'I am a child, opened by ' + data.parentName + ' , my id is: ' + data.id;
+		}
+
+		window.removeEventListener('message', onHandShake);
+		window.addEventListener('message', onHandShake);
 	</script>
 </body>
 </html>

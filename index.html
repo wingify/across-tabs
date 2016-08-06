@@ -7,8 +7,8 @@
 <body>
 	<!-- Disable until post message received -->
 	<button onclick="openNewTab()">Open up</button>
+	<!-- enable if any tab is open -->
 	<button onclick="closeAllTabs()">Close all</button>
-	<button onclick="showList()">Show list</button>
 
 	<br /><br />
 	<div>All tabs Info Below</div>
@@ -19,7 +19,7 @@
 	<div id="pm"></div>
 
 	<script type="text/javascript">
-		window.childTabs = [];
+		window.name = 'MASTER_TAB';
 
 		/*
 		 * TABS Class
@@ -29,10 +29,6 @@
 		}
 		Tabs.prototype.addNew = function (tab) {
 			this.tabs.push(tab);
-			window.childTabs.push({
-				id: tab.id,
-				name: tab.name
-			});
 			return this;
 		};
 		Tabs.prototype.getAllTabs = function () {
@@ -50,10 +46,11 @@
 			this.id = (tabs.tabs.length + 100) || 100;
 			this.name = (tabs.tabs.length + 100) || 100;
 			this.status = 'open';
-			this.ref =  window.open('/child.html', '_blank');
+			this.ref =  window.open('http://localhost:3000/child.html', '_blank');
 			window.newlyTabOpened = {
 				id: this.id,
-				name: this.name
+				name: this.name,
+				ref: this.ref
 			}
 
 			tabs.addNew(this);
@@ -73,13 +70,22 @@
 
 		function onNewTabPostMessage (message) {
 			var data = message.data;
-			showPMList(data);
+			if (data === 'loaded') {
+				var tabInfo = {
+					id: window.newlyTabOpened.id,
+					name: window.newlyTabOpened.name,
+					parentName: window.name
+				};
+				window.newlyTabOpened.ref.postMessage(JSON.stringify(tabInfo), '*')
+			} else if (data.indexOf('custom') > -1) {
+				data = message.data;
+				showPMList(data);
+			}
 		}
 		window.removeEventListener('message', onNewTabPostMessage);
 		window.addEventListener('message', onNewTabPostMessage);
 	</script>
 	<script type="text/javascript">
-		window.name = 'MASTER_TAB';
 
 		var tabs = new Tabs();
 		var tab;

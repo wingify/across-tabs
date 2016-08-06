@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	i'm a child, opened by <script>document.write(window.top.opener.name)</script>, my id is <script>document.write(window.top.opener.newlyTabOpened.id)</script>
+	<script type="text/javascript">
+		var id = window.top.opener.newlyTabOpened.id;
+
+		console.log(window.top.opener.name, window.top.opener.childTabs)
+		window.top.opener.postMessage(id, '*');
+	</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Parent Tab</title>
+	<style type="text/css">
+		.margin--top {
+			margin-top: 20px;
+		}
+		.margin--half-left {
+			margin-left: 10px;
+		}
+		.list-item {
+			background: #EFEFEF;
+			padding: 20px;
+		}
+		.btn {
+			min-width: 70px;
+			height: 34px;
+			background: #61bdff;
+			border: 0;
+			color: #fff;
+			font-size: 15px;
+		}
+		.btn--success {
+			background: #30b986;
+		}
+		.btn--danger {
+			background: #e86a6a;
+		}
+		.text--success {
+			color: #30b986;
+		}
+		.text--danger {
+			color: #e86a6a;
+		}
+		.text--info {
+			color: #968d15;
+		}
+		h3 {
+			color: #777;
+		}
+	</style>
+	<script type="text/javascript" src="../dist/across-tabs.js"></script>
+</head>
+<body>
+	<!-- Disable until post message received -->
+	<button class="btn" data-tab-opener="yea" onclick="openNewTab()">Open New</button>
+	<!-- enable if any tab is open -->
+	<button class="btn" onclick="closeAllTabs()">Close all</button>
+
+	<br /><br />
+	<!-- <div>All tabs Info Below</div> -->
+	<div style="display:inline-block;width:49%;">
+		<div id="list"></div>
+	</div>
+	<div style="display:inline-block;width:49%; float:right;">
+		<h3>All Post Messages Info Below</h3>
+		<div id="pm"></div>
+	</div>
+	<script type="text/javascript">
+		var newTab, i = 0;
+
+		var parent = new AcrossTabs.Parent({
+			onHandshakeCallback: showPMList,
+			onPollingCallback: showList
+		});
+
+
+		function openNewTab () {
+			var config = {
+				url: 'http://localhost:3000/example/child.html',
+				windowName: 'heatmap' + ++i,
+				windowFeatures: ''
+			};
+			newTab = parent.openNewTab(config);
+			console.log( newTab )
+		}
+
+		function closeAllTabs () {
+			parent.closeAllTabs();
+		}
+
+		function showPMList (data) {
+			document.getElementById('pm').innerHTML += '<li>data recieved by tab: ' + data + '</li>';
+		}
+
+		function showList () {
+			if (!newTab) { return; }
+
+			var list = '', tabs;
+			document.getElementById('list').innerHTML = '';
+
+			list += '<h3 class="margin--top">List of All Tabs:</h3>';
+
+			tabs = parent.getAllTabs();
+			for (var i = 0; i < tabs.length; i++) {
+				list += '<div class="list-item">' +
+					'<div>name: <strong class="text--info">' + tabs[i].name + '</strong></div>' +
+					'<div>id: ' + tabs[i].id + '</div>' +
+					'<div>status: ' + tabs[i].status + '</div>' +
+					//'<button class="btn btn--danger" onclick="parent.closeTab(\'' + tabs[i].id + '\')">Close me</button>' +
+					//'<button class="btn btn--success margin--half-left" onclick="parent.broadCastTo(\'' + tabs[i].id + '\', \'__PARENT_COMMUNICATED__123 \')">Send Msg</button>' +
+				'</div>';
+			}
+
+			list += '<h3 class="margin--top">List of All Active Tabs:</h3>';
+
+			tabs = parent.getOpenedTabs();
+			for (var i = 0; i < tabs.length; i++) {
+				list += '<div class="list-item">' +
+					'<div>name: <strong class="text--info">' + tabs[i].name + '</strong></div>' +
+					'<div>id: ' + tabs[i].id + '</div>' +
+					'<div>status: ' + tabs[i].status + '</div>' +
+					'<input type="text" id="data-' + i + '" value="Yo! Message from parent!" readonly/>' +
+					'<button class="btn btn--success margin--half-left" onclick="parent.broadCastTo(\'' + tabs[i].id + '\', \'Yo! Message from parent!\')">Send Msg</button>' +
+					'<button class="btn btn--danger margin--half-left" onclick="parent.closeTab(\'' + tabs[i].id + '\')">Close me</button>' +
+				'</div>';
+			}
+
+			list += '<h3 class="margin--top">List of All Closed Tabs:</h3>';
+
+			tabs = parent.getClosedTabs();
+			for (var i = 0; i < tabs.length; i++) {
+				list += '<div class="list-item">' +
+					'<div>name: <strong class="text--info">' + tabs[i].name + '</strong></div>' +
+					'<div>id: ' + tabs[i].id + '</div>' +
+					'<div>status: ' + tabs[i].status + '</div>' +
+				'</div>';
+			}
+			document.getElementById('list').innerHTML = list;
+		}
+
+	</script>
+</body>
+</html>

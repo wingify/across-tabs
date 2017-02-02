@@ -10,7 +10,7 @@ let Child = class Child {
 
     this.config = config || {};
 
-    this.handshakeExpiryLimit = 5000;
+    this.handshakeExpiryLimit = this.config.handshakeExpiryLimit || 5000;
 
     this.tabName = window.name;
     this.tabId = null;
@@ -46,9 +46,9 @@ let Child = class Child {
       let storedData = this._getData();
 
       this.parseData(storedData);
-      if (this.config.onInitialize) {
+      /*if (this.config.onInitialize) {
         this.config.onInitialize();
-      }
+      }*/
     }
   };
 
@@ -115,8 +115,8 @@ let Child = class Child {
 
   setHandshakeExpiry() {
     return setTimeout(() => {
-      if (this.config.onInitialize) {
-        this.config.onInitialize();
+      if (this.config.onHandShakeExpiry) {
+        this.config.onHandShakeExpiry();
       }
     }, this.handshakeExpiryLimit);
   }

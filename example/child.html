@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Child Tab</title>
+</head>
+<body>
+	<div id="info"></div>
+	<script type="text/javascript" src="../dist/across-tabs.js"></script>
+	<script type="text/javascript">
+		var child = new AcrossTabs.Child({
+			onReady: onReady,
+			onInitialize: onInitialize,
+			handshakeExpiryLimit: 4000, // msec
+			onParentDisconnect: onParentDisconnect,
+			onParentCommunication: onParentCommunication
+		});
+		child.init()
+
+		var html = '';
+
+		function onParentDisconnect() {
+			var data = '<li>Uhh no! Parent disconnected :(</li>';
+			showList(data);
+			// window.close();
+		}
+
+		function onInitialize() {
+			var tabInfo = child.getTabInfo();
+
+			var data = '' +
+				'I am a <strong>CHILD TAB</strong>, opened by my Master: <strong>' + tabInfo.parentName +
+				'</strong>.<br/>' +
+				'My id is: <strong>' + tabInfo.id + '</strong>.<br/>' +
+				'My name is: <strong>' + tabInfo.name + '</strong>' +
+				'<br/><br/>Events:<br/><br/>';
+
+			showList(data);
+		}
+
+		function onReady() {
+			var data = '<li>Loaded</li>';
+			showList(data);
+		}
+
+		function onParentCommunication(dataReceived) {
+			var data = '<li>Message recieved from parent - ' + dataReceived + '</li>';
+			showList(data);
+		}
+
+		function showList(data) {
+			html += data;
+			document.getElementById('info').innerHTML = html;
+		}
+	</script>
+</body>
+</html>

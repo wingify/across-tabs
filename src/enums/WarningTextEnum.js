@@ -1,3 +1,7 @@
+/**
+ * Enum for showing various warnings to suser when things done wrong
+ * @type {Object}
+ */
 const WarningTextEnum = {
   INVALID_JSON: 'Invalid JSON Object!',
   INVALID_DATA: 'Some wrong message is being sent by Parent.',

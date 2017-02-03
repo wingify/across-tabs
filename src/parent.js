@@ -13,47 +13,102 @@ let heartBeat, tab;
 
 // Named Class expression
 var Parent = class Parent {
+  /**
+   * Involed when object is instantiated
+   * Set flags/variables and calls init method to attach event listeners
+   * @param  {Object} config - Refer API/docs for config keys
+   */
   constructor(config) {
-    this.heartBeatInterval = config.heartBeatInterval || 500;
+    if (!config) {
+      config = {};
+    }
+    if (typeof config.heartBeatInterval === 'undefined') {
+      config.heartBeatInterval = 500;
+    }
+    if (typeof config.shouldInitImmediately === 'undefined') {
+      config.shouldInitImmediately = true;
+    }
+
+    this.heartBeatInterval = config.heartBeatInterval;
+
     // reset tabs with every new Object
     tabUtils.closeAll();
+
     this.Tab = Tab;
     this.onHandshakeCallback = config.onHandshakeCallback;
     this.onPollingCallback = config.onPollingCallback;
-    this.init();
+    this.removeClosedTabs = config.removeClosedTabs;
+    this.shouldInitImmediately = config.shouldInitImmediately;
+
+    if (this.shouldInitImmediately) {
+      this.init();
+    }
   };
+
+  /**
+   * Poll all tabs for their status - OPENED / CLOSED
+   * An interval is created which checks for last and current status.
+   * There's a property on window i.e. `closed` which returns true for the closed window.
+   * And one can see `true` only in another tab when the tab was opened by the same `another` tab.
+   */
   startPollingTabs() {
-    // don't poll if all tabs are in closed states
-    heartBeat = setInterval(() => {
-      let i, tabs = tabUtils.getAll();
+    heartBeat = window.setInterval(() => {
+      let i,
+        tabs = tabUtils.getAll(),
+        openedTabs = tabUtils.getOpenedTabs();
+
+      // don't poll if all tabs are in CLOSED states
+      if (!openedTabs || !openedTabs.length) {
+        window.clearInterval(heartBeat); // stop the interval
+        heartBeat = null;
+        return;
+      }
 
       for (i = 0; i < tabs.length; i++) {
-        // this.watchStatus(tabs[i]);
-        // check as tab(s) get removed when closed irrespective of heatbeat controller
+        if (this.removeClosedTabs) {
+          this.watchStatus(tabs[i]);
+        }
+        /**
+         * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
+         * irrespective of heatbeat controller
+        */
         if (tabs[i]) {
           tabs[i].status = tabs[i].ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN;
         }
       }
+
+      // Call the user-defined callback after every polling operation is operted in a single run
       if (this.onPollingCallback) {
         this.onPollingCallback();
       }
     }, this.heartBeatInterval);
   };
 
+  /**
+   * Compare tab status - OPEN vs CLOSE
+   * @param  {Object} tab
+   */
   watchStatus(tab) {
     if (!tab) { return; }
     let newStatus = tab.ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN,
       oldStatus = tab.status;
 
+    // If last and current status(inside a polling interval) are same, don't do anything
     if (!newStatus || newStatus === oldStatus) { return; }
 
+    // OPEN to CLOSE state
     if (oldStatus === TabStatusEnum.OPEN && newStatus === TabStatusEnum.CLOSE) {
       // remove tab from tabUtils
       tabUtils._remove(tab);
     }
-    // Change from CLOSE to OPEN is never gonna happen :)
+    // Change from CLOSE to OPEN state is never gonna happen ;)
   };
 
+  /**
+   * Enable link/btn, which got disabled on clicking.
+   * Note: works only when `data-tab-opener="heatmap"` is used on the respective element
+   * @param  {Object} ev - Event
+   */
   customEventUnListener(ev) {
     this.enableElements();
     if (this.onHandshakeCallback) {
@@ -61,6 +116,9 @@ var Parent = class Parent {
     }
   };
 
+  /**
+   * Attach postmessage, native and custom listeners to the window
+   */
   addEventListeners() {
     window.removeEventListener('message', PostMessageListener.onNewTab);
     window.addEventListener('message', PostMessageListener.onNewTab);
@@ -68,46 +126,81 @@ var Parent = class Parent {
     window.removeEventListener('show', this.customEventUnListener);
     window.addEventListener('show', ev => this.customEventUnListener(ev));
 
+    // Let children tabs know when Parent is closed / refereshed.
     window.onbeforeunload = () => {
       tabUtils.broadCastAll(PostMessageEventNamesEnum.PARENT_DISCONNECTED);
     };
   };
 
-  /*
-    API goes here ->
+  /**
+   * API methods exposed for Public
+   *
+   * Re-enable the link/btn which got disabled on clicking
    */
   enableElements() {
     domUtils.enable('data-tab-opener');
   };
 
+  /**
+   * Return list of all tabs
+   * @return {Array}
+   */
   getAllTabs() {
     return tabUtils.getAll();
   };
 
+  /**
+   * Return list of all OPENED tabs
+   * @return {Array}
+   */
   getOpenedTabs() {
     return tabUtils.getOpened();
   };
 
+  /**
+   * Return list of all CLOSED tabs
+   * @return {Array}
+   */
   getClosedTabs() {
     return tabUtils.getClosed();
   }
 
+  /**
+   * Close all tabs at once
+   * @return {Object}
+   */
   closeAllTabs() {
     return tabUtils.closeAll();
   };
 
-  closeTab(tab) {
-    return tabUtils.closeTab(tab);
+  /**
+   * Close a specific tab
+   * @return {Object}
+   */
+  closeTab(id) {
+    return tabUtils.closeTab(id);
   };
 
+  /**
+   * Send a postmessage to all OPENED tabs
+   * @return {Object}
+   */
   broadCastAll(msg) {
     return tabUtils.broadCastAll(msg);
   }
 
+  /**
+   * Send a postmessage to a specific tab
+   * @return {Object}
+   */
   broadCastTo(tab, msg) {
     return tabUtils.broadCastTo(tab, msg);
   }
 
+  /**
+   * Open a new tab. Config has to be passed with some required keys
+   * @return {Object} tab
+   */
   openNewTab(config) {
     let url = config.url;
 
@@ -126,8 +219,13 @@ var Parent = class Parent {
     return tab;
   };
 
-  // API ends here
+  /**
+   * API methods exposed for Public ends here
+   **/
 
+  /**
+   * Invoked on object instantiation unless user pass a key to call it explicitly
+   */
   init() {
     this.addEventListeners();
   };

@@ -1,3 +1,7 @@
+/**
+ * Enum for different event names used for tab-communication
+ * @type {Object}
+ */
 const PostMessageEventNamesEnum = {
   LOADED: '__TAB__LOADED_EVENT__',
   CUSTOM: '__TAB__CUSTOM_EVENT__',

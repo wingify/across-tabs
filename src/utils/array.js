@@ -1,11 +1,26 @@
 let arrayUtils = {};
+
+/**
+ * Different type of data needed after searching an item(Object) within data(Array of Objects).
+ * 1. `INDEX` returns just the index at which the item was present
+ * 2. `OBJECT` returns the matched object
+ * 3. `BOTH` returns an object { obj: matched_object, index: index_found }
+ */
 let returnPreferenceEnum = {
   INDEX: 'index',
   OBJECT: 'object',
   BOTH: 'both'
 };
 
-arrayUtils.searchByKeyName = function (data, key, value, returnPreference) {
+/**
+ * Search for an item(Object) within a data-set(Array Of Objects)
+ * @param  {Array of Objects} data
+ * @param  {String} key - Unique key to search on the basis of
+ * @param  {String} value - The matching criteria
+ * @param  {String} returnPreference - what kind of output is needed
+ * @return {Object}
+ */
+arrayUtils.searchByKeyName = (data, key, value, returnPreference) => {
   if (!data || !key) { return {}; }
 
   returnPreference = returnPreference || returnPreferenceEnum[1]; // default to Object

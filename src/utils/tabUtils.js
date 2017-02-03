@@ -1,3 +1,7 @@
+/**
+ * A Tab utility file to deal with tab operations
+ */
+
 import PostMessageEventNamesEnum from '../enums/PostMessageEventNamesEnum';
 import arrayUtils from './array';
 import TabStatusEnum from '../enums/TabStatusEnum';
@@ -7,6 +11,12 @@ let tabUtils = {
   tabs: []
 };
 
+/**
+ * Remove a tab from a list of all tabs.
+ * This is required when users opts for removing the closed tabs from the list of tabs.
+ * This can be done explictly by passing `removeClosedTabs` key while instantiating Parent.
+ * @param  {Object} tab
+ */
 tabUtils._remove = (tab) => {
   let index;
 
@@ -14,6 +24,12 @@ tabUtils._remove = (tab) => {
   tabUtils.tabs.splice(index, 1);
 };
 
+/**
+ * As explained in `event-listeners/postmessage.js` file,
+ * the data received from postmessage API is further processed based on our convention
+ * @param  {String} msg
+ * @return {String} msg
+ */
 tabUtils._preProcessMesage = (msg) => {
 
   // make msg always an object to support JSON support
@@ -29,25 +45,43 @@ tabUtils._preProcessMesage = (msg) => {
 
   return msg;
 };
-
+/**
+ * Add a new tab to the Array of tabs
+ * @param  {Object} tab
+ * @return {Object} - this
+ */
 tabUtils.addNew = (tab) => {
   tabUtils.tabs.push(tab);
   return this;
 };
-
+/**
+ * Filter out all the opened tabs
+ * @return {Array} - only the opened tabs
+ */
 tabUtils.getOpened = () => {
   return tabUtils.tabs.filter(tab => tab.status === TabStatusEnum.OPEN);
 };
-
+/**
+ * Filter out all the closed tabs
+ * @return {Array} - only the closed tabs
+ */
 tabUtils.getClosed = () => {
   return tabUtils.tabs.filter(tab => tab.status === TabStatusEnum.CLOSE);
 };
-
+/**
+ * To get list of all tabs(closed/opened).
+ * Note: Closed tabs will not be returned if `removeClosedTabs` key is paased while instantiaiting Parent.
+ * @return {Array} - list of all tabs
+ */
 tabUtils.getAll = () => {
   return tabUtils.tabs;
 };
 
-// it takes id because of some cross origin restriction when passing tab with ref
+/**
+ * Close a specific tab
+ * @param  {String} id
+ * @return {Object} this
+ */
 tabUtils.closeTab = (id) => {
   let tab = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', id);
 
@@ -55,7 +89,10 @@ tabUtils.closeTab = (id) => {
   return tabUtils;
   // --tabUtils.tabs.length;
 };
-
+/**
+ * Close all opened tabs using a native method `close` available on window.open reference.
+ * @return {tabUtils} this
+ */
 tabUtils.closeAll = () => {
   let i;
 
@@ -65,7 +102,10 @@ tabUtils.closeAll = () => {
   }
   return tabUtils;
 };
-
+/**
+ * Send a postmessage to every opened Child tab(excluding itself i.e Parent Tab)
+ * @param  {String} msg
+ */
 tabUtils.broadCastAll = (msg) => {
   let i, tabs = tabUtils.getAll();
 
@@ -75,14 +115,18 @@ tabUtils.broadCastAll = (msg) => {
     tabs[i].ref.postMessage(msg, '*');
   }
 };
-
-tabUtils.broadCastTo = (tab, msg) => {
+/**
+ * Send a postmessage to a specific Child tab
+ * @param  {String} id
+ * * @param  {String} msg
+ */
+tabUtils.broadCastTo = (id, msg) => {
   let targetedTab,
     tabs = tabUtils.getAll();
 
   msg = tabUtils._preProcessMesage(msg);
 
-  targetedTab = arrayUtils.searchByKeyName(tabs, 'id', tab); // TODO: tab.id
+  targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
   targetedTab.ref.postMessage(msg, '*');
 };
 

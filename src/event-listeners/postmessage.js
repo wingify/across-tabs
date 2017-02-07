@@ -1,5 +1,5 @@
 import arrayUtils from '../utils/array';
-import tabUtils from '../utils/tabUtils';
+import tabUtils from '../utils/tab';
 import WarningTextEnum from '../enums/WarningTextEnum';
 import PostMessageEventNamesEnum from '../enums/PostMessageEventNamesEnum';
 
@@ -31,7 +31,7 @@ let PostMessageListener = {};
 /**
  * OnLoad Event - it serves as an communication establishment source from Child tab
  */
-PostMessageListener._onLoad = function () {
+PostMessageListener._onLoad = () => {
   let data;
   // Setting generic tab info to be sent to Child after establishing connection
   let tabInfo = {
@@ -57,9 +57,17 @@ PostMessageListener._onLoad = function () {
  *
  * The method fires an event to notify Parent regarding Child's behavior
  */
-PostMessageListener._onCustomMessage = function (data) {
+PostMessageListener._onCustomMessage = (data) => {
+  let tabInfo = data.split(PostMessageEventNamesEnum.CUSTOM)[1];
+
+  try {
+    tabInfo = JSON.parse(tabInfo);
+  } catch (e) {
+    throw new Error(WarningTextEnum.INVALID_JSON);
+  }
+
   // CustomEvent is not supported in IE and so does this library
-  let event = new CustomEvent('show', {'detail': data});
+  let event = new CustomEvent('toggleElementDisabledAttribute', {'detail': tabInfo});
 
   window.dispatchEvent(event);
   window.newlyTabOpened = null;
@@ -73,13 +81,18 @@ PostMessageListener._onCustomMessage = function (data) {
  *
  * @param  {Object} data
  */
-PostMessageListener._onBeforeUnload = function (data) {
-  let id = data.split(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD)[1],
-    tabs;
+PostMessageListener._onBeforeUnload = (data) => {
+  let tabs, tabInfo = data.split(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD)[1];
+
+  try {
+    tabInfo = JSON.parse(tabInfo);
+  } catch (e) {
+    throw new Error(WarningTextEnum.INVALID_JSON);
+  }
 
   if (tabUtils.tabs.length) {
     tabs = tabUtils.getAll();
-    window.newlyTabOpened = arrayUtils.searchByKeyName(tabs, 'id', id) || window.newlyTabOpened;
+    window.newlyTabOpened = arrayUtils.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
   }
 };
 
@@ -96,7 +109,7 @@ PostMessageListener.onNewTab = (message) => {
    * Tab status is automatically fetched using our polling mechanism written in `Parent.js` file.
    */
   if (!tabUtils.tabs.length) {
-    return;
+    return false;
   }
 
   if (data.indexOf(PostMessageEventNamesEnum.LOADED) > -1) {

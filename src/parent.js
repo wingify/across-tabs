@@ -1,6 +1,6 @@
 import Tab from './tab';
 
-import tabUtils from './utils/tabUtils';
+import tabUtils from './utils/tab';
 import domUtils from './utils/dom';
 
 import TabStatusEnum from './enums/TabStatusEnum';
@@ -45,6 +45,37 @@ var Parent = class Parent {
     }
   };
 
+  addInterval() {
+    let i,
+      tabs = tabUtils.getAll(),
+      openedTabs = tabUtils.getOpened();
+
+    // don't poll if all tabs are in CLOSED states
+    if (!openedTabs || !openedTabs.length) {
+      window.clearInterval(heartBeat); // stop the interval
+      heartBeat = null;
+      return false;
+    }
+
+    for (i = 0; i < tabs.length; i++) {
+      if (this.removeClosedTabs) {
+        this.watchStatus(tabs[i]);
+      }
+      /**
+       * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
+       * irrespective of heatbeat controller
+      */
+      if (tabs[i]) {
+        tabs[i].status = tabs[i].ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN;
+      }
+    }
+
+    // Call the user-defined callback after every polling operation is operted in a single run
+    if (this.onPollingCallback) {
+      this.onPollingCallback();
+    }
+  };
+
   /**
    * Poll all tabs for their status - OPENED / CLOSED
    * An interval is created which checks for last and current status.
@@ -52,36 +83,7 @@ var Parent = class Parent {
    * And one can see `true` only in another tab when the tab was opened by the same `another` tab.
    */
   startPollingTabs() {
-    heartBeat = window.setInterval(() => {
-      let i,
-        tabs = tabUtils.getAll(),
-        openedTabs = tabUtils.getOpenedTabs();
-
-      // don't poll if all tabs are in CLOSED states
-      if (!openedTabs || !openedTabs.length) {
-        window.clearInterval(heartBeat); // stop the interval
-        heartBeat = null;
-        return;
-      }
-
-      for (i = 0; i < tabs.length; i++) {
-        if (this.removeClosedTabs) {
-          this.watchStatus(tabs[i]);
-        }
-        /**
-         * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
-         * irrespective of heatbeat controller
-        */
-        if (tabs[i]) {
-          tabs[i].status = tabs[i].ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN;
-        }
-      }
-
-      // Call the user-defined callback after every polling operation is operted in a single run
-      if (this.onPollingCallback) {
-        this.onPollingCallback();
-      }
-    }, this.heartBeatInterval);
+    heartBeat = window.setInterval(() => this.addInterval(), this.heartBeatInterval);
   };
 
   /**
@@ -89,12 +91,12 @@ var Parent = class Parent {
    * @param  {Object} tab
    */
   watchStatus(tab) {
-    if (!tab) { return; }
+    if (!tab) { return false; }
     let newStatus = tab.ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN,
       oldStatus = tab.status;
 
     // If last and current status(inside a polling interval) are same, don't do anything
-    if (!newStatus || newStatus === oldStatus) { return; }
+    if (!newStatus || newStatus === oldStatus) { return false; }
 
     // OPEN to CLOSE state
     if (oldStatus === TabStatusEnum.OPEN && newStatus === TabStatusEnum.CLOSE) {
@@ -123,8 +125,8 @@ var Parent = class Parent {
     window.removeEventListener('message', PostMessageListener.onNewTab);
     window.addEventListener('message', PostMessageListener.onNewTab);
 
-    window.removeEventListener('show', this.customEventUnListener);
-    window.addEventListener('show', ev => this.customEventUnListener(ev));
+    window.removeEventListener('toggleElementDisabledAttribute', this.customEventUnListener);
+    window.addEventListener('toggleElementDisabledAttribute', ev => this.customEventUnListener(ev));
 
     // Let children tabs know when Parent is closed / refereshed.
     window.onbeforeunload = () => {
@@ -202,6 +204,10 @@ var Parent = class Parent {
    * @return {Object} tab
    */
   openNewTab(config) {
+    if (!config) {
+      throw new Error(WarningTextEnum.CONFIG_REQUIRED);
+    }
+
     let url = config.url;
 
     if (!url) {

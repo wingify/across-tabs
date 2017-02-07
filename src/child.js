@@ -1,8 +1,6 @@
 import PostMessageEventNamesEnum from './enums/PostMessageEventNamesEnum';
 import WarningTextEnum from './enums/WarningTextEnum';
 
-const sessionStorageKey = '__vwo_new_tab_info__';
-
 // Named Class expression
 let Child = class Child {
   /**
@@ -11,11 +9,16 @@ let Child = class Child {
    * @param  {Object} config - Refer API/docs for config keys
    */
   constructor(config) {
+    this.sessionStorageKey = '__vwo_new_tab_info__';
+
     if (!config) {
       config = {};
     }
     if (typeof config.handshakeExpiryLimit === 'undefined') {
       config.handshakeExpiryLimit = 5000;
+    }
+    if (typeof config.shouldInitImmediately === 'undefined') {
+      config.shouldInitImmediately = true;
     }
 
     this.handshakeExpiryLimit = config.handshakeExpiryLimit;
@@ -26,7 +29,11 @@ let Child = class Child {
     this.tabId = null;
     this.tabParentName = null;
 
-    // this.init();
+    this.shouldInitImmediately = config.shouldInitImmediately;
+
+    if (this.shouldInitImmediately) {
+      this.init();
+    }
   };
 
   /**
@@ -49,7 +56,7 @@ let Child = class Child {
       return false;
     }
 
-    return sessionStorage.getItem(sessionStorageKey);
+    return window.sessionStorage.getItem(this.sessionStorageKey);
   };
 
   /**
@@ -61,7 +68,7 @@ let Child = class Child {
       return false;
     }
 
-    sessionStorage.setItem(sessionStorageKey, dataReceived);
+    window.sessionStorage.setItem(this.sessionStorageKey, dataReceived);
     return dataReceived;
   };
 
@@ -100,7 +107,8 @@ let Child = class Child {
 
   /**
    * The core of this file
-   * This method receives the postmessage from Parent after establishing a proper communication channel between Parent tab and Child tab.
+   * This method receives the postmessage from Parent
+   * after establishing a proper communication channel between Parent tab and Child tab.
    * It removes the handshake timeout.
    * Based on the type of postmessage event, it sets/parses or calls user defined callbacks
    *
@@ -122,19 +130,24 @@ let Child = class Child {
 
       // remove postMessage listener since no Parent is there to communicate with
       window.removeEventListener('message', evt => this.onHandShake(evt));
-
-      return;
     }
 
-    // When Parent sends an Acknowledgement to the Child's request of setting up a communication channel along with the tab's identity i.e. id, name and it's parent(itself) to the child tab.
+    /**
+     * When Parent sends an Acknowledgement to the Child's request of setting up a communication channel
+     * along with the tab's identity i.e. id, name and it's parent(itself) to the child tab.
+    */
     if (data.indexOf(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT) > -1) {
+      let msg = PostMessageEventNamesEnum.CUSTOM + JSON.stringify({
+        id: this.tabId
+      });
+
       dataReceived = data.split(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT)[1];
 
       // Set data to sessionStorage so that when page reloads it can directly read the past info till the session lives
       this._setData(dataReceived);
       this.parseData(dataReceived);
 
-      this.sendMessageToParent(PostMessageEventNamesEnum.CUSTOM + this.tabId);
+      this.sendMessageToParent(msg);
 
       if (this.config.onInitialize) {
         this.config.onInitialize();
@@ -145,6 +158,11 @@ let Child = class Child {
     if (data.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED) > -1) {
       dataReceived = data.split(PostMessageEventNamesEnum.PARENT_COMMUNICATED)[1];
 
+      try {
+        dataReceived = JSON.parse(dataReceived);
+      } catch (e) {
+        throw new Error(WarningTextEnum.INVALID_JSON);
+      }
       // Call user-defined `onParentCommunication` callback when Parent sends a message to Parent tab
       if (this.config.onParentCommunication) {
         this.config.onParentCommunication(dataReceived);
@@ -157,7 +175,11 @@ let Child = class Child {
    */
   addListeners() {
     window.onbeforeunload = (evt) => {
-      this.sendMessageToParent(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD + this.tabId);
+      let msg = PostMessageEventNamesEnum.ON_BEFORE_UNLOAD + JSON.stringify({
+        id: this.tabId
+      });
+
+      this.sendMessageToParent(msg);
     };
 
     window.removeEventListener('message', evt => this.onCommunication(evt));
@@ -165,11 +187,12 @@ let Child = class Child {
   };
 
   /**
-   * Call a user-defined method `onHandShakeExpiry` if the Parent doesn't recieve a first handshake message within the configurable `handshakeExpiryLimit`
+   * Call a user-defined method `onHandShakeExpiry`
+   * if the Parent doesn't recieve a first handshake message within the configurable `handshakeExpiryLimit`
    * @return {Function}
    */
   setHandshakeExpiry() {
-    return setTimeout(() => {
+    return window.setTimeout(() => {
       if (this.config.onHandShakeExpiry) {
         this.config.onHandShakeExpiry();
       }

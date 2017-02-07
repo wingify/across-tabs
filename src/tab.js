@@ -1,4 +1,4 @@
-import tabUtils from './utils/tabUtils';
+import tabUtils from './utils/tab';
 import UUID from './vendor/uuid';
 import domUtils from './utils/dom';
 

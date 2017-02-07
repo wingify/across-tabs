@@ -28,10 +28,9 @@ tabUtils._remove = (tab) => {
  * As explained in `event-listeners/postmessage.js` file,
  * the data received from postmessage API is further processed based on our convention
  * @param  {String} msg
- * @return {String} msg
+ * @return {String} modified msg
  */
-tabUtils._preProcessMesage = (msg) => {
-
+tabUtils._preProcessMessage = (msg) => {
   // make msg always an object to support JSON support
   try {
     msg = JSON.stringify(msg);
@@ -85,7 +84,11 @@ tabUtils.getAll = () => {
 tabUtils.closeTab = (id) => {
   let tab = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', id);
 
-  tab && tab.ref.close();
+  if (tab) {
+    tab.ref.close();
+    tab.status = TabStatusEnum.CLOSE;
+  }
+
   return tabUtils;
   // --tabUtils.tabs.length;
 };
@@ -99,7 +102,9 @@ tabUtils.closeAll = () => {
   for (i = 0; i < tabUtils.tabs.length; i++) {
     // --tabUtils.tabs.length;
     tabUtils.tabs[i].ref.close();
+    tabUtils.tabs[i].status = TabStatusEnum.CLOSE;
   }
+
   return tabUtils;
 };
 /**
@@ -107,13 +112,15 @@ tabUtils.closeAll = () => {
  * @param  {String} msg
  */
 tabUtils.broadCastAll = (msg) => {
-  let i, tabs = tabUtils.getAll();
+  let i, tabs = tabUtils.getOpened();
 
-  msg = tabUtils._preProcessMesage(msg);
+  msg = tabUtils._preProcessMessage(msg);
 
   for (i = 0; i < tabs.length; i++) {
     tabs[i].ref.postMessage(msg, '*');
   }
+
+  return tabUtils;
 };
 /**
  * Send a postmessage to a specific Child tab
@@ -124,10 +131,12 @@ tabUtils.broadCastTo = (id, msg) => {
   let targetedTab,
     tabs = tabUtils.getAll();
 
-  msg = tabUtils._preProcessMesage(msg);
+  msg = tabUtils._preProcessMessage(msg);
 
   targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
   targetedTab.ref.postMessage(msg, '*');
+
+  return tabUtils;
 };
 
 module.exports = tabUtils;

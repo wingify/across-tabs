@@ -8,7 +8,7 @@
  */
 let domUtils = {
   disable: (selector) => {
-    if (!selector) { return; }
+    if (!selector) { return false; }
 
     let i, ATOpenerElems = document.querySelectorAll('[' + selector + ']');
 
@@ -17,7 +17,7 @@ let domUtils = {
     }
   },
   enable: (selector) => {
-    if (!selector) { return; }
+    if (!selector) { return false; }
 
     let i, ATOpenerElems = document.querySelectorAll('[' + selector + ']');
 

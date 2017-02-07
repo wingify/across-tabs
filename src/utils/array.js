@@ -21,7 +21,7 @@ let returnPreferenceEnum = {
  * @return {Object}
  */
 arrayUtils.searchByKeyName = (data, key, value, returnPreference) => {
-  if (!data || !key) { return {}; }
+  if (!data || !key) { return false; }
 
   returnPreference = returnPreference || returnPreferenceEnum[1]; // default to Object
   let i, obj, returnData, index = -1;
@@ -36,6 +36,10 @@ arrayUtils.searchByKeyName = (data, key, value, returnPreference) => {
       index = i;
       break;
     }
+  }
+
+  if (index === -1) { // item not found
+    data[index] = {}; // for consistency
   }
 
   switch (returnPreference) {

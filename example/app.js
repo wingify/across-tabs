@@ -28,8 +28,7 @@ var app = new Vue({
         windowName: 'heatmap' + ++i,
         windowFeatures: ''
       };
-      newTab = parent.openNewTab(config);
-      console.log( newTab )
+      parent.openNewTab(config);
     },
     closeAllTabs: function () {
       parent.closeAllTabs();
@@ -47,7 +46,7 @@ var app = new Vue({
       this.postMessageEvents.push(data);
     },
     showList: function () {
-      if (!newTab) { return; }
+      // if (!newTab) { return; }
 
       this.allTabs = parent.getAllTabs(),
       this.openedTabs = parent.getOpenedTabs(),

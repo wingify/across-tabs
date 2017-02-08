@@ -195,8 +195,8 @@ var Parent = class Parent {
    * Send a postmessage to a specific tab
    * @return {Object}
    */
-  broadCastTo(tab, msg) {
-    return tabUtils.broadCastTo(tab, msg);
+  broadCastTo(id, msg) {
+    return tabUtils.broadCastTo(id, msg);
   }
 
   /**

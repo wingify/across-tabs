@@ -1,11 +1,16 @@
 var webpack = require('webpack');
+var DashboardPlugin = require('webpack-dashboard/plugin');
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+// Import the plugin:
 var path = require('path');
 var env = require('yargs').argv.mode;
 
 var libraryName = 'across-tabs';
 
-var plugins = [], outputFile;
+var plugins = [
+  new DashboardPlugin()
+];
+var outputFile;
 
 if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
@@ -27,13 +32,13 @@ var config = {
   module: {
     loaders: [
       {
-        test: /(\.jsx|\.js)$/,
+        test: /(\.js)$/,
         loader: 'babel',
         exclude: /(node_modules|bower_components)/
       },
       {
-        test: /(\.jsx|\.js)$/,
-        loader: "eslint-loader",
+        test: /(\.js)$/,
+        loader: 'eslint-loader',
         exclude: /node_modules/
       }
     ]

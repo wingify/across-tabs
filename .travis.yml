@@ -9,6 +9,8 @@ install:
   - npm run build
 script:
   - npm run build-test
+  - npm run coverage
+after_success: 'npm run coveralls'
 cache:
   directories:
     - node_modules

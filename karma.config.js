@@ -15,10 +15,14 @@ module.exports = function (config) {
       'tests/**/*.spec.js': [ 'webpack' ]
     },
     reporters: [ 'progress', 'coverage' ],
-    coverageReporter: [{
-      type: 'html',
-      dir: 'coverage/'
-    }],
+    coverageReporter: {
+      dir: 'coverage',
+      reporters: [
+        // reporters not supporting the `file` property
+        // { type: 'html', subdir: 'report-html' }, // fro dev
+        { type: 'lcov', subdir: 'report-lcov' }, // for coveralls
+      ]
+    },
     webpack: {
       cache: true,
       module: {

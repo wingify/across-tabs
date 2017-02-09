@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - '4.0.0'
+before_install:
+  - npm install -g webpack
+install:
+  - npm install
+  - npm run build-dev
+  - npm run build
+script:
+  - npm run build-test
+cache:
+  directories:
+    - node_modules

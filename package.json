@@ -1,6 +1,6 @@
 {
   "name": "across-tabs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Easily communicate among browser tabs(supports cross-origin)",
   "main": "dist/across-tabs.js",
   "scripts": {
@@ -42,6 +42,9 @@
   },
   "keywords": [
     "across-tabs",
+    "browser tabs",
+    "tabs communication",
+    "tabs postmessage",
     "postmessage",
     "webpack",
     "es6",

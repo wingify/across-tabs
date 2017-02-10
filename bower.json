@@ -1,7 +1,7 @@
 {
   "name": "across-tabs",
   "description": "Easily communicate among browser tabs(supports cross-origin)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [
     "angular",
     "time-picker"
@@ -24,21 +24,30 @@
   "main": [
     "dist/across-tabs.js",
   ],
+  "keywords": [
+    "across-tabs",
+    "browser tabs",
+    "tabs communication",
+    "tabs postmessage",
+    "postmessage",
+    "webpack",
+    "es6",
+    "umd",
+    "commonjs"
+  ],
   "ignore": [
     "node_modules",
-    "test",
-    "README.md",
+    "tests",
+    "webpack.config.js",
     ".gitignore",
     ".travis.yml",
-    ".jshintrc",
+    ".eslintrc",
+    ".babelrc",
     "Gruntfile.js",
     "karma.conf.js",
-    "package.json",
     "LICENSE",
-    "images"
+    "coverage"
   ],
   "dependencies": {
-  },
-  "devDependencies": {
   }
 }

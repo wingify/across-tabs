@@ -1,0 +1,44 @@
+{
+  "name": "across-tabs",
+  "description": "Easily communicate among browser tabs(supports cross-origin)",
+  "version": "0.1.0",
+  "keywords": [
+    "angular",
+    "time-picker"
+  ],
+  "homepage": "https://github.com/wingify/across-tabs",
+  "bugs": "https://github.com/wingify/across-tabs/issues",
+  "author": {
+    "name": "Varun Malhotra",
+    "email": "varun2902@gmail.com",
+    "url": "https://github.com/softvar"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wingify/across-tabs.git"
+  },
+  "licenses": [{
+    "type": "MIT",
+    "url": "https://github.com/wingify/across-tabs/blob/master/LICENSE"
+  }],
+  "main": [
+    "dist/across-tabs.js",
+  ],
+  "ignore": [
+    "node_modules",
+    "test",
+    "README.md",
+    ".gitignore",
+    ".travis.yml",
+    ".jshintrc",
+    "Gruntfile.js",
+    "karma.conf.js",
+    "package.json",
+    "LICENSE",
+    "images"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}

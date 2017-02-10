@@ -30,8 +30,16 @@
 
 ### Installation
 
+Via [npm](https://www.npmjs.com/)
+
 ```
 $ npm install across-tabs
+```
+
+Via [bower](https://bower.io/)
+
+```
+$ bower install across-tabs
 ```
 
 ### Flow Diagram

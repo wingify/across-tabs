@@ -22,7 +22,7 @@
 
 ### Features
 
-1. Safely enables [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) communication among different browser tabs. Uses `PostMessage` API for communicating with each other.
+1. Safely enables [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) communication among different browser tabs. Uses `PostMessage` API for communication.
 2. Easy to hook custom callback at various levels. Eg: executing a custom method in Child's tab on receiving a message from Parent tab.
 3. Provide `data-tab-opener="name"` on the target link/btn to disable/enable the element, based on the communication-setup status.
 4. Fully fledged API to get information regarding the tabs(Parent and Child tabs) and other communication related methods.
@@ -44,6 +44,65 @@ $ bower install across-tabs
 
 ### Flow Diagram
 
+* Opener/Parent tab(`P`) opens up a new Child tab(`C`).
+* `C` initiates a handshake with the `P` tab by sending a `postMessage`.
+* `P` acknowledges the request and sends `C` it's identity i.e. `UUID` along with `P` information.
+* This sets up a communication channel between Parent and Child tab.
+* Now, `P` and `C` can share custom messages with each other.
+* Whenever `C` gets closed/refreshed, `P` is notified.
+* Whenever `P` is closed/refreshed, all children of `P` tab gets notified.
+
+<img src="parent-tab-communication.jpg" />
+
+**Explanation of diagram**
+
+* Parent(`P`) opens CHild tab(`C1`) at `t=1`.
+* `c1a` - Time at which `C1` initiates a handshake with the Parent.
+* `P1` - Time at which `P` receives `C1` message.
+* `P2` - `P` acknowledges the request and sends the `C1` its identity.
+* `c1b` - Time at which `C1` receives acknowledgemnet message along with identity from `P`.
+
+---
+
+Total Tabs Associated: **1** | Opened Tabs: **1** | Closed Tabs: **0**
+
+---
+
+* Parent(`P`) opens CHild tab(`C2`) at `t=10`.
+* `c2a` - Time at which `C2` initiates a handshake with the Parent.
+* `P3` - Time at which `P` receives `C2` message.
+* `P4` - `P` acknowledges the request and sends the `C2` its identity.
+* `c2b` - Time at which `C2` receives acknowledgemnet message along with identity from `P`.
+
+---
+
+Total Tabs Associated: **2** | Opened Tabs: **2** | Closed Tabs: **0**
+
+---
+
+* `c1c` - Tab `C1` closes.
+* `P5` - `P` is notified about the `C1`. Parent updates the list.
+
+---
+
+Total Tabs Associated: **2** | Opened Tabs: **1** | Closed Tabs: **1**
+
+---
+* Parent(`P`) opens CHild tab(`C3`) at `t=25`.
+* `c3a` - Time at which `C3` initiates a handshake with the Parent.
+* `P6` - Time at which `P` receives `C3` message.
+* `c2c` - Tab `C2` sends a `custom` message.
+* `P7` - When `P` receives a message from tab `C2`. It processes it.
+* `P8` - `P` acknowledges the request and sends the `C3` its identity.
+* `c3b` - Time at which `C3` receives acknowledgemnet message along with identity from `P`.
+
+---
+
+Total Tabs Associated: **3** | Opened Tabs: **2** | Closed Tabs: **1**
+
+---
+
+* When Parent Tab `P` is closed, all the opened tabs are notified about it.
 
 ### Usage
 

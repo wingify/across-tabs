@@ -21,15 +21,12 @@ let Child = class Child {
       config.shouldInitImmediately = true;
     }
 
-    this.handshakeExpiryLimit = config.handshakeExpiryLimit;
-
-    this.config = config || {};
-
     this.tabName = window.name;
     this.tabId = null;
     this.tabParentName = null;
 
-    this.shouldInitImmediately = config.shouldInitImmediately;
+    Object.assign(this, config);
+    this.config = config;
 
     if (this.shouldInitImmediately) {
       this.init();

@@ -19,9 +19,7 @@ var Parent = class Parent {
    * @param  {Object} config - Refer API/docs for config keys
    */
   constructor(config) {
-    if (!config) {
-      config = {};
-    }
+    config = config || {};
     if (typeof config.heartBeatInterval === 'undefined') {
       config.heartBeatInterval = 500;
     }
@@ -29,16 +27,11 @@ var Parent = class Parent {
       config.shouldInitImmediately = true;
     }
 
-    this.heartBeatInterval = config.heartBeatInterval;
-
     // reset tabs with every new Object
     tabUtils.closeAll();
 
     this.Tab = Tab;
-    this.onHandshakeCallback = config.onHandshakeCallback;
-    this.onPollingCallback = config.onPollingCallback;
-    this.removeClosedTabs = config.removeClosedTabs;
-    this.shouldInitImmediately = config.shouldInitImmediately;
+    Object.assign(this, config);
 
     if (this.shouldInitImmediately) {
       this.init();
@@ -222,7 +215,6 @@ var Parent = class Parent {
       this.startPollingTabs();
     }
 
-    return tab;
   };
 
   /**

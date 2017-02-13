@@ -17,9 +17,9 @@ let Tab = class Tab {
    * @return {Object} this
    */
   create(config) {
-    this.url = config.url;
+    config = config || {};
+    Object.assign(this, config);
     this.id = UUID.generate() || (tabUtils.tabs.length + 1);
-    this.name = config.windowName;
     this.status = 'open';
     // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
     this.ref = window.open(

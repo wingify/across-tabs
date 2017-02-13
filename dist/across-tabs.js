@@ -135,9 +135,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Parent(config) {
 	    _classCallCheck(this, Parent);
 	
-	    if (!config) {
-	      config = {};
-	    }
+	    config = config || {};
 	    if (typeof config.heartBeatInterval === 'undefined') {
 	      config.heartBeatInterval = 500;
 	    }
@@ -145,16 +143,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      config.shouldInitImmediately = true;
 	    }
 	
-	    this.heartBeatInterval = config.heartBeatInterval;
-	
 	    // reset tabs with every new Object
 	    _tab4.default.closeAll();
 	
 	    this.Tab = _tab2.default;
-	    this.onHandshakeCallback = config.onHandshakeCallback;
-	    this.onPollingCallback = config.onPollingCallback;
-	    this.removeClosedTabs = config.removeClosedTabs;
-	    this.shouldInitImmediately = config.shouldInitImmediately;
+	    Object.assign(this, config);
 	
 	    if (this.shouldInitImmediately) {
 	      this.init();
@@ -390,8 +383,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!heartBeat) {
 	        this.startPollingTabs();
 	      }
-	
-	      return tab;
 	    }
 	  }, {
 	    key: 'init',
@@ -459,9 +450,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {Object} this
 	     */
 	    value: function create(config) {
-	      this.url = config.url;
+	      config = config || {};
+	      Object.assign(this, config);
 	      this.id = _uuid2.default.generate() || _tab2.default.tabs.length + 1;
-	      this.name = config.windowName;
 	      this.status = 'open';
 	      // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
 	      this.ref = window.open(this.url, config.windowName || '_blank', config.windowFeatures);
@@ -1114,15 +1105,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      config.shouldInitImmediately = true;
 	    }
 	
-	    this.handshakeExpiryLimit = config.handshakeExpiryLimit;
-	
-	    this.config = config || {};
-	
 	    this.tabName = window.name;
 	    this.tabId = null;
 	    this.tabParentName = null;
 	
-	    this.shouldInitImmediately = config.shouldInitImmediately;
+	    Object.assign(this, config);
+	    this.config = config;
 	
 	    if (this.shouldInitImmediately) {
 	      this.init();

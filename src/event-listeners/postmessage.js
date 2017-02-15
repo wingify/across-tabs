@@ -31,20 +31,39 @@ let PostMessageListener = {};
 /**
  * OnLoad Event - it serves as an communication establishment source from Child tab
  */
-PostMessageListener._onLoad = () => {
-  let data;
-  // Setting generic tab info to be sent to Child after establishing connection
-  let tabInfo = {
-    id: window.newlyTabOpened.id,
-    name: window.newlyTabOpened.name,
-    parentName: window.name
-  };
+PostMessageListener._onLoad = (data) => {
+  let tabs,
+    dataToSend,
+    tabInfo = data.split(PostMessageEventNamesEnum.LOADED)[1];
+
+  // Child was opened but parent got refereshed, opened a tab i.e.
+  // last opened tab will get refreshed(browser behavior). WOW! Handle this now.
+  if (tabInfo) {
+    try {
+      tabInfo = JSON.parse(tabInfo);
+      // If Child knows its UUID, means Parent was refreshed and Child did not
+      if (tabInfo.id) {
+        tabs = tabUtils.getAll();
+        if (tabs.length) {
+          window.newlyTabOpened = tabs[tabs.length - 1];
+          window.newlyTabOpened.id = tabInfo.id;
+          window.newlyTabOpened.name = tabInfo.name;
+        }
+      }
+    } catch (e) {
+      throw new Error(WarningTextEnum.INVALID_JSON);
+    }
+  }
 
   if (window.newlyTabOpened) {
     try {
-      data = PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT;
-      data += JSON.stringify(tabInfo);
-      tabUtils.sendMessage(window.newlyTabOpened, data);
+      dataToSend = PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT;
+      dataToSend += JSON.stringify({
+        id: window.newlyTabOpened.id,
+        name: window.newlyTabOpened.name,
+        parentName: window.name
+      });
+      tabUtils.sendMessage(window.newlyTabOpened, dataToSend);
     } catch (e) {
       throw new Error(WarningTextEnum.INVALID_JSON);
     }
@@ -113,7 +132,7 @@ PostMessageListener.onNewTab = (message) => {
   }
 
   if (data.indexOf(PostMessageEventNamesEnum.LOADED) > -1) {
-    PostMessageListener._onLoad();
+    PostMessageListener._onLoad(data);
   } else if (data.indexOf(PostMessageEventNamesEnum.CUSTOM) > -1) {
     PostMessageListener._onCustomMessage(data);
   } else if (data.indexOf(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD) > -1) {
@@ -121,4 +140,4 @@ PostMessageListener.onNewTab = (message) => {
   }
 };
 
-module.exports = PostMessageListener;
+export default PostMessageListener;

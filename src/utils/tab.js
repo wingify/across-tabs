@@ -147,4 +147,4 @@ tabUtils.sendMessage = (target, msg) => {
   }
 };
 
-module.exports = tabUtils;
+export default tabUtils;

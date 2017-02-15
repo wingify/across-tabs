@@ -5,7 +5,7 @@ import Child from './child';
  * Expose Parent and Child modules on AcrossTabs Object
  * @type {Object}
  */
-let AcrossTabs = {
+const AcrossTabs = {
   Parent: Parent,
   Child: Child
 };

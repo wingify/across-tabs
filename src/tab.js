@@ -3,7 +3,7 @@ import UUID from './vendor/uuid';
 import domUtils from './utils/dom';
 
 // Named Class expression
-let Tab = class Tab {
+class Tab {
   /**
    * Invoked when the object is instantiated
    */
@@ -43,4 +43,4 @@ let Tab = class Tab {
   };
 };
 
-module.exports = Tab;
+export default Tab;

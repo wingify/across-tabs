@@ -9,5 +9,5 @@ const WarningTextEnum = {
   URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.'
 };
 
-module.exports = WarningTextEnum;
+export default WarningTextEnum;
 

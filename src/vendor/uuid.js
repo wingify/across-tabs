@@ -87,4 +87,4 @@ UUID = (function () {
 
 })(UUID);
 
-module.exports = UUID;
+export default UUID;

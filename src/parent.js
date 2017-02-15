@@ -12,7 +12,7 @@ import PostMessageListener from './event-listeners/postmessage';
 let heartBeat, tab;
 
 // Named Class expression
-var Parent = class Parent {
+class Parent {
   /**
    * Involed when object is instantiated
    * Set flags/variables and calls init method to attach event listeners
@@ -231,4 +231,4 @@ var Parent = class Parent {
   };
 };
 
-module.exports = Parent;
+export default Parent;

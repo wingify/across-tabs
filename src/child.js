@@ -2,7 +2,7 @@ import PostMessageEventNamesEnum from './enums/PostMessageEventNamesEnum';
 import WarningTextEnum from './enums/WarningTextEnum';
 
 // Named Class expression
-let Child = class Child {
+class Child {
   /**
    * Involed when object is instantiated
    * Set flags/variables and calls init method to attach event listeners
@@ -81,7 +81,7 @@ let Child = class Child {
     if (this.isSessionStorageSupported) {
       let storedData = this._getData();
 
-      this.parseData(storedData);
+      this._parseData(storedData);
     }
   };
 
@@ -89,7 +89,7 @@ let Child = class Child {
    * Parse data fetched from sessionStorage
    * @param  {String} dataReceived
    */
-  parseData(dataReceived) {
+  _parseData(dataReceived) {
     let actualData;
 
     // Expecting JSON data
@@ -140,7 +140,7 @@ let Child = class Child {
 
       // Set data to sessionStorage so that when page reloads it can directly read the past info till the session lives
       this._setData(dataReceived);
-      this.parseData(dataReceived);
+      this._parseData(dataReceived);
 
       msg = PostMessageEventNamesEnum.CUSTOM + JSON.stringify({
         id: this.tabId
@@ -232,11 +232,11 @@ let Child = class Child {
       this.config.onReady();
     }
     this.isSessionStorageSupported = this._isSessionStorage();
-    this.sendMessageToParent(PostMessageEventNamesEnum.LOADED);
     this.addListeners();
     this._restoreData();
+    this.sendMessageToParent(PostMessageEventNamesEnum.LOADED + JSON.stringify(this.getTabInfo()));
     this.timeout = this.setHandshakeExpiry();
   }
 };
 
-module.exports = Child;
+export default Child;

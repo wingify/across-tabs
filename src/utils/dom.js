@@ -27,4 +27,4 @@ let domUtils = {
   }
 };
 
-module.exports = domUtils;
+export default domUtils;

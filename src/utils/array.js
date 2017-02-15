@@ -62,4 +62,4 @@ arrayUtils.searchByKeyName = (data, key, value, returnPreference) => {
 
 };
 
-module.exports = arrayUtils;
+export default arrayUtils;

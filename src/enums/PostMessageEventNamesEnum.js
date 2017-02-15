@@ -11,4 +11,4 @@ const PostMessageEventNamesEnum = {
   PARENT_COMMUNICATED: '__PARENT_COMMUNICATED__'
 };
 
-module.exports = PostMessageEventNamesEnum;
+export default PostMessageEventNamesEnum;

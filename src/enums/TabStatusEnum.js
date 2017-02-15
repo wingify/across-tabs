@@ -7,4 +7,4 @@ const TabStatusEnum = {
   CLOSE: 'close'
 };
 
-module.exports = TabStatusEnum;
+export default TabStatusEnum;

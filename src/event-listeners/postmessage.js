@@ -44,7 +44,7 @@ PostMessageListener._onLoad = () => {
     try {
       data = PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT;
       data += JSON.stringify(tabInfo);
-      window.newlyTabOpened.ref.postMessage(data, '*');
+      tabUtils.sendMessage(window.newlyTabOpened, data);
     } catch (e) {
       throw new Error(WarningTextEnum.INVALID_JSON);
     }

@@ -215,6 +215,8 @@ var Parent = class Parent {
       this.startPollingTabs();
     }
 
+    return tab;
+
   };
 
   /**

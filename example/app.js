@@ -32,9 +32,11 @@ var app = new Vue({
     },
     closeAllTabs: function () {
       parent.closeAllTabs();
+      app.showList();
     },
     closeTab: function (id) {
       parent.closeTab(id);
+      app.showList();
     },
     broadCastTo: function (tab) {
       parent.broadCastTo(tab, 'Yo! Message from parent!!');

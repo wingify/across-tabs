@@ -117,7 +117,7 @@ tabUtils.broadCastAll = (msg) => {
   msg = tabUtils._preProcessMessage(msg);
 
   for (i = 0; i < tabs.length; i++) {
-    tabs[i].ref.postMessage(msg, '*');
+    tabUtils.sendMessage(tabs[i], msg);
   }
 
   return tabUtils;
@@ -134,9 +134,17 @@ tabUtils.broadCastTo = (id, msg) => {
   msg = tabUtils._preProcessMessage(msg);
 
   targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
-  targetedTab.ref.postMessage(msg, '*');
+  tabUtils.sendMessage(targetedTab, msg);
 
   return tabUtils;
+};
+
+tabUtils.sendMessage = (target, msg) => {
+  if (target.ref.length > 1) {
+    target.ref[0].postMessage(msg, '*');
+  } else {
+    target.ref.postMessage(msg, '*');
+  }
 };
 
 module.exports = tabUtils;

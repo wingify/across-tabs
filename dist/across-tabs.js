@@ -383,6 +383,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!heartBeat) {
 	        this.startPollingTabs();
 	      }
+	
+	      return tab;
 	    }
 	  }, {
 	    key: 'init',
@@ -621,7 +623,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  msg = tabUtils._preProcessMessage(msg);
 	
 	  for (i = 0; i < tabs.length; i++) {
-	    tabs[i].ref.postMessage(msg, '*');
+	    tabUtils.sendMessage(tabs[i], msg);
 	  }
 	
 	  return tabUtils;
@@ -638,9 +640,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  msg = tabUtils._preProcessMessage(msg);
 	
 	  targetedTab = _array2.default.searchByKeyName(tabs, 'id', id); // TODO: tab.id
-	  targetedTab.ref.postMessage(msg, '*');
+	  tabUtils.sendMessage(targetedTab, msg);
 	
 	  return tabUtils;
+	};
+	
+	tabUtils.sendMessage = function (target, msg) {
+	  if (target.ref.length > 1) {
+	    target.ref[0].postMessage(msg, '*');
+	  } else {
+	    target.ref.postMessage(msg, '*');
+	  }
 	};
 	
 	module.exports = tabUtils;
@@ -983,7 +993,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    try {
 	      data = _PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT;
 	      data += JSON.stringify(tabInfo);
-	      window.newlyTabOpened.ref.postMessage(data, '*');
+	      _tab2.default.sendMessage(window.newlyTabOpened, data);
 	    } catch (e) {
 	      throw new Error(_WarningTextEnum2.default.INVALID_JSON);
 	    }
@@ -1232,7 +1242,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        // remove postMessage listener since no Parent is there to communicate with
 	        window.removeEventListener('message', function (evt) {
-	          return _this.onHandShake(evt);
+	          return _this.onCommunication(evt);
 	        });
 	      }
 	
@@ -1241,9 +1251,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	       * along with the tab's identity i.e. id, name and it's parent(itself) to the child tab.
 	      */
 	      if (data.indexOf(_PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT) > -1) {
-	        var msg = _PostMessageEventNamesEnum2.default.CUSTOM + JSON.stringify({
-	          id: this.tabId
-	        });
+	        var msg = void 0;
 	
 	        dataReceived = data.split(_PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT)[1];
 	
@@ -1251,6 +1259,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._setData(dataReceived);
 	        this.parseData(dataReceived);
 	
+	        msg = _PostMessageEventNamesEnum2.default.CUSTOM + JSON.stringify({
+	          id: this.tabId
+	        });
 	        this.sendMessageToParent(msg);
 	
 	        if (this.config.onInitialize) {

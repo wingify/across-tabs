@@ -126,7 +126,7 @@ let Child = class Child {
       }
 
       // remove postMessage listener since no Parent is there to communicate with
-      window.removeEventListener('message', evt => this.onHandShake(evt));
+      window.removeEventListener('message', evt => this.onCommunication(evt));
     }
 
     /**
@@ -134,9 +134,7 @@ let Child = class Child {
      * along with the tab's identity i.e. id, name and it's parent(itself) to the child tab.
     */
     if (data.indexOf(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT) > -1) {
-      let msg = PostMessageEventNamesEnum.CUSTOM + JSON.stringify({
-        id: this.tabId
-      });
+      let msg;
 
       dataReceived = data.split(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT)[1];
 
@@ -144,6 +142,9 @@ let Child = class Child {
       this._setData(dataReceived);
       this.parseData(dataReceived);
 
+      msg = PostMessageEventNamesEnum.CUSTOM + JSON.stringify({
+        id: this.tabId
+      });
       this.sendMessageToParent(msg);
 
       if (this.config.onInitialize) {

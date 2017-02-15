@@ -88,6 +88,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _tab = __webpack_require__(2);
@@ -126,6 +132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tab = void 0;
 	
 	// Named Class expression
+	
 	var Parent = function () {
 	  /**
 	   * Involed when object is instantiated
@@ -147,7 +154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _tab4.default.closeAll();
 	
 	    this.Tab = _tab2.default;
-	    Object.assign(this, config);
+	    _extends(this, config);
 	
 	    if (this.shouldInitImmediately) {
 	      this.init();
@@ -405,13 +412,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Parent;
 	}();
 	
-	module.exports = Parent;
+	;
+	
+	exports.default = Parent;
+	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -453,7 +469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    value: function create(config) {
 	      config = config || {};
-	      Object.assign(this, config);
+	      _extends(this, config);
 	      this.id = _uuid2.default.generate() || _tab2.default.tabs.length + 1;
 	      this.status = 'open';
 	      // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
@@ -478,13 +494,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Tab;
 	}();
 	
-	module.exports = Tab;
+	;
+	
+	exports.default = Tab;
+	module.exports = exports['default'];
 
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	
 	var _PostMessageEventNamesEnum = __webpack_require__(4);
 	
@@ -653,7 +676,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 	
-	module.exports = tabUtils;
+	exports.default = tabUtils;
+	module.exports = exports['default'];
 
 /***/ },
 /* 4 */
@@ -661,6 +685,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	/**
 	 * Enum for different event names used for tab-communication
 	 * @type {Object}
@@ -674,7 +701,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  PARENT_COMMUNICATED: '__PARENT_COMMUNICATED__'
 	};
 	
-	module.exports = PostMessageEventNamesEnum;
+	exports.default = PostMessageEventNamesEnum;
+	module.exports = exports['default'];
 
 /***/ },
 /* 5 */
@@ -682,6 +710,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	var arrayUtils = {};
 	
 	/**
@@ -752,7 +783,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return returnData;
 	};
 	
-	module.exports = arrayUtils;
+	exports.default = arrayUtils;
+	module.exports = exports['default'];
 
 /***/ },
 /* 6 */
@@ -760,6 +792,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	/**
 	 * Enum for Tab status(still opened / closed) used for tab-communication
 	 * @type {Object}
@@ -769,7 +804,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  CLOSE: 'close'
 	};
 	
-	module.exports = TabStatusEnum;
+	exports.default = TabStatusEnum;
+	module.exports = exports['default'];
 
 /***/ },
 /* 7 */
@@ -777,6 +813,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	/**
 	 * Enum for showing various warnings to suser when things done wrong
 	 * @type {Object}
@@ -788,7 +827,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.'
 	};
 	
-	module.exports = WarningTextEnum;
+	exports.default = WarningTextEnum;
+	module.exports = exports['default'];
 
 /***/ },
 /* 8 */
@@ -796,6 +836,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	/**
 	 * UUID.js: The RFC-compliant UUID generator for JavaScript.
 	 * ES6 port of only `generate` method of UUID by Varun Malhotra under MIT License
@@ -883,7 +926,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return UUID;
 	}(UUID);
 	
-	module.exports = UUID;
+	exports.default = UUID;
+	module.exports = exports['default'];
 
 /***/ },
 /* 9 */
@@ -891,6 +935,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	/**
 	 * This utility helps enabling/disabling the Link/Button on the Parent Tab.
 	 * As soon as, user clicks on link/btn to open a new tab, the link/btn gets disabled.
@@ -926,13 +973,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 	
-	module.exports = domUtils;
+	exports.default = domUtils;
+	module.exports = exports['default'];
 
 /***/ },
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	
 	var _array = __webpack_require__(5);
 	
@@ -980,20 +1032,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * OnLoad Event - it serves as an communication establishment source from Child tab
 	 */
-	PostMessageListener._onLoad = function () {
-	  var data = void 0;
-	  // Setting generic tab info to be sent to Child after establishing connection
-	  var tabInfo = {
-	    id: window.newlyTabOpened.id,
-	    name: window.newlyTabOpened.name,
-	    parentName: window.name
-	  };
+	PostMessageListener._onLoad = function (data) {
+	  var tabs = void 0,
+	      dataToSend = void 0,
+	      tabInfo = data.split(_PostMessageEventNamesEnum2.default.LOADED)[1];
+	
+	  // Child was opened but parent got refereshed, opened a tab i.e.
+	  // last opened tab will get refreshed(browser behavior). WOW! Handle this now.
+	  if (tabInfo) {
+	    try {
+	      tabInfo = JSON.parse(tabInfo);
+	      // If Child knows its UUID, means Parent was refreshed and Child did not
+	      if (tabInfo.id) {
+	        tabs = _tab2.default.getAll();
+	        if (tabs.length) {
+	          window.newlyTabOpened = tabs[tabs.length - 1];
+	          window.newlyTabOpened.id = tabInfo.id;
+	          window.newlyTabOpened.name = tabInfo.name;
+	        }
+	      }
+	    } catch (e) {
+	      throw new Error(_WarningTextEnum2.default.INVALID_JSON);
+	    }
+	  }
 	
 	  if (window.newlyTabOpened) {
 	    try {
-	      data = _PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT;
-	      data += JSON.stringify(tabInfo);
-	      _tab2.default.sendMessage(window.newlyTabOpened, data);
+	      dataToSend = _PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT;
+	      dataToSend += JSON.stringify({
+	        id: window.newlyTabOpened.id,
+	        name: window.newlyTabOpened.name,
+	        parentName: window.name
+	      });
+	      _tab2.default.sendMessage(window.newlyTabOpened, dataToSend);
 	    } catch (e) {
 	      throw new Error(_WarningTextEnum2.default.INVALID_JSON);
 	    }
@@ -1063,7 +1134,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	
 	  if (data.indexOf(_PostMessageEventNamesEnum2.default.LOADED) > -1) {
-	    PostMessageListener._onLoad();
+	    PostMessageListener._onLoad(data);
 	  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.CUSTOM) > -1) {
 	    PostMessageListener._onCustomMessage(data);
 	  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD) > -1) {
@@ -1071,13 +1142,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 	
-	module.exports = PostMessageListener;
+	exports.default = PostMessageListener;
+	module.exports = exports['default'];
 
 /***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -1119,7 +1197,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.tabId = null;
 	    this.tabParentName = null;
 	
-	    Object.assign(this, config);
+	    _extends(this, config);
 	    this.config = config;
 	
 	    if (this.shouldInitImmediately) {
@@ -1188,18 +1266,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (this.isSessionStorageSupported) {
 	        var storedData = this._getData();
 	
-	        this.parseData(storedData);
+	        this._parseData(storedData);
 	      }
 	    }
 	  }, {
-	    key: 'parseData',
+	    key: '_parseData',
 	
 	
 	    /**
 	     * Parse data fetched from sessionStorage
 	     * @param  {String} dataReceived
 	     */
-	    value: function parseData(dataReceived) {
+	    value: function _parseData(dataReceived) {
 	      var actualData = void 0;
 	
 	      // Expecting JSON data
@@ -1257,7 +1335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        // Set data to sessionStorage so that when page reloads it can directly read the past info till the session lives
 	        this._setData(dataReceived);
-	        this.parseData(dataReceived);
+	        this._parseData(dataReceived);
 	
 	        msg = _PostMessageEventNamesEnum2.default.CUSTOM + JSON.stringify({
 	          id: this.tabId
@@ -1372,9 +1450,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.config.onReady();
 	      }
 	      this.isSessionStorageSupported = this._isSessionStorage();
-	      this.sendMessageToParent(_PostMessageEventNamesEnum2.default.LOADED);
 	      this.addListeners();
 	      this._restoreData();
+	      this.sendMessageToParent(_PostMessageEventNamesEnum2.default.LOADED + JSON.stringify(this.getTabInfo()));
 	      this.timeout = this.setHandshakeExpiry();
 	    }
 	  }]);
@@ -1382,7 +1460,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Child;
 	}();
 	
-	module.exports = Child;
+	;
+	
+	exports.default = Child;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ])

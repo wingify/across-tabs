@@ -215,4 +215,34 @@ describe('tabUtils', () => {
 			expect(tab1.ref.postMessage).toHaveBeenCalled();
 		});
 	});
+	describe('method: sendMessage', () => {
+		it('should send message to correct child window', () => {
+			let result;
+
+			addTabs();
+
+			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+
+			spyOn(tab1.ref, 'postMessage');
+			tabUtils.sendMessage(tab1, 'hello');
+			expect(tab1.ref.postMessage).toHaveBeenCalled();
+		});
+		it('should send message to the first window i.e. parent window', () => {
+			let result;
+
+			addTabs();
+
+			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+
+			tab1.ref = [{postMessage: function () {} }, {postMessage: function () {} }]; // mock length
+
+			spyOn(tab1.ref[0], 'postMessage');
+			tabUtils.sendMessage(tab1, 'hello');
+			expect(tab1.ref[0].postMessage).toHaveBeenCalled();
+		});
+	});
 });

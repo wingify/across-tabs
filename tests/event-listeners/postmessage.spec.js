@@ -43,10 +43,6 @@ describe('PostMessageListener', () => {
 		});
 	});
 	describe('PostMessageListener:_onLoad', () => {
-		it('should throw error if new tab info is not set', () => {
-			unSetNewTabInfo();
-			expect(PostMessageListener._onLoad).toThrow(new Error(WarningTextEnum.INVALID_JSON));
-		});
 		xit('should stringify tabInfo before sending data to Child', () => {
 			spyOn(JSON, 'stringify');
 			setNewTabInfo();
@@ -60,9 +56,9 @@ describe('PostMessageListener', () => {
 	        window.addEventListener('message', (e) => {
 	            spy();
 	        });
-			spyOn(window.newlyTabOpened.ref, 'postMessage');
-			PostMessageListener._onLoad();
-			expect(window.newlyTabOpened.ref.postMessage).toHaveBeenCalled();
+			spyOn(tabUtils, 'sendMessage');
+			PostMessageListener._onLoad(PostMessageEventNamesEnum.LOADED + JSON.stringify({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'}));
+			expect(tabUtils.sendMessage).toHaveBeenCalled();
 		});
 	});
 	describe('PostMessageListener:_onCustomMessage', () => {

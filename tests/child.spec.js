@@ -28,7 +28,7 @@ describe('Child', () => {
 			expect(child._getData).toBeDefined();
 			expect(child._setData).toBeDefined();
 			expect(child._restoreData).toBeDefined();
-			expect(child.parseData).toBeDefined();
+			expect(child._parseData).toBeDefined();
 			expect(child.onCommunication).toBeDefined();
 			expect(child.addListeners).toBeDefined();
 			expect(child.setHandshakeExpiry).toBeDefined();
@@ -60,19 +60,19 @@ describe('Child', () => {
 	describe('method: _restoreData', () => {
 		it('should get data from sessionStorage adn parse it', () => {
 			spyOn(sessionStorage, 'getItem');
-			spyOn(child, 'parseData');
+			spyOn(child, '_parseData');
 			child._restoreData();
 			expect(sessionStorage.getItem).toHaveBeenCalled();
-			expect(child.parseData).toHaveBeenCalled();
+			expect(child._parseData).toHaveBeenCalled();
 		});
 	});
-	describe('method: parseData', () => {
+	describe('method: _parseData', () => {
 		it('should throw error if data passed is not valid JSON', () => {
-			expect(child.parseData).toThrow(new Error(WarningTextEnum.INVALID_DATA));
+			expect(child._parseData).toThrow(new Error(WarningTextEnum.INVALID_DATA));
 		});
 		it('should parse stringified data', () => {
 			spyOn(JSON, 'parse');
-			child.parseData(JSON.stringify({a: 1}));
+			child._parseData(JSON.stringify({a: 1}));
 			expect(JSON.parse).toHaveBeenCalled();
 		});
 	});
@@ -114,7 +114,7 @@ describe('Child', () => {
 			});
 
 			spyOn(child, '_setData');
-			spyOn(child, 'parseData');
+			spyOn(child, '_parseData');
 			spyOn(child, 'sendMessageToParent');
 
 			spyOn(child.config, 'onInitialize');
@@ -124,7 +124,7 @@ describe('Child', () => {
 			});
 
 			expect(child._setData).toHaveBeenCalled();
-			expect(child.parseData).toHaveBeenCalled();
+			expect(child._parseData).toHaveBeenCalled();
 			expect(child.sendMessageToParent).toHaveBeenCalled();
 			expect(child.config.onInitialize).toHaveBeenCalled();
 		});

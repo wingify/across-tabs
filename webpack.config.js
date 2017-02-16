@@ -7,8 +7,19 @@ var env = require('yargs').argv.mode;
 
 var libraryName = 'across-tabs';
 
+var libVersion = JSON.stringify(require("./package.json").version);
+
+var libraryHeaderComment =  '\n' +
+  'across-tabs ' + libVersion + '\n' +
+  'https://github.com/wingify/across-tabs.js\n' +
+  'MIT licensed\n' +
+  '\n' +
+  'Copyright (C) 2017-2018 Wingify - A project by Varun Malhotra(https://github.com/softvar)\n';
+
+
 var plugins = [
-  new DashboardPlugin()
+  new DashboardPlugin(),
+  new webpack.BannerPlugin(libraryHeaderComment, { entryOnly: true })
 ];
 var outputFile;
 

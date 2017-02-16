@@ -9,7 +9,7 @@
     "build-test": "karma start --single-run --no-auto-watch karma.config.js",
     "dev": "webpack-dashboard -- webpack --progress --colors --watch --mode=dev",
     "test": "karma start karma.config.js",
-    "coverage": "node node_modules/.bin/istanbul cover karma start --single-run --no-auto-watch karma.config.js",
+    "coverage": "node node_modules/.bin/istanbul cover karma start --single-run karma.config.js",
     "coveralls": "cat ./coverage/report-lcov/lcov.info | node node_modules/.bin/coveralls"
   },
   "devDependencies": {

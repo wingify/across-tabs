@@ -24,9 +24,9 @@
 
 1. Safely enables [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) communication among different browser tabs. Uses `PostMessage` API for communication.
 2. Easy to hook custom callback at various levels. Eg: executing a custom method in Child's tab on receiving a message from Parent tab.
-3. Provide `data-tab-opener="name"` on the target link/btn to disable/enable the element, based on the communication-setup status.
+3. Option to provide `data-tab-opener="name"` attribute on the target link/btn(which opens up a new tab), so that it remains disable until `Child` tab initiates a handshake and is received by the `Parent` tab
 4. Fully fledged API to get information regarding the tabs(Parent and Child tabs) and other communication related methods.
-5. Exports in a umd format i.e. library works everywhere.
+5. Exports in a UMD format i.e. library works everywhere.
 
 ### Installation
 
@@ -57,10 +57,10 @@ $ bower install across-tabs
 **Explanation of diagram**
 
 * Parent(`P`) opens CHild tab(`C1`) at `t=1`.
-* `c1a` - Time at which `C1` initiates a handshake with the Parent.
-* `P1` - Time at which `P` receives `C1` message.
+* `c1a` - When `C1` initiates a handshake with the Parent.
+* `P1` - When `P` receives `C1` message.
 * `P2` - `P` acknowledges the request and sends the `C1` its identity.
-* `c1b` - Time at which `C1` receives acknowledgemnet message along with identity from `P`.
+* `c1b` - When `C1` receives acknowledgemnet message along with identity from `P`.
 
 ---
 
@@ -69,10 +69,10 @@ Total Tabs Associated: **1** | Opened Tabs: **1** | Closed Tabs: **0**
 ---
 
 * Parent(`P`) opens CHild tab(`C2`) at `t=10`.
-* `c2a` - Time at which `C2` initiates a handshake with the Parent.
-* `P3` - Time at which `P` receives `C2` message.
+* `c2a` - When `C2` initiates a handshake with the Parent.
+* `P3` - When `P` receives `C2` message.
 * `P4` - `P` acknowledges the request and sends the `C2` its identity.
-* `c2b` - Time at which `C2` receives acknowledgemnet message along with identity from `P`.
+* `c2b` - When `C2` receives acknowledgemnet message along with identity from `P`.
 
 ---
 
@@ -89,12 +89,12 @@ Total Tabs Associated: **2** | Opened Tabs: **1** | Closed Tabs: **1**
 
 ---
 * Parent(`P`) opens CHild tab(`C3`) at `t=25`.
-* `c3a` - Time at which `C3` initiates a handshake with the Parent.
-* `P6` - Time at which `P` receives `C3` message.
+* `c3a` - When `C3` initiates a handshake with the Parent.
+* `P6` - When `P` receives `C3` message.
 * `c2c` - Tab `C2` sends a `custom` message.
 * `P7` - When `P` receives a message from tab `C2`. It processes it.
 * `P8` - `P` acknowledges the request and sends the `C3` its identity.
-* `c3b` - Time at which `C3` receives acknowledgemnet message along with identity from `P`.
+* `c3b` - When `C3` receives acknowledgemnet message along with identity from `P`.
 
 ---
 
@@ -291,7 +291,7 @@ Tested in Chrome and Firefox.
 
 * Webpack based `src` compilation & bundling and `dist` generation.
 * ES6 as a source of writing code.
-* Exports in a [umd](https://github.com/umdjs/umd) format so the library works everywhere.
+* Exports in a [UMD](https://github.com/umdjs/umd) format so the library works everywhere.
 * Linting with [ESLint](http://eslint.org/).
 * ES6 test setup with [Karma](https://karma-runner.github.io/1.0/index.html), [Jasmine](https://jasmine.github.io/2.0/introduction.html) and [isparta](https://github.com/deepsweet/isparta-loader).
 * Test covergae with [Istanbul]() and [Coveralls](https://coveralls.io/).
@@ -310,7 +310,7 @@ ES6 source files
        |
   ready to use
      library
-  in umd format
+  in UMD format
 ```
 
 ### Scripts

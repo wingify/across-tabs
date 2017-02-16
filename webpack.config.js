@@ -18,7 +18,6 @@ var libraryHeaderComment =  '\n' +
 
 
 var plugins = [
-  new DashboardPlugin(),
   new webpack.BannerPlugin(libraryHeaderComment, { entryOnly: true })
 ];
 var outputFile;
@@ -27,6 +26,7 @@ if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
   outputFile = libraryName + '.min.js';
 } else {
+  plugins.push(new DashboardPlugin());
   outputFile = libraryName + '.js';
 }
 

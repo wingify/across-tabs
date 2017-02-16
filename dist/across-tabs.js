@@ -1,3 +1,12 @@
+/*!
+ * 
+ * across-tabs "0.1.1"
+ * https://github.com/wingify/across-tabs.js
+ * MIT licensed
+ * 
+ * Copyright (C) 2017-2018 Wingify - A project by Varun Malhotra(https://github.com/softvar)
+ * 
+ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();

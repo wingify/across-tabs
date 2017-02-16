@@ -315,8 +315,8 @@ ES6 source files
 
 ### Scripts
 
-* `npm run build` - produces production version of the library under the `dist` folder
-* `npm run dev` - produces development version of the library and runs a watcher
+* `npm run build` - produces production version(minified) of the library under the `dist` folder
+* `npm run dev` - produces development version(unminified) of the library and runs a watcher to detect file changes.
 * `npm run test` - well ... it runs the tests :)
 
 ### Contributing
@@ -331,9 +331,10 @@ ES6 source files
 
 ### Roadmap
 
-* Have a queuing mechanism to deal with loads of async events.
+* Having a Queue mechanism to deal with loads of async events.
+* Promise based `Parent-Child` communication. Will help in sending window specific data to and fro apart from custom data messages.
+* Add support for whitelisting `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior.
 * E2E testing so that the behavior can be tested automatically.
-* Add support for providing `origin` for postMessage communication for security concerns.
 * Maintaining and adding more enhancements as and when required. Open to everyone's suggestions.
 
 ### Authors

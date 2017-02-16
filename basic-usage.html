@@ -1,0 +1,77 @@
+<script src="js/script.js"></script><script>navigateHome()</script>
+
+## Basic Usage
+
+### Installation
+
+Via [npm](https://www.npmjs.com/)
+
+```
+$ npm install across-tabs
+```
+
+Via [bower](https://bower.io/)
+
+```
+$ bower install across-tabs
+```
+
+### Usage
+
+##### Create an instance / reference before using.
+
+**Opener(Parent) tab***
+
+```
+var config = {
+  onHandshakeCallback: function () { ... },
+  onPollingCallback: function () { ... }
+}
+var parent = new AcrossTabs.Parent(config);
+```
+
+`Constructor` accepts a configurable `Object` with the following keys.
+
+* `heartBeatInterval`: The time interval for polling tabs statuses
+* `removeClosedTabs`: Pass it as `true` to have only opened tabs in the list
+* `shouldInitImmediately`: Pass it as `false` to create an instance but initialize it later
+* `onHandshakeCallback`: Callback to be called when a successful connection has been established
+* `onPollingCallback`: Callback to be called every time a tab is polled for its status
+
+| Config Keys               |     default    |      accepts                              |
+| ---------------------     | -------------- | ----------------------------------------- |
+| **heartBeatInterval**     |     500 msec   |  A number representing milliseconds       |
+| **removeClosedTabs**      |     false      |            Boolean                        |
+| **shouldInitImmediately** |     true       |            Boolean                        |
+| **onHandshakeCallback**   |     Undefined  |        Function as callback               |
+| **onPollingCallback**     |     Undefined  |        Function as callback               |
+
+
+**New(Child tab)**
+
+```
+var config = {
+  onReady: onReady,
+  onInitialize: onInitialize,
+  handshakeExpiryLimit: 4000, // msec
+  onParentDisconnect: onParentDisconnect,
+  onParentCommunication: onParentCommunication
+};
+var child =  new AcrossTabs.Child();
+```
+
+`Constructor` accepts a configurable `Object` with the following keys.
+
+* `handshakeExpiryLimit`: Time to wait for getting an acknowledgement from Parent window for child's request
+* `onReady`: Callback to be invoked once child instance is ready
+* `onInitialize`: Callback when a child instance is actually initiated
+* `onParentDisconnect`: Callback to be invoked when Parent gets disconnected
+* `onParentCommunication`: Callback to be invoked whenevr Parent communicates with the child tab
+
+| Config Keys               |     default    |      accepts                              |
+| ------------------------- | -------------- | ----------------------------------------- |
+| **handshakeExpiryLimit**  |    5000 msec   |    A number representing milliseconds     |
+| **onReady**               |    Undefined   |        Function as callback               |
+| **onInitialize**          |    Undefined   |        Function as callback               |
+| **onParentDisconnect**    |    Undefined   |        Function as callback               |
+| **onParentCommunication** |    Undefined   |        Function as callback               |

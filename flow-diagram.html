@@ -1,0 +1,63 @@
+<script src="js/script.js"></script><script>navigateHome()</script>
+
+## Flow Diagram
+
+* Opener/Parent tab(`P`) opens up a new Child tab(`C`).
+* `C` initiates a handshake with the `P` tab by sending a `postMessage`.
+* `P` acknowledges the request and sends `C` it's identity i.e. `UUID` along with `P` information.
+* This sets up a communication channel between Parent and Child tab.
+* Now, `P` and `C` can share custom messages with each other.
+* Whenever `C` gets closed/refreshed, `P` is notified.
+* Whenever `P` is closed/refreshed, all children of `P` tab gets notified.
+
+<img src="images/parent-tab-communication.jpg" />
+
+**Explanation of diagram**
+
+* Parent(`P`) opens CHild tab(`C1`) at `t=1`.
+* `c1a` - When `C1` initiates a handshake with the Parent.
+* `P1` - When `P` receives `C1` message.
+* `P2` - `P` acknowledges the request and sends the `C1` its identity.
+* `c1b` - When `C1` receives acknowledgemnet message along with identity from `P`.
+
+---
+
+Total Tabs Associated: **1** | Opened Tabs: **1** | Closed Tabs: **0**
+
+---
+
+* Parent(`P`) opens CHild tab(`C2`) at `t=10`.
+* `c2a` - When `C2` initiates a handshake with the Parent.
+* `P3` - When `P` receives `C2` message.
+* `P4` - `P` acknowledges the request and sends the `C2` its identity.
+* `c2b` - When `C2` receives acknowledgemnet message along with identity from `P`.
+
+---
+
+Total Tabs Associated: **2** | Opened Tabs: **2** | Closed Tabs: **0**
+
+---
+
+* `c1c` - Tab `C1` closes.
+* `P5` - `P` is notified about the `C1`. Parent updates the list.
+
+---
+
+Total Tabs Associated: **2** | Opened Tabs: **1** | Closed Tabs: **1**
+
+---
+* Parent(`P`) opens CHild tab(`C3`) at `t=25`.
+* `c3a` - When `C3` initiates a handshake with the Parent.
+* `P6` - When `P` receives `C3` message.
+* `c2c` - Tab `C2` sends a `custom` message.
+* `P7` - When `P` receives a message from tab `C2`. It processes it.
+* `P8` - `P` acknowledges the request and sends the `C3` its identity.
+* `c3b` - When `C3` receives acknowledgemnet message along with identity from `P`.
+
+---
+
+Total Tabs Associated: **3** | Opened Tabs: **2** | Closed Tabs: **1**
+
+---
+
+* When Parent Tab `P` is closed, all the opened tabs are notified about it.

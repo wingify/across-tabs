@@ -1,0 +1,48 @@
+<script src="js/script.js"></script><script>navigateHome()</script>
+
+## Introduction
+
+Easily communicate among browser tabs(supports cross-origin).
+
+### Features
+
+1. Safely enables [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) communication among different browser tabs. Uses `PostMessage` API for communication.
+2. Easy to hook custom callback at various levels. Eg: executing a custom method in Child's tab on receiving a message from Parent tab.
+3. Option to provide `data-tab-opener="name"` attribute on the target link/btn(which opens up a new tab), so that it remains disable until `Child` tab initiates a handshake and is received by the `Parent` tab
+4. Fully fledged API to get information regarding the tabs(Parent and Child tabs) and other communication related methods.
+5. Exports in a UMD format i.e. library works everywhere.
+
+
+### Browser Support
+
+Tested in Chrome and Firefox.
+
+
+### Example
+
+##### Create an instance / reference before using.
+
+**Opener(Parent) tab**
+
+```js
+var config = {
+  onHandshakeCallback: function () { ... },
+  onPollingCallback: function () { ... }
+}
+var parent = new AcrossTabs.Parent(config);
+```
+
+**New(Child tab)**
+
+```js
+var config = {
+  onReady: onReady,
+  onInitialize: onInitialize,
+  handshakeExpiryLimit: 4000, // msec
+  onParentDisconnect: onParentDisconnect,
+  onParentCommunication: onParentCommunication
+};
+var child =  new AcrossTabs.Child();
+```
+
+That's it! The communication setup would be set up once the new tab is opened up.

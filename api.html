@@ -1,0 +1,119 @@
+<script src="js/script.js"></script><script>navigateHome()</script>
+
+## API
+
+Refer [above section](#create-an-instance--reference-before-using) on how to create an instance before hitting API methods.
+
+#### Opener Tab(Parent) Methods
+
+* **`openNewTab`**
+
+  Saves `data` in specifed `key` in localStorage. If the key is not provided, the library will warn. Following types of JavaScript objects are supported:
+
+  |   Parameter   |        Description                                   |
+  | ------------- | ---------------------------------------------------- |
+  |     config    |     For opening a new tab i.e. url and windowName    |
+
+  ```
+    parent.openNewTab({url: 'http://example.com', windowName: 'AcrossTab'});
+  ```
+
+* **`enableElements`**
+
+  Links / buttons can be given a data attribute: `data-tab-opener="name"`. On clicking, the library finds elements with that attribute and adds `disabled="disabled"` attribute to that element. The `disabled` attribute is removed once the Child tab communicates back to the opener i.e. Parent. Though, this method is called internally but can also be invoked(may be within a timer) to be on a safer side.
+
+  ```
+    parent.enableElements();
+  ```
+
+* **`getAllTabs`**
+
+  Returns the list of all the tabs.
+  If `removeClosedTabs: true` is provided while instantiating, it will return only the opened tabs as closed tabs would be removed.
+  ```
+    parent.getAllTabs()
+  ```
+
+* **`getOpenedTabs`**
+
+  Returns the list of all `opened` tabs.
+
+  ```
+    parent.getOpenedTabs();
+  ```
+
+* **`getClosedTabs`**
+
+  Returns the list of all `closed` tabs.
+  If `removeClosedTabs: true` is provided while instantiating, it will return empty list as closed tabs would be removed.
+
+  ```
+    parent.getClosedTabs();
+  ```
+
+* **`closeAllTabs`**
+
+  Closes all the opened tabs.
+
+  ```
+    parent.closeAllTabs()
+  ```
+
+* **`closeTab`**
+
+  Closes a particular tab whose id is provided.
+
+  |   Parameter   |        Description                |
+  | ------------- | --------------------------------- |
+  |     id        |     id of the tab to be closed    |
+
+  ```
+    parent.closeTab('57cd47da-d98e-4a2d-814c-9b07cb51059c');
+  ```
+
+* **`broadCastAll`**
+
+  Sends a same `message` to all the opened tabs.
+
+  |   Parameter   |        Description          |
+  | ------------- | --------------------------- |
+  |     msg       |        msg to be ent        |
+
+  ```
+    parent.broadCastAll('Hello my dear Child! A greeting from Parent.'});
+  ```
+
+* **`broadCastTo`**
+
+  Sends a `message` to a particular opened tab.
+
+  |   Parameter   |        Description            |
+  | ------------- | ----------------------------- |
+  |     id        |  id of the tab to send a msg  |
+  |     msg       |        msg to be ent          |
+
+  ```
+    parent.broadCastTo('57cd47da-d98e-4a2d-814c-9b07cb51059c', 'Hey! Can you run the script: worker.js? Thanks!');
+  ```
+
+####  New Tab(Child) Methods
+
+* **`getTabInfo`**
+
+  Return id, name and parentName of the child tab.
+
+  ```
+    child.getTabInfo();
+  ```
+
+* **`sendMessageToParent`**
+
+  Sends a `message` to the `Parent` tab.
+
+  |   Parameter   |        Description            |
+  | ------------- | ----------------------------- |
+  |     msg       |        msg to be ent          |
+
+  ```
+    parent.sendMessageToParent('Hey Parent! I\'m done with my work.');
+  ```

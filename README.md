@@ -1,4 +1,4 @@
-## AcrossTabs - Easily communicate among browser tabs(supports cross-origin).
+## <img src="across-tabs.png" alt="Across tabs" width="50" height="50"/> AcrossTabs - Easily communicate among browser tabs(supports cross-origin).
 
 [![npm version](https://badge.fury.io/js/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![npm](https://img.shields.io/npm/dt/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![Build Status](http://img.shields.io/travis/wingify/across-tabs/master.svg?style=flat)](http://travis-ci.org/wingify/across-tabs) [![Coverage Status](https://coveralls.io/repos/github/wingify/across-tabs/badge.svg?branch=master)](https://coveralls.io/github/wingify/across-tabs?branch=master)
 

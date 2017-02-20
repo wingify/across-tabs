@@ -164,6 +164,8 @@ var child =  new AcrossTabs.Child();
 | **onParentDisconnect**    |    Undefined   |        Function as callback               |
 | **onParentCommunication** |    Undefined   |        Function as callback               |
 
+**Example** is included in the `example` folder. `Vanilla JS` and `Vue js` versions are there to test out.
+*Note:* Run `npm install` if you wish to run `vuejs` example since the example needs vue-js library to work.
 
 ### API
 

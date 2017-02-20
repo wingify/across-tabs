@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "0.1.2"
+ * across-tabs "0.1.3"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -247,14 +247,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Change from CLOSE to OPEN state is never gonna happen ;)
 	    }
 	  }, {
-	    key: 'customEventUnListener',
+	    key: 'onChildUnload',
 	
+	
+	    /**
+	     * Called when a child is refreshed/closed
+	     * @param  {Object} ev - Event
+	     */
+	    value: function onChildUnload(ev) {
+	      if (this.onChildDisconnect) {
+	        this.onChildDisconnect(ev.detail);
+	      }
+	    }
 	
 	    /**
 	     * Enable link/btn, which got disabled on clicking.
 	     * Note: works only when `data-tab-opener="heatmap"` is used on the respective element
 	     * @param  {Object} ev - Event
 	     */
+	
+	  }, {
+	    key: 'customEventUnListener',
 	    value: function customEventUnListener(ev) {
 	      this.enableElements();
 	      if (this.onHandshakeCallback) {
@@ -277,6 +290,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      window.removeEventListener('toggleElementDisabledAttribute', this.customEventUnListener);
 	      window.addEventListener('toggleElementDisabledAttribute', function (ev) {
 	        return _this2.customEventUnListener(ev);
+	      });
+	
+	      window.removeEventListener('onChildUnload', this.onChildUnload);
+	      window.addEventListener('onChildUnload', function (ev) {
+	        return _this2.onChildUnload(ev);
 	      });
 	
 	      // Let children tabs know when Parent is closed / refereshed.
@@ -1124,6 +1142,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tabs = _tab2.default.getAll();
 	    window.newlyTabOpened = _array2.default.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
 	  }
+	
+	  // CustomEvent is not supported in IE and so does this library
+	  var event = new CustomEvent('onChildUnload', { 'detail': tabInfo });
+	
+	  window.dispatchEvent(event);
 	};
 	
 	/**

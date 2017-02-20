@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "0.1.3"
+ * across-tabs "0.1.4"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 

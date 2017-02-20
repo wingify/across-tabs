@@ -113,6 +113,11 @@ PostMessageListener._onBeforeUnload = (data) => {
     tabs = tabUtils.getAll();
     window.newlyTabOpened = arrayUtils.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
   }
+
+  // CustomEvent is not supported in IE and so does this library
+  let event = new CustomEvent('onChildUnload', {'detail': tabInfo});
+
+  window.dispatchEvent(event);
 };
 
 /**

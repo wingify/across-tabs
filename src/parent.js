@@ -100,6 +100,16 @@ class Parent {
   };
 
   /**
+   * Called when a child is refreshed/closed
+   * @param  {Object} ev - Event
+   */
+  onChildUnload(ev) {
+    if (this.onChildDisconnect) {
+      this.onChildDisconnect(ev.detail);
+    }
+  }
+
+  /**
    * Enable link/btn, which got disabled on clicking.
    * Note: works only when `data-tab-opener="heatmap"` is used on the respective element
    * @param  {Object} ev - Event
@@ -120,6 +130,9 @@ class Parent {
 
     window.removeEventListener('toggleElementDisabledAttribute', this.customEventUnListener);
     window.addEventListener('toggleElementDisabledAttribute', ev => this.customEventUnListener(ev));
+
+    window.removeEventListener('onChildUnload', this.onChildUnload);
+    window.addEventListener('onChildUnload', ev => this.onChildUnload(ev));
 
     // Let children tabs know when Parent is closed / refereshed.
     window.onbeforeunload = () => {

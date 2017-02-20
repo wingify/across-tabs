@@ -1,5 +1,4 @@
 var newTab, i = 0;
-var newTab, i = 0;
 
 var app = new Vue({
 
@@ -24,7 +23,7 @@ var app = new Vue({
   methods: {
     openNewTab: function (ev) {
       var config = {
-        url: 'http://localhost:3000/example/child.html',
+        url: 'http://localhost:3000/example/vue-js/child.html',
         windowName: 'heatmap' + ++i,
         windowFeatures: ''
       };
@@ -44,6 +43,14 @@ var app = new Vue({
     broadCastAll: function () {
       parent.broadCastAll('Yo! Broadcasted Message from parent to ALL!');
     },
+    onChildCommunication: function (data) {
+      data.type = 'open';
+      this.showPMList(data);
+    },
+    onChildDisconnect: function(data) {
+      data.type = 'close';
+      this.showPMList(data);
+    },
     showPMList: function (data) {
       this.postMessageEvents.push(data);
     },
@@ -60,6 +67,7 @@ var app = new Vue({
 app.$mount('#example-container');
 
 var parent = new AcrossTabs.Parent({
-  onHandshakeCallback: app.showPMList,
-  onPollingCallback: app.showList
+  onHandshakeCallback: app.onChildCommunication,
+  onPollingCallback: app.showList,
+  onChildDisconnect: app.onChildDisconnect
 });

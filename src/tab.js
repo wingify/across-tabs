@@ -24,7 +24,7 @@ class Tab {
     // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
     this.ref = window.open(
       this.url,
-      config.windowName || '_blank',
+      '_blank',
       config.windowFeatures);
 
     domUtils.disable('data-tab-opener');

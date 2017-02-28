@@ -500,7 +500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.id = _uuid2.default.generate() || _tab2.default.tabs.length + 1;
 	      this.status = 'open';
 	      // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
-	      this.ref = window.open(this.url, config.windowName || '_blank', config.windowFeatures);
+	      this.ref = window.open(this.url, '_blank', config.windowFeatures);
 	
 	      _dom2.default.disable('data-tab-opener');
 	

@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "0.1.4"
+ * across-tabs "0.1.5"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -160,7 +160,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    // reset tabs with every new Object
-	    _tab4.default.closeAll();
+	    _tab4.default.tabs = [];
 	
 	    this.Tab = _tab2.default;
 	    _extends(this, config);
@@ -1478,14 +1478,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Invoked on object instantiation unless user pass a key to call it explicitly
 	     */
 	    value: function init() {
-	      if (this.config.onReady) {
-	        this.config.onReady();
-	      }
 	      this.isSessionStorageSupported = this._isSessionStorage();
 	      this.addListeners();
 	      this._restoreData();
 	      this.sendMessageToParent(_PostMessageEventNamesEnum2.default.LOADED + JSON.stringify(this.getTabInfo()));
 	      this.timeout = this.setHandshakeExpiry();
+	
+	      if (this.config.onReady) {
+	        this.config.onReady();
+	      }
 	    }
 	  }]);
 	

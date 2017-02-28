@@ -228,14 +228,15 @@ class Child {
    * Invoked on object instantiation unless user pass a key to call it explicitly
    */
   init() {
-    if (this.config.onReady) {
-      this.config.onReady();
-    }
     this.isSessionStorageSupported = this._isSessionStorage();
     this.addListeners();
     this._restoreData();
     this.sendMessageToParent(PostMessageEventNamesEnum.LOADED + JSON.stringify(this.getTabInfo()));
     this.timeout = this.setHandshakeExpiry();
+
+    if (this.config.onReady) {
+      this.config.onReady();
+    }
   }
 };
 

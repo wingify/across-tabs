@@ -28,7 +28,7 @@ class Parent {
     }
 
     // reset tabs with every new Object
-    tabUtils.closeAll();
+    tabUtils.tabs = [];
 
     this.Tab = Tab;
     Object.assign(this, config);

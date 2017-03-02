@@ -696,7 +696,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	tabUtils.sendMessage = function (target, msg) {
-	  target.ref.top.postMessage(msg, '*');
+	  [].slice.call(target.ref)[0].postMessage(msg, '*');
 	};
 	
 	exports.default = tabUtils;

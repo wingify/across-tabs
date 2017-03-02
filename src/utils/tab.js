@@ -140,11 +140,7 @@ tabUtils.broadCastTo = (id, msg) => {
 };
 
 tabUtils.sendMessage = (target, msg) => {
-  if (target.ref.length > 1) {
-    target.ref[0].postMessage(msg, '*');
-  } else {
-    target.ref.postMessage(msg, '*');
-  }
+  target.ref.top.postMessage(msg, '*');
 };
 
 export default tabUtils;

@@ -204,8 +204,8 @@ class Child {
    * @param  {String} msg
 =   */
   sendMessageToParent(msg) {
-    if (window.top.opener) {
-      window.top.opener.postMessage(msg, '*');
+    if (window.top.opener.top) {
+      window.top.opener.top.postMessage(msg, '*');
     }
   };
 

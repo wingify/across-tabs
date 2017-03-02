@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "0.1.5"
+ * across-tabs "0.1.6"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -696,11 +696,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	tabUtils.sendMessage = function (target, msg) {
-	  if (target.ref.length > 1) {
-	    target.ref[0].postMessage(msg, '*');
-	  } else {
-	    target.ref.postMessage(msg, '*');
-	  }
+	  target.ref.top.postMessage(msg, '*');
 	};
 	
 	exports.default = tabUtils;

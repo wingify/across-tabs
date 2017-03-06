@@ -141,6 +141,7 @@ var parent = new AcrossTabs.Parent(config);
 var config = {
   onReady: onReady,
   onInitialize: onInitialize,
+  isSiteInsideFrame: false, // dont set if not required
   handshakeExpiryLimit: 4000, // msec
   onParentDisconnect: onParentDisconnect,
   onParentCommunication: onParentCommunication
@@ -155,10 +156,12 @@ var child =  new AcrossTabs.Child();
 * `onInitialize`: Callback when a child instance is actually initiated
 * `onParentDisconnect`: Callback to be invoked when Parent gets disconnected
 * `onParentCommunication`: Callback to be invoked whenevr Parent communicates with the child tab
+* `isSiteInsideFrame`: If the library is loaded inside an iframe in the child tab, this needs to be set `true` for maintaining proper window/frame(s) references
 
 | Config Keys               |     default    |      accepts                              |
 | ------------------------- | -------------- | ----------------------------------------- |
 | **handshakeExpiryLimit**  |    5000 msec   |    A number representing milliseconds     |
+| **isSiteInsideFrame**     |      null      |    If child tab has actual site in a fram |
 | **onReady**               |    Undefined   |        Function as callback               |
 | **onInitialize**          |    Undefined   |        Function as callback               |
 | **onParentDisconnect**    |    Undefined   |        Function as callback               |

@@ -143,7 +143,8 @@ class Child {
       this._parseData(dataReceived);
 
       msg = PostMessageEventNamesEnum.CUSTOM + JSON.stringify({
-        id: this.tabId
+        id: this.tabId,
+        isSiteInsideFrame: this.config.isSiteInsideFrame
       });
       this.sendMessageToParent(msg);
 
@@ -174,7 +175,8 @@ class Child {
   addListeners() {
     window.onbeforeunload = (evt) => {
       let msg = PostMessageEventNamesEnum.ON_BEFORE_UNLOAD + JSON.stringify({
-        id: this.tabId
+        id: this.tabId,
+        isSiteInsideFrame: this.config.isSiteInsideFrame
       });
 
       this.sendMessageToParent(msg);
@@ -217,7 +219,8 @@ class Child {
     return {
       id: this.tabId,
       name: this.tabName,
-      parentName: this.tabParentName
+      parentName: this.tabParentName,
+      isSiteInsideFrame: this.config.isSiteInsideFrame
     };
   };
   /**

@@ -110,14 +110,15 @@ tabUtils.closeAll = () => {
 /**
  * Send a postmessage to every opened Child tab(excluding itself i.e Parent Tab)
  * @param  {String} msg
+ * @param  {Boolean} isSiteInsideFrame
  */
-tabUtils.broadCastAll = (msg) => {
+tabUtils.broadCastAll = (msg, isSiteInsideFrame) => {
   let i, tabs = tabUtils.getOpened();
 
   msg = tabUtils._preProcessMessage(msg);
 
   for (i = 0; i < tabs.length; i++) {
-    tabUtils.sendMessage(tabs[i], msg);
+    tabUtils.sendMessage(tabs[i], msg, isSiteInsideFrame);
   }
 
   return tabUtils;
@@ -125,26 +126,34 @@ tabUtils.broadCastAll = (msg) => {
 /**
  * Send a postmessage to a specific Child tab
  * @param  {String} id
- * * @param  {String} msg
+ * @param  {String} msg
+ * @param  {Boolean} isSiteInsideFrame
  */
-tabUtils.broadCastTo = (id, msg) => {
+tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
   let targetedTab,
     tabs = tabUtils.getAll();
 
   msg = tabUtils._preProcessMessage(msg);
 
   targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
-  tabUtils.sendMessage(targetedTab, msg);
+  tabUtils.sendMessage(targetedTab, msg, isSiteInsideFrame);
 
   return tabUtils;
 };
 
-tabUtils.sendMessage = (target, msg) => {
-  if (target.ref.length > 1) {
+/**
+ * Send a postMessage to the desired window/frame
+ * @param  {Object}  target
+ * @param  {String}  msg
+ * @param  {Boolean} isSiteInsideFrame
+ */
+tabUtils.sendMessage = (target, msg, isSiteInsideFrame) => {
+  if (isSiteInsideFrame) {
     target.ref[0].postMessage(msg, '*');
   } else {
-    target.ref.postMessage(msg, '*');
+    target.ref.top.postMessage(msg, '*');
   }
+
 };
 
 export default tabUtils;

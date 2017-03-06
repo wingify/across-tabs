@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "0.1.5"
+ * across-tabs "0.1.7"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -665,15 +665,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Send a postmessage to every opened Child tab(excluding itself i.e Parent Tab)
 	 * @param  {String} msg
+	 * @param  {Boolean} isSiteInsideFrame
 	 */
-	tabUtils.broadCastAll = function (msg) {
+	tabUtils.broadCastAll = function (msg, isSiteInsideFrame) {
 	  var i = void 0,
 	      tabs = tabUtils.getOpened();
 	
 	  msg = tabUtils._preProcessMessage(msg);
 	
 	  for (i = 0; i < tabs.length; i++) {
-	    tabUtils.sendMessage(tabs[i], msg);
+	    tabUtils.sendMessage(tabs[i], msg, isSiteInsideFrame);
 	  }
 	
 	  return tabUtils;
@@ -681,25 +682,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Send a postmessage to a specific Child tab
 	 * @param  {String} id
-	 * * @param  {String} msg
+	 * @param  {String} msg
+	 * @param  {Boolean} isSiteInsideFrame
 	 */
-	tabUtils.broadCastTo = function (id, msg) {
+	tabUtils.broadCastTo = function (id, msg, isSiteInsideFrame) {
 	  var targetedTab = void 0,
 	      tabs = tabUtils.getAll();
 	
 	  msg = tabUtils._preProcessMessage(msg);
 	
 	  targetedTab = _array2.default.searchByKeyName(tabs, 'id', id); // TODO: tab.id
-	  tabUtils.sendMessage(targetedTab, msg);
+	  tabUtils.sendMessage(targetedTab, msg, isSiteInsideFrame);
 	
 	  return tabUtils;
 	};
 	
-	tabUtils.sendMessage = function (target, msg) {
-	  if (target.ref.length > 1) {
+	/**
+	 * Send a postMessage to the desired window/frame
+	 * @param  {Object}  target
+	 * @param  {String}  msg
+	 * @param  {Boolean} isSiteInsideFrame
+	 */
+	tabUtils.sendMessage = function (target, msg, isSiteInsideFrame) {
+	  if (isSiteInsideFrame) {
 	    target.ref[0].postMessage(msg, '*');
 	  } else {
-	    target.ref.postMessage(msg, '*');
+	    target.ref.top.postMessage(msg, '*');
 	  }
 	};
 	
@@ -1091,7 +1099,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        name: window.newlyTabOpened.name,
 	        parentName: window.name
 	      });
-	      _tab2.default.sendMessage(window.newlyTabOpened, dataToSend);
+	      _tab2.default.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);
 	    } catch (e) {
 	      throw new Error(_WarningTextEnum2.default.INVALID_JSON);
 	    }
@@ -1370,7 +1378,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._parseData(dataReceived);
 	
 	        msg = _PostMessageEventNamesEnum2.default.CUSTOM + JSON.stringify({
-	          id: this.tabId
+	          id: this.tabId,
+	          isSiteInsideFrame: this.config.isSiteInsideFrame
 	        });
 	        this.sendMessageToParent(msg);
 	
@@ -1406,7 +1415,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      window.onbeforeunload = function (evt) {
 	        var msg = _PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD + JSON.stringify({
-	          id: _this2.tabId
+	          id: _this2.tabId,
+	          isSiteInsideFrame: _this2.config.isSiteInsideFrame
 	        });
 	
 	        _this2.sendMessageToParent(msg);
@@ -1464,7 +1474,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return {
 	        id: this.tabId,
 	        name: this.tabName,
-	        parentName: this.tabParentName
+	        parentName: this.tabParentName,
+	        isSiteInsideFrame: this.config.isSiteInsideFrame
 	      };
 	    }
 	  }, {

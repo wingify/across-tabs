@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AcrossTabs</title>
     <script>
@@ -32,6 +32,67 @@
     <script src="js/script.js"></script>
     <script src="js/highlight.js"></script>
     <script src="js/marked.js"></script>
+    <script src="js/across-tabs.js"></script>
+    <script type="text/javascript">
+        var i = 1,
+            parent;
+        var allTabs = [], openedTabs = [], closedTabs = [];
+        var postMessageEvents = [];
+
+        function openNewTab() {
+            var config = {
+                url: 'child.html',
+                windowName: 'child-tab-' + i++,
+                windowFeatures: ''
+            };
+            parent.openNewTab(config);
+            document.getElementById('tabs').style.visibility = 'visible';
+        }
+        function closeAllTabs() {
+          parent.closeAllTabs();
+          showList();
+        }
+        function closeTab(id) {
+          parent.closeTab(id);
+          showList();
+        }
+        function showPMList() {
+            postMessageEvents.push(data);
+        }
+        function showList() {
+            allTabs = parent.getAllTabs(),
+            openedTabs = parent.getOpenedTabs(),
+            closedTabs = parent.getClosedTabs();
+
+            var allTabsText = '', openedTabsText = '', closedTabsText = '';
+            for (var i = 0; i < allTabs.length; i++) {
+                allTabsText += 'id: <strong>' + allTabs[i].id + '</strong>';
+                allTabsText += '<br>status: <strong>' + allTabs[i].status + '</strong><br/>';
+            }
+            document.getElementById('all-tabs').innerHTML = allTabsText;
+
+            for (var i = 0; i < openedTabs.length; i++) {
+                openedTabsText += 'id: <strong>' +openedTabs[i].id + '</strong>';
+                openedTabsText += '<br>status: <strong>' + openedTabs[i].status + '</strong><br/>';
+            }
+            document.getElementById('opened-tabs').innerHTML = openedTabsText;
+
+            for (var i = 0; i < closedTabs.length; i++) {
+                closedTabsText += 'id: <strong>' +closedTabs[i].id + '</strong>';
+                closedTabsText += '<br>status: <strong>' + closedTabs[i].status + '</strong><br/>';
+            }
+            document.getElementById('closed-tabs').innerHTML = closedTabsText;
+
+        }
+
+        document.addEventListener('DOMContentLoaded',function(){
+            var config = {
+                onHandshakeCallback: showPMList,
+                onPollingCallback: showList
+            };
+            parent = new AcrossTabs.Parent(config);
+        });
+    </script>
 
     <script>
     hljs.configure({
@@ -99,6 +160,5 @@
   </div>
 
 </div> <!-- /container -->
-    <script src="js/app.js"></script>
 </body>
 </html>

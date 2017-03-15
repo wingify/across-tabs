@@ -1,5 +1,5 @@
 var siteName = 'angular-time-picker - Wingify Engineering Labs';
-var gitHubRepoName = 'wingify/angular-time-picker';
+var gitHubRepoName = 'wingify/across-tabs';
 
 function get(file, cb) {
     var xhr = new XMLHttpRequest();

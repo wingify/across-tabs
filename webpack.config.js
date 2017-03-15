@@ -1,6 +1,8 @@
 var webpack = require('webpack');
 var DashboardPlugin = require('webpack-dashboard/plugin');
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+var createVariants = require('parallel-webpack').createVariants;
+
 // Import the plugin:
 var path = require('path');
 var env = require('yargs').argv.mode;
@@ -24,45 +26,48 @@ var outputFile;
 
 if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
-  outputFile = libraryName + '.min.js';
 } else {
   plugins.push(new DashboardPlugin());
-  outputFile = libraryName + '.js';
 }
 
-var config = {
-  entry: __dirname + '/src/index.js',
-  devtool: 'source-map',
-  output: {
-    path: __dirname + '/dist',
-    filename: outputFile,
-    library: 'AcrossTabs',
-    libraryTarget: 'umd',
-    umdNamedDefine: true
-  },
-  module: {
-    loaders: [
-      {
-        test: /(\.js)$/,
-        loader: 'babel',
-        exclude: /(node_modules|bower_components)/
-      },
-      {
-        test: /(\.js)$/,
-        loader: 'eslint-loader',
-        exclude: /node_modules/
-      }
-    ]
-  },
-  eslint: {
-    failOnWarning: false,
-    failOnError: false
-  },
-  resolve: {
-    root: path.resolve('./src'),
-    extensions: ['', '.js']
-  },
-  plugins: plugins
-};
+function createConfig(options) {
+  return {
+    entry: __dirname + '/src/index.js',
+    devtool: 'source-map',
+    output: {
+      path: __dirname + '/dist',
+      library: 'AcrossTabs',
+      filename: libraryName + (options.target ? '.' + options.target : '') + (env === 'build' ? '.min.js' : '.js'),
+      libraryTarget: options.target || 'umd',
+      umdNamedDefine: true
+    },
+    module: {
+      loaders: [
+        {
+          test: /(\.js)$/,
+          loader: 'babel',
+          exclude: /(node_modules|bower_components)/
+        },
+        {
+          test: /(\.js)$/,
+          loader: 'eslint-loader',
+          exclude: /node_modules/
+        }
+      ]
+    },
+    eslint: {
+      failOnWarning: false,
+      failOnError: false
+    },
+    resolve: {
+      root: path.resolve('./src'),
+      extensions: ['', '.js']
+    },
+    plugins: plugins
+  };
+}
 
-module.exports = config;
+// At the end of the file:
+module.exports = createVariants({
+    target: ['this', '']
+}, createConfig);

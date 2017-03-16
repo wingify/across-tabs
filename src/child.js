@@ -115,6 +115,10 @@ class Child {
     let dataReceived,
       data = message.data;
 
+    if (!data || typeof data !== 'string') {
+      return;
+    }
+
     // cancel timeout
     window.clearTimeout(this.timeout);
 

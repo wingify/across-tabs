@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "0.1.8"
+ * across-tabs "0.1.9"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -1160,7 +1160,7 @@ this["AcrossTabs"] =
 	   * No need to go further from this point.
 	   * Tab status is automatically fetched using our polling mechanism written in `Parent.js` file.
 	   */
-	  if (!_tab2.default.tabs.length) {
+	  if (!data || typeof data !== 'string' || !_tab2.default.tabs.length) {
 	    return false;
 	  }
 	
@@ -1338,6 +1338,10 @@ this["AcrossTabs"] =
 	
 	      var dataReceived = void 0,
 	          data = message.data;
+	
+	      if (!data || typeof data !== 'string') {
+	        return;
+	      }
 	
 	      // cancel timeout
 	      window.clearTimeout(this.timeout);

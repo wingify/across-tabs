@@ -132,7 +132,7 @@ PostMessageListener.onNewTab = (message) => {
    * No need to go further from this point.
    * Tab status is automatically fetched using our polling mechanism written in `Parent.js` file.
    */
-  if (!tabUtils.tabs.length) {
+  if (!data || typeof data !== 'string' || !tabUtils.tabs.length) {
     return false;
   }
 

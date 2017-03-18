@@ -1,4 +1,4 @@
-var siteName = 'angular-time-picker - Wingify Engineering Labs';
+var siteName = 'across-tabs - Wingify Engineering Labs';
 var gitHubRepoName = 'wingify/across-tabs';
 
 function get(file, cb) {

@@ -126,6 +126,7 @@ var parent = new AcrossTabs.Parent(config);
 * `shouldInitImmediately`: Pass it as `false` to create an instance but initialize it later
 * `onHandshakeCallback`: Callback to be called when a successful connection has been established
 * `onPollingCallback`: Callback to be called every time a tab is polled for its status
+* `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
 
 | Config Keys               |     default    |      accepts                              |
 | ---------------------     | -------------- | ----------------------------------------- |
@@ -158,6 +159,7 @@ var child =  new AcrossTabs.Child();
 * `onParentDisconnect`: Callback to be invoked when Parent gets disconnected
 * `onParentCommunication`: Callback to be invoked whenevr Parent communicates with the child tab
 * `isSiteInsideFrame`: If the library is loaded inside an iframe in the child tab, this needs to be set `true` for maintaining proper window/frame(s) references
+* `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
 
 | Config Keys               |     default    |      accepts                              |
 | ------------------------- | -------------- | ----------------------------------------- |
@@ -339,7 +341,6 @@ ES6 source files
 
 * Having a Queue mechanism to deal with loads of async events.
 * Promise based `Parent-Child` communication. Will help in sending window specific data to and fro apart from custom data messages.
-* Add support for whitelisting `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior.
 * E2E testing so that the behavior can be tested automatically.
 * Maintaining and adding more enhancements as and when required. Open to everyone's suggestions.
 

@@ -8,7 +8,8 @@ import TabStatusEnum from '../enums/TabStatusEnum';
 import WarningTextEnum from '../enums/WarningTextEnum';
 
 let tabUtils = {
-  tabs: []
+  tabs: [],
+  config: {}
 };
 
 /**
@@ -84,7 +85,7 @@ tabUtils.getAll = () => {
 tabUtils.closeTab = (id) => {
   let tab = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', id);
 
-  if (tab) {
+  if (tab && tab.ref) {
     tab.ref.close();
     tab.status = TabStatusEnum.CLOSE;
   }
@@ -100,9 +101,10 @@ tabUtils.closeAll = () => {
   let i;
 
   for (i = 0; i < tabUtils.tabs.length; i++) {
-    // --tabUtils.tabs.length;
-    tabUtils.tabs[i].ref.close();
-    tabUtils.tabs[i].status = TabStatusEnum.CLOSE;
+    if (tabUtils.tabs[i] && tabUtils.tabs[i].ref) {
+      tabUtils.tabs[i].ref.close();
+      tabUtils.tabs[i].status = TabStatusEnum.CLOSE;
+    }
   }
 
   return tabUtils;
@@ -148,10 +150,12 @@ tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
  * @param  {Boolean} isSiteInsideFrame
  */
 tabUtils.sendMessage = (target, msg, isSiteInsideFrame) => {
+  let origin = tabUtils.config.origin || '*';
+
   if (isSiteInsideFrame) {
-    target.ref[0].postMessage(msg, '*');
+    target.ref[0].postMessage(msg, origin);
   } else {
-    target.ref.top.postMessage(msg, '*');
+    target.ref.top.postMessage(msg, origin);
   }
 
 };

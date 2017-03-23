@@ -136,6 +136,11 @@ PostMessageListener.onNewTab = (message) => {
     return false;
   }
 
+  // `origin` check for secureity point of view
+  if (tabUtils.config.origin && tabUtils.config.origin !== message.origin) {
+    return false;
+  }
+
   if (data.indexOf(PostMessageEventNamesEnum.LOADED) > -1) {
     PostMessageListener._onLoad(data);
   } else if (data.indexOf(PostMessageEventNamesEnum.CUSTOM) > -1) {

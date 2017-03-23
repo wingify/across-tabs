@@ -119,6 +119,11 @@ class Child {
       return;
     }
 
+    // `origin` check for secureity point of view
+    if (this.config.origin && this.config.origin !== message.origin) {
+      return;
+    }
+
     // cancel timeout
     window.clearTimeout(this.timeout);
 
@@ -210,8 +215,11 @@ class Child {
    * @param  {String} msg
 =   */
   sendMessageToParent(msg) {
+    let origin;
+
     if (window.top.opener) {
-      window.top.opener.postMessage(msg, '*');
+      origin = this.config.origin || '*';
+      window.top.opener.postMessage(msg, origin);
     }
   };
 

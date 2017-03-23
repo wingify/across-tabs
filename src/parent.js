@@ -33,6 +33,8 @@ class Parent {
     this.Tab = Tab;
     Object.assign(this, config);
 
+    tabUtils.config = config;
+
     if (this.shouldInitImmediately) {
       this.init();
     }

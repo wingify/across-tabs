@@ -1,7 +1,7 @@
 {
   "name": "across-tabs",
   "description": "Easily communicate among browser tabs(supports cross-origin)",
-  "version": "0.1.9",
+  "version": "1.0.0",
   "homepage": "https://github.com/wingify/across-tabs",
   "bugs": "https://github.com/wingify/across-tabs/issues",
   "author": {

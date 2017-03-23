@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "0.1.9"
+ * across-tabs "1.0.0"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -164,6 +164,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    this.Tab = _tab2.default;
 	    _extends(this, config);
+	
+	    _tab4.default.config = config;
 	
 	    if (this.shouldInitImmediately) {
 	      this.init();
@@ -559,7 +561,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	
 	var tabUtils = {
-	  tabs: []
+	  tabs: [],
+	  config: {}
 	};
 	
 	/**
@@ -639,7 +642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	tabUtils.closeTab = function (id) {
 	  var tab = _array2.default.searchByKeyName(tabUtils.tabs, 'id', id);
 	
-	  if (tab) {
+	  if (tab && tab.ref) {
 	    tab.ref.close();
 	    tab.status = _TabStatusEnum2.default.CLOSE;
 	  }
@@ -655,9 +658,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var i = void 0;
 	
 	  for (i = 0; i < tabUtils.tabs.length; i++) {
-	    // --tabUtils.tabs.length;
-	    tabUtils.tabs[i].ref.close();
-	    tabUtils.tabs[i].status = _TabStatusEnum2.default.CLOSE;
+	    if (tabUtils.tabs[i] && tabUtils.tabs[i].ref) {
+	      tabUtils.tabs[i].ref.close();
+	      tabUtils.tabs[i].status = _TabStatusEnum2.default.CLOSE;
+	    }
 	  }
 	
 	  return tabUtils;
@@ -704,10 +708,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param  {Boolean} isSiteInsideFrame
 	 */
 	tabUtils.sendMessage = function (target, msg, isSiteInsideFrame) {
+	  var origin = tabUtils.config.origin || '*';
+	
 	  if (isSiteInsideFrame) {
-	    target.ref[0].postMessage(msg, '*');
+	    target.ref[0].postMessage(msg, origin);
 	  } else {
-	    target.ref.top.postMessage(msg, '*');
+	    target.ref.top.postMessage(msg, origin);
 	  }
 	};
 	
@@ -1173,6 +1179,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return false;
 	  }
 	
+	  // `origin` check for secureity point of view
+	  if (_tab2.default.config.origin && _tab2.default.config.origin !== message.origin) {
+	    return false;
+	  }
+	
 	  if (data.indexOf(_PostMessageEventNamesEnum2.default.LOADED) > -1) {
 	    PostMessageListener._onLoad(data);
 	  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.CUSTOM) > -1) {
@@ -1352,6 +1363,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 	
+	      // `origin` check for secureity point of view
+	      if (this.config.origin && this.config.origin !== message.origin) {
+	        return;
+	      }
+	
 	      // cancel timeout
 	      window.clearTimeout(this.timeout);
 	
@@ -1462,8 +1478,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'sendMessageToParent',
 	    value: function sendMessageToParent(msg) {
+	      var origin = void 0;
+	
 	      if (window.top.opener) {
-	        window.top.opener.postMessage(msg, '*');
+	        origin = this.config.origin || '*';
+	        window.top.opener.postMessage(msg, origin);
 	      }
 	    }
 	  }, {

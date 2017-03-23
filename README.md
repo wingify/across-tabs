@@ -135,6 +135,7 @@ var parent = new AcrossTabs.Parent(config);
 | **shouldInitImmediately** |     true       |            Boolean                        |
 | **onHandshakeCallback**   |     Undefined  |        Function as callback               |
 | **onPollingCallback**     |     Undefined  |        Function as callback               |
+| **origin**                |     '*'        |            String(url)                    |
 
 
 **New(Child tab)**
@@ -169,6 +170,7 @@ var child =  new AcrossTabs.Child();
 | **onInitialize**          |    Undefined   |        Function as callback               |
 | **onParentDisconnect**    |    Undefined   |        Function as callback               |
 | **onParentCommunication** |    Undefined   |        Function as callback               |
+| **origin**                |     '*'        |            String(url)                    |
 
 **Example** is included in the `example` folder. `Vanilla JS` and `Vue js` versions are there to test out.
 *Note:* Run `npm install` if you wish to run `vuejs` example since the example needs vue-js library to work.

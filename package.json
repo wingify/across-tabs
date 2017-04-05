@@ -1,7 +1,7 @@
 {
   "name": "across-tabs",
   "version": "1.0.0",
-  "description": "Easily communicate among browser tabs(supports cross-origin)",
+  "description": "Easy communication between cross-origin browser tabs",
   "main": "dist/across-tabs.js",
   "scripts": {
     "build": "webpack --mode=build",

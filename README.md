@@ -149,7 +149,7 @@ var config = {
   onParentDisconnect: onParentDisconnect,
   onParentCommunication: onParentCommunication
 };
-var child =  new AcrossTabs.Child();
+var child =  new AcrossTabs.Child(config);
 ```
 
 `Constructor` accepts a configurable `Object` with the following keys.

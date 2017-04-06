@@ -4,6 +4,9 @@
 
 [![NPM](https://nodei.co/npm/across-tabs.png?downloads=true)](https://nodei.co/npm/across-tabs/)
 
+<a href="https://news.ycombinator.com/item?id=14041400"><img src="images/hn.png" width="150" height="20"/></a>
+<a href="https://www.producthunt.com/posts/across-tabs"><img src="images/product_hunt.png" width="100" height="20"/></a>
+
 **[LIVE DEMO](http://engineering.wingify.com/across-tabs#live-demo)**
 
 * [Features](#features)

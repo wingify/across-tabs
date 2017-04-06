@@ -1,11 +1,11 @@
-## <img src="across-tabs.png" alt="Across tabs" width="50" height="50"/> AcrossTabs - Easy communication between cross-origin browser tabs.
+## <img src="https://raw.githubusercontent.com/wingify/across-tabs/master/across-tabs.png" alt="Across tabs" width="50" height="50"/> AcrossTabs - Easy communication between cross-origin browser tabs.
 
 [![npm version](https://badge.fury.io/js/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![npm](https://img.shields.io/npm/dt/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![Build Status](http://img.shields.io/travis/wingify/across-tabs/master.svg?style=flat)](http://travis-ci.org/wingify/across-tabs) [![Coverage Status](https://coveralls.io/repos/github/wingify/across-tabs/badge.svg?branch=master)](https://coveralls.io/github/wingify/across-tabs?branch=master) ![](http://img.badgesize.io/wingify/across-tabs/master/dist/across-tabs.min.js?compression=gzip&color=blue)
 
 [![NPM](https://nodei.co/npm/across-tabs.png?downloads=true)](https://nodei.co/npm/across-tabs/)
 
-<a href="https://news.ycombinator.com/item?id=14041400"><img src="images/hn.png" width="150" height="20"/></a>
-<a href="https://www.producthunt.com/posts/across-tabs"><img src="images/product_hunt.png" width="100" height="20"/></a>
+<a href="https://news.ycombinator.com/item?id=14041400"><img src="https://raw.githubusercontent.com/wingify/across-tabs/master/images/hn.png" width="150" height="20"/></a>
+<a href="https://www.producthunt.com/posts/across-tabs"><img src="https://raw.githubusercontent.com/wingify/across-tabs/master/images/product_hunt.png" width="100" height="20"/></a>
 
 **[LIVE DEMO](http://engineering.wingify.com/across-tabs#live-demo)**
 
@@ -56,7 +56,7 @@ $ bower install across-tabs
 * Whenever `C` gets closed/refreshed, `P` is notified.
 * Whenever `P` is closed/refreshed, all children of `P` tab gets notified.
 
-<img src="parent-tab-communication.jpg" />
+<img src="https://raw.githubusercontent.com/wingify/across-tabs/master/parent-tab-communication.jpg" />
 
 **Explanation of diagram**
 

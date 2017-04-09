@@ -307,7 +307,7 @@ Tested in Chrome and Firefox.
 * Exports in a [UMD](https://github.com/umdjs/umd) format so the library works everywhere.
 * Linting with [ESLint](http://eslint.org/).
 * ES6 test setup with [Karma](https://karma-runner.github.io/1.0/index.html), [Jasmine](https://jasmine.github.io/2.0/introduction.html) and [isparta](https://github.com/deepsweet/isparta-loader).
-* Test covergae with [Istanbul]() and [Coveralls](https://coveralls.io/).
+* Test coverage with [Istanbul]() and [Coveralls](https://coveralls.io/).
 
 ### Process
 

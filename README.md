@@ -27,8 +27,8 @@
 
 1. Safely enables [cross-origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) communication among different browser tabs. Uses `PostMessage` API for communication.
 2. Easy to hook custom callback at various levels. Eg: executing a custom method in Child's tab on receiving a message from Parent tab.
-3. Option to provide `data-tab-opener="name"` attribute on the target link/btn(which opens up a new tab), so that it remains disable until `Child` tab initiates a handshake and is received by the `Parent` tab
-4. Fully fledged API to get information regarding the tabs(Parent and Child tabs) and other communication related methods.
+3. Option to provide `data-tab-opener="name"` attribute on the target link/button(which opens up a new tab), so that it remains to disable until `Child` tab initiates a handshake and is received by the `Parent` tab
+4. Fully fledged API to get information regarding the tabs(Parent and Child tabs) and other communication-related methods.
 5. Exports in a UMD format i.e. library works everywhere.
 6. Only `4.11 KB` gzipped.
 
@@ -60,11 +60,11 @@ $ bower install across-tabs
 
 **Explanation of diagram**
 
-* Parent(`P`) opens CHild tab(`C1`) at `t=1`.
+* Parent(`P`) opens Child tab(`C1`) at `t=1`.
 * `c1a` - When `C1` initiates a handshake with the Parent.
 * `P1` - When `P` receives `C1` message.
 * `P2` - `P` acknowledges the request and sends the `C1` its identity.
-* `c1b` - When `C1` receives acknowledgemnet message along with identity from `P`.
+* `c1b` - When `C1` receives an acknowledgement message along with identity from `P`.
 
 ---
 
@@ -161,7 +161,7 @@ var child =  new AcrossTabs.Child(config);
 * `onReady`: Callback to be invoked once child instance is ready
 * `onInitialize`: Callback when a child instance is actually initiated
 * `onParentDisconnect`: Callback to be invoked when Parent gets disconnected
-* `onParentCommunication`: Callback to be invoked whenevr Parent communicates with the child tab
+* `onParentCommunication`: Callback to be invoked whenever Parent communicates with the child tab
 * `isSiteInsideFrame`: If the library is loaded inside an iframe in the child tab, this needs to be set `true` for maintaining proper window/frame(s) references
 * `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
 
@@ -176,7 +176,7 @@ var child =  new AcrossTabs.Child(config);
 | **origin**                |     '*'        |            String(url)                    |
 
 **Example** is included in the `example` folder. `Vanilla JS` and `Vue js` versions are there to test out.
-*Note:* Run `npm install` if you wish to run `vuejs` example since the example needs vue-js library to work.
+*Note:* Run `npm install` if you wish to run `vuejs` example since the example needs the `vue-js` library to work.
 
 ### API
 
@@ -186,11 +186,12 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
 * **`openNewTab`**
 
-  Saves `data` in specifed `key` in localStorage. If the key is not provided, the library will warn. Following types of JavaScript objects are supported:
+  Saves `data` in specific `key` in sessionStorage. If the key is not provided, the library will warn.
+  Following types of JavaScript objects are supported:
 
   |   Parameter   |        Description                                   |
   | ------------- | ---------------------------------------------------- |
-  |     config    |     For opening a new tab i.e. url and windowName    |
+  |     config    |     For opening a new tab i.e. URL and windowName    |
 
   ```
     parent.openNewTab({url: 'http://example.com', windowName: 'AcrossTab'});
@@ -267,8 +268,8 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   |   Parameter   |        Description            |
   | ------------- | ----------------------------- |
-  |     id        |  id of the tab to send a msg  |
-  |     msg       |        msg to be ent          |
+  |     id        |  id of the tab to send an msg  |
+  |     msg       |        msg to be sent          |
 
   ```
     parent.broadCastTo('57cd47da-d98e-4a2d-814c-9b07cb51059c', 'Hey! Can you run the script: worker.js? Thanks!');
@@ -278,7 +279,7 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
 * **`getTabInfo`**
 
-  Return id, name and parentName of the child tab.
+  Return id, name, and parentName of the child tab.
 
   ```
     child.getTabInfo();
@@ -329,13 +330,13 @@ ES6 source files
 ### Scripts
 
 * `npm run build` - produces production version(minified) of the library under the `dist` folder
-* `npm run dev` - produces development version(unminified) of the library and runs a watcher to detect file changes.
+* `npm run dev` - produces development version(un minified) of the library and runs a watcher to detect file changes.
 * `npm run test` - well ... it runs the tests :)
 
 ### Contributing
 
 1. Fork the repo on GitHub.
-2. Clone the repo on machine.
+2. Clone the repo on a machine.
 3. Execute `npm install` and `npm run dev`.
 3. Create a new branch `<fix-typo>` and do your work.
 4. Run `npm run build` to build dist files and `npm run test` to ensure all test cases are passing.
@@ -345,7 +346,7 @@ ES6 source files
 ### Roadmap
 
 * Having a Queue mechanism to deal with loads of async events.
-* Promise based `Parent-Child` communication. Will help in sending window specific data to and fro apart from custom data messages.
+* Promise based `Parent-Child` communication. Will help in sending window-specific data to and fro apart from custom data messages.
 * E2E testing so that the behavior can be tested automatically.
 * Maintaining and adding more enhancements as and when required. Open to everyone's suggestions.
 

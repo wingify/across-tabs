@@ -1,6 +1,6 @@
 ## <img src="https://raw.githubusercontent.com/wingify/across-tabs/master/across-tabs.png" alt="Across tabs" width="50" height="50"/> AcrossTabs - Easy communication between cross-origin browser tabs.
 
-[![npm version](https://badge.fury.io/js/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![npm](https://img.shields.io/npm/dt/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![Build Status](http://img.shields.io/travis/wingify/across-tabs/master.svg?style=flat)](http://travis-ci.org/wingify/across-tabs) [![Coverage Status](https://coveralls.io/repos/github/wingify/across-tabs/badge.svg?branch=master)](https://coveralls.io/github/wingify/across-tabs?branch=master) ![](http://img.badgesize.io/wingify/across-tabs/master/dist/across-tabs.min.js?compression=gzip&color=blue)
+[![npm version](https://badge.fury.io/js/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![npm](https://img.shields.io/npm/dt/across-tabs.svg)](https://www.npmjs.com/package/across-tabs) [![Build Status](http://img.shields.io/travis/wingify/across-tabs/master.svg?style=flat)](http://travis-ci.org/wingify/across-tabs) [![Coverage Status](https://coveralls.io/repos/github/wingify/across-tabs/badge.svg?branch=master)](https://coveralls.io/github/wingify/across-tabs?branch=master) ![](https://img.shields.io/cdnjs/v/across-tabs.svg?colorB=dd4814) ![](http://img.badgesize.io/wingify/across-tabs/master/dist/across-tabs.min.js?compression=gzip&color=blue)
 
 [![NPM](https://nodei.co/npm/across-tabs.png?downloads=true)](https://nodei.co/npm/across-tabs/)
 
@@ -34,17 +34,25 @@
 
 ### Installation
 
-Via [npm](https://www.npmjs.com/)
+1. Via [npm](https://www.npmjs.com/)
 
 ```
 $ npm install across-tabs
 ```
 
-Via [bower](https://bower.io/)
+2. Via [bower](https://bower.io/)
 
 ```
 $ bower install across-tabs
 ```
+
+3. Via [cdnjs](https://cdnjs.com), using `<script>` tag
+
+```
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/across-tabs/1.0.0/across-tabs.min.js"></script>
+```
+
+**Note**: Use the desired version of the library in place of `1.0.0`. Checkout [cdnjs across-tabs](https://cdnjs.com/libraries/across-tabs).
 
 ### Flow Diagram
 

@@ -1,6 +1,6 @@
 {
   "name": "across-tabs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easy communication between cross-origin browser tabs",
   "main": "dist/across-tabs.js",
   "scripts": {

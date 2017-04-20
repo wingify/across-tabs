@@ -30,7 +30,7 @@
 3. Option to provide `data-tab-opener="name"` attribute on the target link/button(which opens up a new tab), so that it remains to disable until `Child` tab initiates a handshake and is received by the `Parent` tab
 4. Fully fledged API to get information regarding the tabs(Parent and Child tabs) and other communication-related methods.
 5. Exports in a UMD format i.e. library works everywhere.
-6. Only `4.11 KB` gzipped.
+6. Only `~4 KB` gzipped.
 
 ### Installation
 

@@ -60,7 +60,7 @@ class Parent {
        * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
        * irrespective of heatbeat controller
       */
-      if (tabs[i]) {
+      if (tabs[i] && tabs[i].ref) {
         tabs[i].status = tabs[i].ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN;
       }
     }
@@ -86,7 +86,7 @@ class Parent {
    * @param  {Object} tab
    */
   watchStatus(tab) {
-    if (!tab) { return false; }
+    if (!tab || !tab.ref) { return false; }
     let newStatus = tab.ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN,
       oldStatus = tab.status;
 

@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.0.0"
+ * across-tabs "1.0.1"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -194,7 +194,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
 	         * irrespective of heatbeat controller
 	        */
-	        if (tabs[i]) {
+	        if (tabs[i] && tabs[i].ref) {
 	          tabs[i].status = tabs[i].ref.closed ? _TabStatusEnum2.default.CLOSE : _TabStatusEnum2.default.OPEN;
 	        }
 	      }
@@ -230,7 +230,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param  {Object} tab
 	     */
 	    value: function watchStatus(tab) {
-	      if (!tab) {
+	      if (!tab || !tab.ref) {
 	        return false;
 	      }
 	      var newStatus = tab.ref.closed ? _TabStatusEnum2.default.CLOSE : _TabStatusEnum2.default.OPEN,
@@ -710,9 +710,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	tabUtils.sendMessage = function (target, msg, isSiteInsideFrame) {
 	  var origin = tabUtils.config.origin || '*';
 	
-	  if (isSiteInsideFrame) {
+	  if (isSiteInsideFrame && target.ref[0]) {
 	    target.ref[0].postMessage(msg, origin);
-	  } else {
+	  } else if (target.ref && target.ref.top) {
 	    target.ref.top.postMessage(msg, origin);
 	  }
 	};

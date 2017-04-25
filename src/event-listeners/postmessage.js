@@ -2,6 +2,7 @@ import arrayUtils from '../utils/array';
 import tabUtils from '../utils/tab';
 import WarningTextEnum from '../enums/WarningTextEnum';
 import PostMessageEventNamesEnum from '../enums/PostMessageEventNamesEnum';
+import '../utils/customEventPolyfill';
 
 let PostMessageListener = {};
 
@@ -85,7 +86,6 @@ PostMessageListener._onCustomMessage = (data) => {
     throw new Error(WarningTextEnum.INVALID_JSON);
   }
 
-  // CustomEvent is not supported in IE and so does this library
   let event = new CustomEvent('toggleElementDisabledAttribute', {'detail': tabInfo});
 
   window.dispatchEvent(event);

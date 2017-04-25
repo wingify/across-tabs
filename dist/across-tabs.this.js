@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.0.1"
+ * across-tabs "1.0.2"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -64,7 +64,7 @@ this["AcrossTabs"] =
 	
 	var _parent2 = _interopRequireDefault(_parent);
 	
-	var _child = __webpack_require__(11);
+	var _child = __webpack_require__(12);
 	
 	var _child2 = _interopRequireDefault(_child);
 	
@@ -856,6 +856,7 @@ this["AcrossTabs"] =
 	  INVALID_JSON: 'Invalid JSON Object!',
 	  INVALID_DATA: 'Some wrong message is being sent by Parent.',
 	  CONFIG_REQUIRED: 'Configuration options required. Please read docs.',
+	  CUSTOM_EVENT: 'CustomEvent(and it\'s polyfill) is not supported in this browser.',
 	  URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.'
 	};
 	
@@ -1034,6 +1035,8 @@ this["AcrossTabs"] =
 	
 	var _PostMessageEventNamesEnum2 = _interopRequireDefault(_PostMessageEventNamesEnum);
 	
+	__webpack_require__(11);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var PostMessageListener = {};
@@ -1118,7 +1121,6 @@ this["AcrossTabs"] =
 	    throw new Error(_WarningTextEnum2.default.INVALID_JSON);
 	  }
 	
-	  // CustomEvent is not supported in IE and so does this library
 	  var event = new CustomEvent('toggleElementDisabledAttribute', { 'detail': tabInfo });
 	
 	  window.dispatchEvent(event);
@@ -1189,6 +1191,35 @@ this["AcrossTabs"] =
 
 /***/ },
 /* 11 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	// Polyfill of CustomEvent for IE >= 9
+	exports.default = function () {
+	  function CE(event) {
+	    var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	
+	    var evt = document.createEvent('CustomEvent');
+	
+	    evt.initCustomEvent(event, false, false, params.detail);
+	    return evt;
+	  }
+	
+	  if (typeof window.CustomEvent !== 'function') {
+	    CE.prototype = window.Event.prototype;
+	    window.CustomEvent = CE;
+	  }
+	}();
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

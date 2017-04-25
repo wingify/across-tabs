@@ -307,7 +307,7 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
 ### Browser Support
 
-Tested in Chrome and Firefox.
+Tested in Chrome, Firefox and IE(versions >= 9).
 
 ### Development Stack
 

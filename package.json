@@ -5,9 +5,9 @@
   "main": "dist/across-tabs.js",
   "scripts": {
     "build": "webpack --mode=build",
-    "build-dev": "webpack-dashboard -- webpack --mode=dev",
+    "build-dev": "webpack-dashboard -- parallel-webpack -p=2 --mode=dev",
     "build-test": "karma start --single-run --no-auto-watch karma.config.js",
-    "dev": "webpack-dashboard -- webpack --progress --colors --watch --mode=dev",
+    "dev": "webpack-dashboard -- parallel-webpack -p=2 --progress --colors --watch --mode=dev",
     "test": "karma start karma.config.js",
     "coverage": "node node_modules/.bin/istanbul cover karma start --single-run karma.config.js",
     "coveralls": "cat ./coverage/report-lcov/lcov.info | node node_modules/.bin/coveralls"

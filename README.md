@@ -309,6 +309,11 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
 Tested in Chrome, Firefox and IE(versions >= 9).
 
+### Sites using across-tabs
+
+* app.vwo.com
+* *[Add your site]* - See [Contributing](#contributing) section
+
 ### Development Stack
 
 * Webpack based `src` compilation & bundling and `dist` generation.
@@ -350,6 +355,8 @@ ES6 source files
 4. Run `npm run build` to build dist files and `npm run test` to ensure all test cases are passing.
 5. Commit your changes to the branch.
 6. Submit a Pull request.
+
+**Note:** If adding site to the list of *sites using across-tabs*, please mention where to verify this in the PR description.
 
 ### Roadmap
 

@@ -118,8 +118,11 @@ class Parent {
    */
   customEventUnListener(ev) {
     this.enableElements();
-    if (this.onHandshakeCallback) {
-      this.onHandshakeCallback(ev.detail);
+
+    if (ev.detail && ev.detail.type === PostMessageEventNamesEnum.HANDSHAKE && this.onHandshakeCallback) {
+      this.onHandshakeCallback(ev.detail.tabInfo);
+    } else if (ev.detail && ev.detail.type === PostMessageEventNamesEnum.CUSTOM && this.onChildCommunication) {
+      this.onChildCommunication(ev.detail.tabInfo);
     }
   };
 
@@ -130,8 +133,8 @@ class Parent {
     window.removeEventListener('message', PostMessageListener.onNewTab);
     window.addEventListener('message', PostMessageListener.onNewTab);
 
-    window.removeEventListener('toggleElementDisabledAttribute', this.customEventUnListener);
-    window.addEventListener('toggleElementDisabledAttribute', ev => this.customEventUnListener(ev));
+    window.removeEventListener('onCustomChildMessage', this.customEventUnListener);
+    window.addEventListener('onCustomChildMessage', ev => this.customEventUnListener(ev));
 
     window.removeEventListener('onChildUnload', this.onChildUnload);
     window.addEventListener('onChildUnload', ev => this.onChildUnload(ev));

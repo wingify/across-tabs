@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.0.3"
+ * across-tabs "1.1.0"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -263,8 +263,11 @@ this["AcrossTabs"] =
 	    key: 'customEventUnListener',
 	    value: function customEventUnListener(ev) {
 	      this.enableElements();
-	      if (this.onHandshakeCallback) {
-	        this.onHandshakeCallback(ev.detail);
+	
+	      if (ev.detail && ev.detail.type === _PostMessageEventNamesEnum2.default.HANDSHAKE && this.onHandshakeCallback) {
+	        this.onHandshakeCallback(ev.detail.tabInfo);
+	      } else if (ev.detail && ev.detail.type === _PostMessageEventNamesEnum2.default.CUSTOM && this.onChildCommunication) {
+	        this.onChildCommunication(ev.detail.tabInfo);
 	      }
 	    }
 	  }, {
@@ -280,8 +283,8 @@ this["AcrossTabs"] =
 	      window.removeEventListener('message', _postmessage2.default.onNewTab);
 	      window.addEventListener('message', _postmessage2.default.onNewTab);
 	
-	      window.removeEventListener('toggleElementDisabledAttribute', this.customEventUnListener);
-	      window.addEventListener('toggleElementDisabledAttribute', function (ev) {
+	      window.removeEventListener('onCustomChildMessage', this.customEventUnListener);
+	      window.addEventListener('onCustomChildMessage', function (ev) {
 	        return _this2.customEventUnListener(ev);
 	      });
 	
@@ -727,6 +730,7 @@ this["AcrossTabs"] =
 	var PostMessageEventNamesEnum = {
 	  LOADED: '__TAB__LOADED_EVENT__',
 	  CUSTOM: '__TAB__CUSTOM_EVENT__',
+	  HANDSHAKE: '__TAB__HANDSHAKE_EVENT__',
 	  ON_BEFORE_UNLOAD: '__TAB__ON_BEFORE_UNLOAD__',
 	  PARENT_DISCONNECTED: '__PARENT_DISCONNECTED__',
 	  HANDSHAKE_WITH_PARENT: '__HANDSHAKE_WITH_PARENT__',
@@ -1112,8 +1116,10 @@ this["AcrossTabs"] =
 	 *
 	 * The method fires an event to notify Parent regarding Child's behavior
 	 */
-	PostMessageListener._onCustomMessage = function (data) {
-	  var tabInfo = data.split(_PostMessageEventNamesEnum2.default.CUSTOM)[1];
+	PostMessageListener._onCustomMessage = function (data, type) {
+	  var event = void 0,
+	      eventData = void 0,
+	      tabInfo = data.split(type)[1];
 	
 	  try {
 	    tabInfo = JSON.parse(tabInfo);
@@ -1121,7 +1127,12 @@ this["AcrossTabs"] =
 	    throw new Error(_WarningTextEnum2.default.INVALID_JSON);
 	  }
 	
-	  var event = new CustomEvent('toggleElementDisabledAttribute', { 'detail': tabInfo });
+	  eventData = {
+	    tabInfo: tabInfo,
+	    type: type
+	  };
+	
+	  event = new CustomEvent('onCustomChildMessage', { 'detail': eventData });
 	
 	  window.dispatchEvent(event);
 	  window.newlyTabOpened = null;
@@ -1150,7 +1161,7 @@ this["AcrossTabs"] =
 	    window.newlyTabOpened = _array2.default.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
 	  }
 	
-	  // CustomEvent is not supported in IE and so does this library
+	  // CustomEvent is not supported in IE, but polyfill will take care of it
 	  var event = new CustomEvent('onChildUnload', { 'detail': tabInfo });
 	
 	  window.dispatchEvent(event);
@@ -1180,7 +1191,9 @@ this["AcrossTabs"] =
 	  if (data.indexOf(_PostMessageEventNamesEnum2.default.LOADED) > -1) {
 	    PostMessageListener._onLoad(data);
 	  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.CUSTOM) > -1) {
-	    PostMessageListener._onCustomMessage(data);
+	    PostMessageListener._onCustomMessage(data, _PostMessageEventNamesEnum2.default.CUSTOM);
+	  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.HANDSHAKE) > -1) {
+	    PostMessageListener._onCustomMessage(data, _PostMessageEventNamesEnum2.default.HANDSHAKE);
 	  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD) > -1) {
 	    PostMessageListener._onBeforeUnload(data);
 	  }
@@ -1420,11 +1433,11 @@ this["AcrossTabs"] =
 	        this._setData(dataReceived);
 	        this._parseData(dataReceived);
 	
-	        msg = _PostMessageEventNamesEnum2.default.CUSTOM + JSON.stringify({
+	        msg = {
 	          id: this.tabId,
 	          isSiteInsideFrame: this.config.isSiteInsideFrame
-	        });
-	        this.sendMessageToParent(msg);
+	        };
+	        this.sendMessageToParent(msg, _PostMessageEventNamesEnum2.default.HANDSHAKE);
 	
 	        if (this.config.onInitialize) {
 	          this.config.onInitialize();
@@ -1457,12 +1470,12 @@ this["AcrossTabs"] =
 	      var _this2 = this;
 	
 	      window.onbeforeunload = function (evt) {
-	        var msg = _PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD + JSON.stringify({
+	        var msg = {
 	          id: _this2.tabId,
 	          isSiteInsideFrame: _this2.config.isSiteInsideFrame
-	        });
+	        };
 	
-	        _this2.sendMessageToParent(msg);
+	        _this2.sendMessageToParent(msg, _PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD);
 	      };
 	
 	      window.removeEventListener('message', function (evt) {
@@ -1500,8 +1513,12 @@ this["AcrossTabs"] =
 	
 	  }, {
 	    key: 'sendMessageToParent',
-	    value: function sendMessageToParent(msg) {
+	    value: function sendMessageToParent(msg, _prefixType) {
 	      var origin = void 0;
+	
+	      var type = _prefixType || _PostMessageEventNamesEnum2.default.CUSTOM;
+	
+	      msg = type + JSON.stringify(msg);
 	
 	      if (window.top.opener) {
 	        origin = this.config.origin || '*';
@@ -1538,7 +1555,7 @@ this["AcrossTabs"] =
 	      this.isSessionStorageSupported = this._isSessionStorage();
 	      this.addListeners();
 	      this._restoreData();
-	      this.sendMessageToParent(_PostMessageEventNamesEnum2.default.LOADED + JSON.stringify(this.getTabInfo()));
+	      this.sendMessageToParent(this.getTabInfo(), _PostMessageEventNamesEnum2.default.LOADED);
 	      this.timeout = this.setHandshakeExpiry();
 	
 	      if (this.config.onReady) {

@@ -31,7 +31,7 @@ class Tab {
 
     window.newlyTabOpened = {
       id: this.id,
-      name: this.name,
+      name: this.name || this.windowName,
       ref: this.ref
     };
 

@@ -113,7 +113,7 @@ class Parent {
 
   /**
    * Enable link/btn, which got disabled on clicking.
-   * Note: works only when `data-tab-opener="heatmap"` is used on the respective element
+   * Note: works only when `data-tab-opener="child"` is used on the respective element
    * @param  {Object} ev - Event
    */
   customEventUnListener(ev) {

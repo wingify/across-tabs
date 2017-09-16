@@ -96,6 +96,7 @@ class Child {
     try {
       actualData = JSON.parse(dataReceived);
       this.tabId = actualData && actualData.id;
+      this.tabName = actualData && actualData.name;
       this.tabParentName = actualData && actualData.parentName;
     } catch (e) {
       throw new Error(WarningTextEnum.INVALID_DATA);

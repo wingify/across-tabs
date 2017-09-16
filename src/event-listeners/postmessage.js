@@ -48,7 +48,7 @@ PostMessageListener._onLoad = (data) => {
         if (tabs.length) {
           window.newlyTabOpened = tabs[tabs.length - 1];
           window.newlyTabOpened.id = tabInfo.id;
-          window.newlyTabOpened.name = tabInfo.name;
+          window.newlyTabOpened.name = tabInfo.name || tabInfo.windowName;
         }
       }
     } catch (e) {

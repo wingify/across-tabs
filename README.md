@@ -125,7 +125,8 @@ Total Tabs Associated: **3** | Opened Tabs: **2** | Closed Tabs: **1**
 ```
 var config = {
   onHandshakeCallback: function () { ... },
-  onPollingCallback: function () { ... }
+  onPollingCallback: function () { ... },
+  onChildCommunication: function () { .. }
 }
 var parent = new AcrossTabs.Parent(config);
 ```
@@ -136,6 +137,7 @@ var parent = new AcrossTabs.Parent(config);
 * `removeClosedTabs`: Pass it as `true` to have only opened tabs in the list
 * `shouldInitImmediately`: Pass it as `false` to create an instance but initialize it later
 * `onHandshakeCallback`: Callback to be called when a successful connection has been established
+* `onChildCommunication`: Callback to be called when child sends message
 * `onPollingCallback`: Callback to be called every time a tab is polled for its status
 * `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
 
@@ -145,6 +147,7 @@ var parent = new AcrossTabs.Parent(config);
 | **removeClosedTabs**      |     false      |            Boolean                        |
 | **shouldInitImmediately** |     true       |            Boolean                        |
 | **onHandshakeCallback**   |     Undefined  |        Function as callback               |
+| **onChildCommunication**  |     Undefined  |        Function as callback               |
 | **onPollingCallback**     |     Undefined  |        Function as callback               |
 | **origin**                |     '*'        |            String(url)                    |
 

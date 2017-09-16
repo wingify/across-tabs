@@ -299,10 +299,10 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   |   Parameter   |        Description            |
   | ------------- | ----------------------------- |
-  |     msg       |        msg to be ent          |
+  |     msg       |       msg to be sent          |
 
   ```
-    parent.sendMessageToParent('Hey Parent! I\'m done with my work.');
+    child.sendMessageToParent('Hey Parent! I\'m done with my work.');
   ```
 
 ### Browser Support

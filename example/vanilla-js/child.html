@@ -3,6 +3,25 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Child Tab</title>
+	<style type="text/css">
+		.margin--half-left {
+			margin-left: 10px;
+		}
+		.btn {
+			min-width: 70px;
+			height: 34px;
+			background: #61bdff;
+			border: 0;
+			color: #fff;
+			font-size: 15px;
+		}
+		.btn--success {
+			background: #30b986;
+		}
+		.btn--danger {
+			background: #e86a6a;
+		}
+	</style>
 </head>
 <body>
 	<div id="info"></div>
@@ -25,6 +44,19 @@
 			// window.close();
 		}
 
+		function sendToParent(msg) {
+			var tabInfo = child.getTabInfo();
+			var data = {
+				msg: msg,
+				id: tabInfo.id
+			};
+			child.sendMessageToParent(data);
+		}
+
+		function closeTab() {
+			window.close();
+		}
+
 		function onInitialize() {
 			var tabInfo = child.getTabInfo();
 
@@ -33,6 +65,9 @@
 				'</strong>.<br/>' +
 				'My id is: <strong>' + tabInfo.id + '</strong>.<br/>' +
 				'My name is: <strong>' + tabInfo.name + '</strong>' +
+				'<br/><br/>' +
+				'<button class="btn btn--success" onclick="sendToParent(\'Yo! Message from child!\')">Send message to Parent</button>' +
+      			'<button class="btn btn--danger margin--half-left" onclick="closeTab()">Close me</button>' +
 				'<br/><br/>Events:<br/><br/>';
 
 			showList(data);

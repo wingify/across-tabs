@@ -27,7 +27,9 @@ function showPMList() {
   var list = '';
   for (var i = 0; i < postMessageEvents.length; i++) {
     var msg;
-    if (postMessageEvents[i].type === 'open') {
+    if (postMessageEvents[i].type === 'custom') {
+      msg = 'Tab: <strong>' + postMessageEvents[i].id + '</strong> sent: ' + postMessageEvents[i].msg;
+    } else if (postMessageEvents[i].type === 'open') {
       msg = 'Tab: <strong>' + postMessageEvents[i].id + '</strong> opened';
     } else if (postMessageEvents[i].type === 'close') {
       msg = 'Tab: <strong>' + postMessageEvents[i].id + '</strong> closed';
@@ -44,8 +46,13 @@ function onChildDisconnect(data) {
   postMessageEvents.push(data);
   showPMList();
 }
-function onChildCommunication(data) {
+function onHandshakeCallback(data) {
   data.type = 'open';
+  postMessageEvents.push(data);
+  showPMList();
+}
+function onChildCommunication(data) {
+  data.type = 'custom';
   postMessageEvents.push(data);
   showPMList();
 }
@@ -144,7 +151,8 @@ function showList() {
 }
 
 var parent = new AcrossTabs.Parent({
-  onHandshakeCallback: onChildCommunication,
+  onHandshakeCallback: onHandshakeCallback,
+  onChildCommunication: onChildCommunication,
   onPollingCallback: showList,
   onChildDisconnect: onChildDisconnect
 });

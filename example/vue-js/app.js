@@ -43,8 +43,12 @@ var app = new Vue({
     broadCastAll: function () {
       parent.broadCastAll('Yo! Broadcasted Message from parent to ALL!');
     },
-    onChildCommunication: function (data) {
+    onHandshakeCallback: function (data) {
       data.type = 'open';
+      this.showPMList(data);
+    },
+    onChildCommunication: function (data) {
+      data.type = 'custom';
       this.showPMList(data);
     },
     onChildDisconnect: function(data) {
@@ -67,7 +71,8 @@ var app = new Vue({
 app.$mount('#example-container');
 
 var parent = new AcrossTabs.Parent({
-  onHandshakeCallback: app.onChildCommunication,
+  onHandshakeCallback: app.onHandshakeCallback,
+  onChildCommunication: app.onChildCommunication,
   onPollingCallback: app.showList,
   onChildDisconnect: app.onChildDisconnect
 });

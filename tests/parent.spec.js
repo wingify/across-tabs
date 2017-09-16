@@ -181,20 +181,37 @@ describe('Parent', () => {
 		it('should enable elements', () => {
 			spyOn(parent, 'enableElements');
 
-			parent.customEventUnListener({detail: {}});
+			parent.customEventUnListener({detail: {
+				type: PostMessageEventNamesEnum.HANDSHAKE
+			}});
 
 			expect(parent.enableElements).toHaveBeenCalled();
 		});
-		it('should call user-defined callback, if defined', () => {
+		it('should call handshake callback, if defined', () => {
 			let parent = new Parent({
 				onHandshakeCallback: function () {}
 			});
 
 			spyOn(parent, 'onHandshakeCallback');
 
-			parent.customEventUnListener({detail: {}});
+			parent.customEventUnListener({detail: {
+				type: PostMessageEventNamesEnum.HANDSHAKE
+			}});
 
 			expect(parent.onHandshakeCallback).toHaveBeenCalled();
+		});
+		it('should call user-defined callback, if defined', () => {
+			let parent = new Parent({
+				onChildCommunication: function () {}
+			});
+
+			spyOn(parent, 'onChildCommunication');
+
+			parent.customEventUnListener({detail: {
+				type: PostMessageEventNamesEnum.CUSTOM
+			}});
+
+			expect(parent.onChildCommunication).toHaveBeenCalled();
 		});
 	});
 

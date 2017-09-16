@@ -64,16 +64,16 @@ describe('PostMessageListener', () => {
 	describe('PostMessageListener:_onCustomMessage', () => {
 		it('should verify that correct event has been dispatched on receiving data', () => {
 			unSetNewTabInfo();
-			let eventDetailData = JSON.stringify({
+			let eventDetailData = {
 				key: 'value'
-			}), data = PostMessageEventNamesEnum.CUSTOM + eventDetailData, eventSpy = jasmine.createSpy();
+			},
+			data = PostMessageEventNamesEnum.HANDSHAKE + JSON.stringify(eventDetailData),
+			eventSpy = jasmine.createSpy();
 
-			window.addEventListener('toggleElementDisabledAttribute', eventSpy);
-			PostMessageListener._onCustomMessage(data);
+			window.addEventListener('onCustomChildMessage', eventSpy);
+			PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.HANDSHAKE);
 
-			expect(eventSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-				detail: JSON.parse(eventDetailData)
-			}));
+			expect(eventSpy).toHaveBeenCalled();
 		});
 	});
 	describe('PostMessageListener:_onBeforeUnload', () => {

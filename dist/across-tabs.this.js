@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.0.2"
+ * across-tabs "1.0.3"
  * https://github.com/wingify/across-tabs.js
  * MIT licensed
  * 
@@ -255,7 +255,7 @@ this["AcrossTabs"] =
 	
 	    /**
 	     * Enable link/btn, which got disabled on clicking.
-	     * Note: works only when `data-tab-opener="heatmap"` is used on the respective element
+	     * Note: works only when `data-tab-opener="child"` is used on the respective element
 	     * @param  {Object} ev - Event
 	     */
 	
@@ -499,7 +499,7 @@ this["AcrossTabs"] =
 	
 	      window.newlyTabOpened = {
 	        id: this.id,
-	        name: this.name,
+	        name: this.name || this.windowName,
 	        ref: this.ref
 	      };
 	
@@ -1083,7 +1083,7 @@ this["AcrossTabs"] =
 	        if (tabs.length) {
 	          window.newlyTabOpened = tabs[tabs.length - 1];
 	          window.newlyTabOpened.id = tabInfo.id;
-	          window.newlyTabOpened.name = tabInfo.name;
+	          window.newlyTabOpened.name = tabInfo.name || tabInfo.windowName;
 	        }
 	      }
 	    } catch (e) {
@@ -1357,6 +1357,7 @@ this["AcrossTabs"] =
 	      try {
 	        actualData = JSON.parse(dataReceived);
 	        this.tabId = actualData && actualData.id;
+	        this.tabName = actualData && actualData.name;
 	        this.tabParentName = actualData && actualData.parentName;
 	      } catch (e) {
 	        throw new Error(_WarningTextEnum2.default.INVALID_DATA);

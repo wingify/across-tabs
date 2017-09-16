@@ -77,8 +77,10 @@ PostMessageListener._onLoad = (data) => {
  *
  * The method fires an event to notify Parent regarding Child's behavior
  */
-PostMessageListener._onCustomMessage = (data) => {
-  let tabInfo = data.split(PostMessageEventNamesEnum.CUSTOM)[1];
+PostMessageListener._onCustomMessage = (data, type) => {
+  let event,
+    eventData,
+    tabInfo = data.split(type)[1];
 
   try {
     tabInfo = JSON.parse(tabInfo);
@@ -86,7 +88,12 @@ PostMessageListener._onCustomMessage = (data) => {
     throw new Error(WarningTextEnum.INVALID_JSON);
   }
 
-  let event = new CustomEvent('toggleElementDisabledAttribute', {'detail': tabInfo});
+  eventData = {
+    tabInfo,
+    type
+  };
+
+  event = new CustomEvent('onCustomChildMessage', {'detail': eventData});
 
   window.dispatchEvent(event);
   window.newlyTabOpened = null;
@@ -114,7 +121,7 @@ PostMessageListener._onBeforeUnload = (data) => {
     window.newlyTabOpened = arrayUtils.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
   }
 
-  // CustomEvent is not supported in IE and so does this library
+  // CustomEvent is not supported in IE, but polyfill will take care of it
   let event = new CustomEvent('onChildUnload', {'detail': tabInfo});
 
   window.dispatchEvent(event);
@@ -144,7 +151,9 @@ PostMessageListener.onNewTab = (message) => {
   if (data.indexOf(PostMessageEventNamesEnum.LOADED) > -1) {
     PostMessageListener._onLoad(data);
   } else if (data.indexOf(PostMessageEventNamesEnum.CUSTOM) > -1) {
-    PostMessageListener._onCustomMessage(data);
+    PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.CUSTOM);
+  } else if (data.indexOf(PostMessageEventNamesEnum.HANDSHAKE) > -1) {
+    PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.HANDSHAKE);
   } else if (data.indexOf(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD) > -1) {
     PostMessageListener._onBeforeUnload(data);
   }

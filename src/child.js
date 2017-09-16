@@ -152,11 +152,11 @@ class Child {
       this._setData(dataReceived);
       this._parseData(dataReceived);
 
-      msg = PostMessageEventNamesEnum.CUSTOM + JSON.stringify({
+      msg = {
         id: this.tabId,
         isSiteInsideFrame: this.config.isSiteInsideFrame
-      });
-      this.sendMessageToParent(msg);
+      };
+      this.sendMessageToParent(msg, PostMessageEventNamesEnum.HANDSHAKE);
 
       if (this.config.onInitialize) {
         this.config.onInitialize();
@@ -184,12 +184,12 @@ class Child {
    */
   addListeners() {
     window.onbeforeunload = (evt) => {
-      let msg = PostMessageEventNamesEnum.ON_BEFORE_UNLOAD + JSON.stringify({
+      let msg = {
         id: this.tabId,
         isSiteInsideFrame: this.config.isSiteInsideFrame
-      });
+      };
 
-      this.sendMessageToParent(msg);
+      this.sendMessageToParent(msg, PostMessageEventNamesEnum.ON_BEFORE_UNLOAD);
     };
 
     window.removeEventListener('message', evt => this.onCommunication(evt));
@@ -215,8 +215,12 @@ class Child {
    * Send a postmessage to the corresponding Parent tab
    * @param  {String} msg
 =   */
-  sendMessageToParent(msg) {
+  sendMessageToParent(msg, _prefixType) {
     let origin;
+
+    let type = _prefixType || PostMessageEventNamesEnum.CUSTOM;
+
+    msg = type + JSON.stringify(msg);
 
     if (window.top.opener) {
       origin = this.config.origin || '*';
@@ -247,7 +251,7 @@ class Child {
     this.isSessionStorageSupported = this._isSessionStorage();
     this.addListeners();
     this._restoreData();
-    this.sendMessageToParent(PostMessageEventNamesEnum.LOADED + JSON.stringify(this.getTabInfo()));
+    this.sendMessageToParent(this.getTabInfo(), PostMessageEventNamesEnum.LOADED);
     this.timeout = this.setHandshakeExpiry();
 
     if (this.config.onReady) {

@@ -24,7 +24,7 @@ var app = new Vue({
     openNewTab: function (ev) {
       var config = {
         url: 'http://localhost:3000/example/vue-js/child.html',
-        windowName: 'heatmap' + ++i,
+        windowName: 'Child - ' + ++i,
         windowFeatures: ''
       };
       parent.openNewTab(config);

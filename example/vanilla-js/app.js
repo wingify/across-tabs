@@ -4,7 +4,7 @@ var postMessageEvents = [], allTabs = [], openedTabs = [], closedTabs = [];
 function openNewTab(ev) {
   var config = {
     url: 'http://localhost:3000/example/vanilla-js/child.html',
-    windowName: 'heatmap' + ++i,
+    windowName: 'Child - ' + ++i,
     windowFeatures: ''
   };
   parent.openNewTab(config);

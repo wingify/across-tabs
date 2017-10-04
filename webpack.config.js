@@ -1,11 +1,13 @@
 var webpack = require('webpack');
-var DashboardPlugin = require('webpack-dashboard/plugin');
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var createVariants = require('parallel-webpack').createVariants;
 
 // Import the plugin:
 var path = require('path');
-var env = require('yargs').argv.mode;
+var argv = require('yargs').argv.env;
+var env = argv.mode;
+
+console.warn(env);
 
 var libraryName = 'across-tabs';
 
@@ -20,14 +22,15 @@ var libraryHeaderComment =  '\n' +
 
 
 var plugins = [
-  new webpack.BannerPlugin(libraryHeaderComment, { entryOnly: true })
+  new webpack.BannerPlugin({
+    banner: libraryHeaderComment,
+    entryOnly: true
+  })
 ];
 var outputFile;
 
 if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
-} else {
-  plugins.push(new DashboardPlugin());
 }
 
 function createConfig(options) {
@@ -42,26 +45,32 @@ function createConfig(options) {
       umdNamedDefine: true
     },
     module: {
-      loaders: [
-        {
-          test: /(\.js)$/,
-          loader: 'babel',
-          exclude: /(node_modules|bower_components)/
-        },
-        {
-          test: /(\.js)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/
+      rules: [{
+        test: /(\.js)$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          // babel-loader to convert ES6 code to ES5 + amdCleaning requirejs code into simple JS code, taking care of modules to load as desired
+          loader: 'babel-loader',
+          options: {
+            presets: ['env'],
+            plugins: []
+          }
         }
-      ]
-    },
-    eslint: {
-      failOnWarning: false,
-      failOnError: false
-    },
-    resolve: {
-      root: path.resolve('./src'),
-      extensions: ['', '.js']
+      }, {
+        enforce: 'pre',
+        test: /(\.js)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'eslint-loader',
+          options: {
+            fix: true,
+            emitError: true,
+            emitWarning: true,
+            failOnWarning: env === 'build',
+            failOnError: env === 'build'
+          }
+        }
+      }]
     },
     plugins: plugins
   };

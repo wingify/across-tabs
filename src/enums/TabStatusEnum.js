@@ -3,8 +3,8 @@
  * @type {Object}
  */
 const TabStatusEnum = {
-  OPEN: 'open',
-  CLOSE: 'close'
+	OPEN: 'open',
+	CLOSE: 'close'
 };
 
 export default TabStatusEnum;

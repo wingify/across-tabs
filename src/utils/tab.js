@@ -8,8 +8,8 @@ import TabStatusEnum from '../enums/TabStatusEnum';
 import WarningTextEnum from '../enums/WarningTextEnum';
 
 let tabUtils = {
-	tabs: [],
-	config: {}
+  tabs: [],
+  config: {}
 };
 
 /**
@@ -19,10 +19,10 @@ let tabUtils = {
  * @param  {Object} tab
  */
 tabUtils._remove = (tab) => {
-	let index;
+  let index;
 
-	index = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', tab.id, 'index');
-	tabUtils.tabs.splice(index, 1);
+  index = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', tab.id, 'index');
+  tabUtils.tabs.splice(index, 1);
 };
 
 /**
@@ -32,18 +32,18 @@ tabUtils._remove = (tab) => {
  * @return {String} modified msg
  */
 tabUtils._preProcessMessage = (msg) => {
-	// make msg always an object to support JSON support
-	try {
-		msg = JSON.stringify(msg);
-	} catch (e) {
-		throw new Error(WarningTextEnum.INVALID_JSON);
-	}
+  // make msg always an object to support JSON support
+  try {
+    msg = JSON.stringify(msg);
+  } catch (e) {
+    throw new Error(WarningTextEnum.INVALID_JSON);
+  }
 
-	if (msg.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED) === -1) {
-		msg = PostMessageEventNamesEnum.PARENT_COMMUNICATED + msg;
-	}
+  if (msg.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED) === -1) {
+    msg = PostMessageEventNamesEnum.PARENT_COMMUNICATED + msg;
+  }
 
-	return msg;
+  return msg;
 };
 /**
  * Add a new tab to the Array of tabs
@@ -51,22 +51,22 @@ tabUtils._preProcessMessage = (msg) => {
  * @return {Object} - this
  */
 tabUtils.addNew = (tab) => {
-	tabUtils.tabs.push(tab);
-	return this;
+  tabUtils.tabs.push(tab);
+  return this;
 };
 /**
  * Filter out all the opened tabs
  * @return {Array} - only the opened tabs
  */
 tabUtils.getOpened = () => {
-	return tabUtils.tabs.filter(tab => tab.status === TabStatusEnum.OPEN);
+  return tabUtils.tabs.filter(tab => tab.status === TabStatusEnum.OPEN);
 };
 /**
  * Filter out all the closed tabs
  * @return {Array} - only the closed tabs
  */
 tabUtils.getClosed = () => {
-	return tabUtils.tabs.filter(tab => tab.status === TabStatusEnum.CLOSE);
+  return tabUtils.tabs.filter(tab => tab.status === TabStatusEnum.CLOSE);
 };
 /**
  * To get list of all tabs(closed/opened).
@@ -74,7 +74,7 @@ tabUtils.getClosed = () => {
  * @return {Array} - list of all tabs
  */
 tabUtils.getAll = () => {
-	return tabUtils.tabs;
+  return tabUtils.tabs;
 };
 
 /**
@@ -83,31 +83,31 @@ tabUtils.getAll = () => {
  * @return {Object} this
  */
 tabUtils.closeTab = (id) => {
-	let tab = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', id);
+  let tab = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', id);
 
-	if (tab && tab.ref) {
-		tab.ref.close();
-		tab.status = TabStatusEnum.CLOSE;
-	}
+  if (tab && tab.ref) {
+    tab.ref.close();
+    tab.status = TabStatusEnum.CLOSE;
+  }
 
-	return tabUtils;
-	// --tabUtils.tabs.length;
+  return tabUtils;
+  // --tabUtils.tabs.length;
 };
 /**
  * Close all opened tabs using a native method `close` available on window.open reference.
  * @return {tabUtils} this
  */
 tabUtils.closeAll = () => {
-	let i;
+  let i;
 
-	for (i = 0; i < tabUtils.tabs.length; i++) {
-		if (tabUtils.tabs[i] && tabUtils.tabs[i].ref) {
-			tabUtils.tabs[i].ref.close();
-			tabUtils.tabs[i].status = TabStatusEnum.CLOSE;
-		}
-	}
+  for (i = 0; i < tabUtils.tabs.length; i++) {
+    if (tabUtils.tabs[i] && tabUtils.tabs[i].ref) {
+      tabUtils.tabs[i].ref.close();
+      tabUtils.tabs[i].status = TabStatusEnum.CLOSE;
+    }
+  }
 
-	return tabUtils;
+  return tabUtils;
 };
 /**
  * Send a postmessage to every opened Child tab(excluding itself i.e Parent Tab)
@@ -115,15 +115,15 @@ tabUtils.closeAll = () => {
  * @param  {Boolean} isSiteInsideFrame
  */
 tabUtils.broadCastAll = (msg, isSiteInsideFrame) => {
-	let i, tabs = tabUtils.getOpened();
+  let i, tabs = tabUtils.getOpened();
 
-	msg = tabUtils._preProcessMessage(msg);
+  msg = tabUtils._preProcessMessage(msg);
 
-	for (i = 0; i < tabs.length; i++) {
-		tabUtils.sendMessage(tabs[i], msg, isSiteInsideFrame);
-	}
+  for (i = 0; i < tabs.length; i++) {
+    tabUtils.sendMessage(tabs[i], msg, isSiteInsideFrame);
+  }
 
-	return tabUtils;
+  return tabUtils;
 };
 /**
  * Send a postmessage to a specific Child tab
@@ -132,15 +132,15 @@ tabUtils.broadCastAll = (msg, isSiteInsideFrame) => {
  * @param  {Boolean} isSiteInsideFrame
  */
 tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
-	let targetedTab,
-		tabs = tabUtils.getAll();
+  let targetedTab,
+    tabs = tabUtils.getAll();
 
-	msg = tabUtils._preProcessMessage(msg);
+  msg = tabUtils._preProcessMessage(msg);
 
-	targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
-	tabUtils.sendMessage(targetedTab, msg, isSiteInsideFrame);
+  targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
+  tabUtils.sendMessage(targetedTab, msg, isSiteInsideFrame);
 
-	return tabUtils;
+  return tabUtils;
 };
 
 /**
@@ -150,13 +150,13 @@ tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
  * @param  {Boolean} isSiteInsideFrame
  */
 tabUtils.sendMessage = (target, msg, isSiteInsideFrame) => {
-	let origin = tabUtils.config.origin || '*';
+  let origin = tabUtils.config.origin || '*';
 
-	if (isSiteInsideFrame && target.ref[0]) {
-		target.ref[0].postMessage(msg, origin);
-	} else if (target.ref && target.ref.top) {
-		target.ref.top.postMessage(msg, origin);
-	}
+  if (isSiteInsideFrame && target.ref[0]) {
+    target.ref[0].postMessage(msg, origin);
+  } else if (target.ref && target.ref.top) {
+    target.ref.top.postMessage(msg, origin);
+  }
 };
 
 export default tabUtils;

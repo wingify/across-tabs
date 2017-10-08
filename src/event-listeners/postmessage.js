@@ -33,42 +33,42 @@ let PostMessageListener = {};
  * OnLoad Event - it serves as an communication establishment source from Child tab
  */
 PostMessageListener._onLoad = (data) => {
-	let tabs,
-		dataToSend,
-		tabInfo = data.split(PostMessageEventNamesEnum.LOADED)[1];
+  let tabs,
+    dataToSend,
+    tabInfo = data.split(PostMessageEventNamesEnum.LOADED)[1];
 
-	// Child was opened but parent got refereshed, opened a tab i.e.
-	// last opened tab will get refreshed(browser behavior). WOW! Handle this now.
-	if (tabInfo) {
-		try {
-			tabInfo = JSON.parse(tabInfo);
-			// If Child knows its UUID, means Parent was refreshed and Child did not
-			if (tabInfo.id) {
-				tabs = tabUtils.getAll();
-				if (tabs.length) {
-					window.newlyTabOpened = tabs[tabs.length - 1];
-					window.newlyTabOpened.id = tabInfo.id;
-					window.newlyTabOpened.name = tabInfo.name || tabInfo.windowName;
-				}
-			}
-		} catch (e) {
-			throw new Error(WarningTextEnum.INVALID_JSON);
-		}
-	}
+  // Child was opened but parent got refereshed, opened a tab i.e.
+  // last opened tab will get refreshed(browser behavior). WOW! Handle this now.
+  if (tabInfo) {
+    try {
+      tabInfo = JSON.parse(tabInfo);
+      // If Child knows its UUID, means Parent was refreshed and Child did not
+      if (tabInfo.id) {
+        tabs = tabUtils.getAll();
+        if (tabs.length) {
+          window.newlyTabOpened = tabs[tabs.length - 1];
+          window.newlyTabOpened.id = tabInfo.id;
+          window.newlyTabOpened.name = tabInfo.name || tabInfo.windowName;
+        }
+      }
+    } catch (e) {
+      throw new Error(WarningTextEnum.INVALID_JSON);
+    }
+  }
 
-	if (window.newlyTabOpened) {
-		try {
-			dataToSend = PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT;
-			dataToSend += JSON.stringify({
-				id: window.newlyTabOpened.id,
-				name: window.newlyTabOpened.name,
-				parentName: window.name
-			});
-			tabUtils.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);
-		} catch (e) {
-			throw new Error(WarningTextEnum.INVALID_JSON);
-		}
-	}
+  if (window.newlyTabOpened) {
+    try {
+      dataToSend = PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT;
+      dataToSend += JSON.stringify({
+        id: window.newlyTabOpened.id,
+        name: window.newlyTabOpened.name,
+        parentName: window.name
+      });
+      tabUtils.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);
+    } catch (e) {
+      throw new Error(WarningTextEnum.INVALID_JSON);
+    }
+  }
 };
 
 /**
@@ -78,25 +78,25 @@ PostMessageListener._onLoad = (data) => {
  * The method fires an event to notify Parent regarding Child's behavior
  */
 PostMessageListener._onCustomMessage = (data, type) => {
-	let event,
-		eventData,
-		tabInfo = data.split(type)[1];
+  let event,
+    eventData,
+    tabInfo = data.split(type)[1];
 
-	try {
-		tabInfo = JSON.parse(tabInfo);
-	} catch (e) {
-		throw new Error(WarningTextEnum.INVALID_JSON);
-	}
+  try {
+    tabInfo = JSON.parse(tabInfo);
+  } catch (e) {
+    throw new Error(WarningTextEnum.INVALID_JSON);
+  }
 
-	eventData = {
-		tabInfo,
-		type
-	};
+  eventData = {
+    tabInfo,
+    type
+  };
 
-	event = new CustomEvent('onCustomChildMessage', {'detail': eventData});
+  event = new CustomEvent('onCustomChildMessage', {'detail': eventData});
 
-	window.dispatchEvent(event);
-	window.newlyTabOpened = null;
+  window.dispatchEvent(event);
+  window.newlyTabOpened = null;
 };
 
 /**
@@ -108,23 +108,23 @@ PostMessageListener._onCustomMessage = (data, type) => {
  * @param  {Object} data
  */
 PostMessageListener._onBeforeUnload = (data) => {
-	let tabs, tabInfo = data.split(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD)[1];
+  let tabs, tabInfo = data.split(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD)[1];
 
-	try {
-		tabInfo = JSON.parse(tabInfo);
-	} catch (e) {
-		throw new Error(WarningTextEnum.INVALID_JSON);
-	}
+  try {
+    tabInfo = JSON.parse(tabInfo);
+  } catch (e) {
+    throw new Error(WarningTextEnum.INVALID_JSON);
+  }
 
-	if (tabUtils.tabs.length) {
-		tabs = tabUtils.getAll();
-		window.newlyTabOpened = arrayUtils.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
-	}
+  if (tabUtils.tabs.length) {
+    tabs = tabUtils.getAll();
+    window.newlyTabOpened = arrayUtils.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
+  }
 
-	// CustomEvent is not supported in IE, but polyfill will take care of it
-	let event = new CustomEvent('onChildUnload', {'detail': tabInfo});
+  // CustomEvent is not supported in IE, but polyfill will take care of it
+  let event = new CustomEvent('onChildUnload', {'detail': tabInfo});
 
-	window.dispatchEvent(event);
+  window.dispatchEvent(event);
 };
 
 /**
@@ -132,31 +132,31 @@ PostMessageListener._onBeforeUnload = (data) => {
  * @param  {Object} message
  */
 PostMessageListener.onNewTab = (message) => {
-	let data = message.data;
+  let data = message.data;
 
-	/**
+  /**
    * Safe check - This happens when CHild Tab gets closed just after sending a message.
    * No need to go further from this point.
    * Tab status is automatically fetched using our polling mechanism written in `Parent.js` file.
    */
-	if (!data || typeof data !== 'string' || !tabUtils.tabs.length) {
-		return false;
-	}
+  if (!data || typeof data !== 'string' || !tabUtils.tabs.length) {
+    return false;
+  }
 
-	// `origin` check for secureity point of view
-	if (tabUtils.config.origin && tabUtils.config.origin !== message.origin) {
-		return false;
-	}
+  // `origin` check for secureity point of view
+  if (tabUtils.config.origin && tabUtils.config.origin !== message.origin) {
+    return false;
+  }
 
-	if (data.indexOf(PostMessageEventNamesEnum.LOADED) > -1) {
-		PostMessageListener._onLoad(data);
-	} else if (data.indexOf(PostMessageEventNamesEnum.CUSTOM) > -1) {
-		PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.CUSTOM);
-	} else if (data.indexOf(PostMessageEventNamesEnum.HANDSHAKE) > -1) {
-		PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.HANDSHAKE);
-	} else if (data.indexOf(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD) > -1) {
-		PostMessageListener._onBeforeUnload(data);
-	}
+  if (data.indexOf(PostMessageEventNamesEnum.LOADED) > -1) {
+    PostMessageListener._onLoad(data);
+  } else if (data.indexOf(PostMessageEventNamesEnum.CUSTOM) > -1) {
+    PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.CUSTOM);
+  } else if (data.indexOf(PostMessageEventNamesEnum.HANDSHAKE) > -1) {
+    PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.HANDSHAKE);
+  } else if (data.indexOf(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD) > -1) {
+    PostMessageListener._onBeforeUnload(data);
+  }
 };
 
 export default PostMessageListener;

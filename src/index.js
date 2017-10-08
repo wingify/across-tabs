@@ -6,8 +6,8 @@ import Child from './child';
  * @type {Object}
  */
 const AcrossTabs = {
-	Parent: Parent,
-	Child: Child
+  Parent: Parent,
+  Child: Child
 };
 
 export default AcrossTabs;

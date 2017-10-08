@@ -7,24 +7,24 @@
  * <a href="/demo.html" data-tab-opener="parent" target="_blank" on-click="parent.openNewTab(config)">Open Tab</a>
  */
 let domUtils = {
-	disable: (selector) => {
-		if (!selector) { return false; }
+  disable: (selector) => {
+    if (!selector) { return false; }
 
-		let i, ATOpenerElems = document.querySelectorAll('[' + selector + ']');
+    let i, ATOpenerElems = document.querySelectorAll('[' + selector + ']');
 
-		for (i = 0; i < ATOpenerElems.length; i++) {
-			ATOpenerElems[i].setAttribute('disabled', 'disabled');
-		}
-	},
-	enable: (selector) => {
-		if (!selector) { return false; }
+    for (i = 0; i < ATOpenerElems.length; i++) {
+      ATOpenerElems[i].setAttribute('disabled', 'disabled');
+    }
+  },
+  enable: (selector) => {
+    if (!selector) { return false; }
 
-		let i, ATOpenerElems = document.querySelectorAll('[' + selector + ']');
+    let i, ATOpenerElems = document.querySelectorAll('[' + selector + ']');
 
-		for (i = 0; i < ATOpenerElems.length; i++) {
-			ATOpenerElems[i].removeAttribute('disabled');
-		}
-	}
+    for (i = 0; i < ATOpenerElems.length; i++) {
+      ATOpenerElems[i].removeAttribute('disabled');
+    }
+  }
 };
 
 export default domUtils;

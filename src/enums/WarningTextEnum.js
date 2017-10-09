@@ -11,4 +11,3 @@ const WarningTextEnum = {
 };
 
 export default WarningTextEnum;
-

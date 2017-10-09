@@ -38,7 +38,7 @@ class Tab {
     // Push it to the list of tabs
     tabUtils.addNew(this);
 
-     // Return reference for chaining purpose
+    // Return reference for chaining purpose
     return this;
   };
 };

@@ -59,7 +59,6 @@ arrayUtils.searchByKeyName = (data, key, value, returnPreference) => {
   }
 
   return returnData;
-
 };
 
 export default arrayUtils;

@@ -157,7 +157,6 @@ tabUtils.sendMessage = (target, msg, isSiteInsideFrame) => {
   } else if (target.ref && target.ref.top) {
     target.ref.top.postMessage(msg, origin);
   }
-
 };
 
 export default tabUtils;

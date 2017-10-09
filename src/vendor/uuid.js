@@ -24,15 +24,15 @@ UUID = (function () {
     let rand = UUID._getRandomInt, hex = UUID._hexAligner;
 
     // ["timeLow", "timeMid", "timeHiAndVersion", "clockSeqHiAndReserved", "clockSeqLow", "node"]
-    return hex(rand(32), 8) +           // time_low
+    return hex(rand(32), 8) + // time_low
       '-' +
-      hex(rand(16), 4) +                // time_mid
+      hex(rand(16), 4) + // time_mid
       '-' +
-      hex(0x4000 | rand(12), 4) +       // time_hi_and_version
+      hex(0x4000 | rand(12), 4) + // time_hi_and_version
       '-' +
-      hex(0x8000 | rand(14), 4) +       // clock_seq_hi_and_reserved clock_seq_low
+      hex(0x8000 | rand(14), 4) + // clock_seq_hi_and_reserved clock_seq_low
       '-' +
-      hex(rand(48), 12);                // node
+      hex(rand(48), 12); // node
   };
 
   /**
@@ -84,7 +84,6 @@ UUID = (function () {
   };
 
   return UUID;
-
 })(UUID);
 
 export default UUID;

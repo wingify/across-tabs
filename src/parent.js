@@ -234,7 +234,6 @@ class Parent {
     }
 
     return tab;
-
   };
 
   /**

@@ -28,10 +28,10 @@ module.exports = function (config) {
       module: {
         loaders: [{
           test: /(\.js)$/,
-          loader: 'babel',
+          loader: 'babel-loader',
           exclude: /(node_modules)/,
           query: {
-            presets: ['es2015']
+            presets: ['env']
           }
         }, {
           test: /\.spec.js$/,
@@ -39,13 +39,13 @@ module.exports = function (config) {
           loader: 'babel-loader',
           query: {
             cacheDirectory: true,
-            presets: ['es2015']
+            presets: ['env']
           },
         }, {// transpile and instrument only testing sources with isparta
           test: /\.js$/,
           include: path.resolve('src/'),
           exclude: /(src\/vendor\/)/,
-          loader: 'isparta'
+          loader: 'isparta-loader'
         }],
       },
     },

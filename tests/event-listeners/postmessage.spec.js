@@ -7,6 +7,7 @@ import PostMessageListener from '../../src/event-listeners/postmessage';
 
 function beforeEveryEach() {
 	tabUtils.tabs = [];
+	tabUtils.config = {};
 	setNewTabInfo();
 }
 function afterEveryEach() { // teardown
@@ -43,11 +44,19 @@ describe('PostMessageListener', () => {
 		});
 	});
 	describe('PostMessageListener:_onLoad', () => {
-		xit('should stringify tabInfo before sending data to Child', () => {
-			spyOn(JSON, 'stringify');
-			setNewTabInfo();
-			PostMessageListener._onLoad();
-			expect(JSON.stringify).toHaveBeenCalled();
+		it('should set newlyTabOpened info on window load', () => {
+			let spy = jasmine.createSpy('message');
+
+			unSetNewTabInfo();
+			tabUtils.tabs.push({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'});
+
+			expect(window.newlyTabOpened.id).not.toBeDefined();
+			expect(window.newlyTabOpened.name).not.toBeDefined();
+
+			PostMessageListener._onLoad(PostMessageEventNamesEnum.LOADED + JSON.stringify({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'}));
+
+			expect(window.newlyTabOpened.id).toBeDefined();
+			expect(window.newlyTabOpened.name).not.toBeDefined();
 		});
 		it('should send a msg to child', () => {
 			let spy = jasmine.createSpy('message');
@@ -102,6 +111,16 @@ describe('PostMessageListener', () => {
 
 			expect(PostMessageListener.onNewTab(message)).toBe(false);
 		});
+		it('should not proceed to process postmessage if origin doesnt match', () => {
+			let message = {
+				data: PostMessageEventNamesEnum.LOADED,
+				origin: 'abc.com'
+			};
+
+			tabUtils.config = { origin: 'xyz.com' };
+			tabUtils.tabs.push({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'});
+			expect(PostMessageListener.onNewTab(message)).toBe(false);
+		});
 		it('should invoke _onLoad method on receiving LOADED from child tab', () => {
 			let message = {
 				data: PostMessageEventNamesEnum.LOADED
@@ -111,7 +130,7 @@ describe('PostMessageListener', () => {
 			tabUtils.tabs.push({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'});
 			PostMessageListener.onNewTab(message);
 
-			expect(PostMessageListener._onLoad).toHaveBeenCalled();
+			expect(PostMessageListener._onLoad).toHaveBeenCalledWith(message.data);
 		});
 		it('should invoke _onCustomMessage method on receiving CUSTOM from child tab', () => {
 			let message = {
@@ -122,7 +141,18 @@ describe('PostMessageListener', () => {
 			tabUtils.tabs.push({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'});
 			PostMessageListener.onNewTab(message);
 
-			expect(PostMessageListener._onCustomMessage).toHaveBeenCalled();
+			expect(PostMessageListener._onCustomMessage).toHaveBeenCalledWith(message.data, PostMessageEventNamesEnum.CUSTOM);
+		});
+		it('should invoke _onCustomMessage method on receiving HANDSHAKE from child tab', () => {
+			let message = {
+				data: PostMessageEventNamesEnum.HANDSHAKE + JSON.stringify({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'})
+			};
+
+			spyOn(PostMessageListener, '_onCustomMessage');
+			tabUtils.tabs.push({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'});
+			PostMessageListener.onNewTab(message);
+
+			expect(PostMessageListener._onCustomMessage).toHaveBeenCalledWith(message.data, PostMessageEventNamesEnum.HANDSHAKE);
 		});
 		it('should invoke _onBeforeUnload method on receiving ON_BEFORE_UNLOAD from child tab', () => {
 			let message = {
@@ -133,7 +163,7 @@ describe('PostMessageListener', () => {
 			tabUtils.tabs.push({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'});
 			PostMessageListener.onNewTab(message);
 
-			expect(PostMessageListener._onBeforeUnload).toHaveBeenCalled();
+			expect(PostMessageListener._onBeforeUnload).toHaveBeenCalledWith(message.data);
 		});
 	});
 });

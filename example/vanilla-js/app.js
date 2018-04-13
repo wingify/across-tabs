@@ -150,7 +150,7 @@ function showList() {
   document.getElementById('btn-group').innerHTML = btnGroup;
 }
 
-var parent = new AcrossTabs.Parent({
+var parent = new AcrossTabs.default.Parent({
   onHandshakeCallback: onHandshakeCallback,
   onChildCommunication: onChildCommunication,
   onPollingCallback: showList,

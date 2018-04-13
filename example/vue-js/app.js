@@ -70,7 +70,7 @@ var app = new Vue({
 
 app.$mount('#example-container');
 
-var parent = new AcrossTabs.Parent({
+var parent = new AcrossTabs.default.Parent({
   onHandshakeCallback: app.onHandshakeCallback,
   onChildCommunication: app.onChildCommunication,
   onPollingCallback: app.showList,

@@ -26,6 +26,29 @@ tabUtils._remove = (tab) => {
 };
 
 /**
+ * If 'removeClosedTabs' is true then this function deletes the tab from the list otherwise
+ * just updates it's status to close.
+ * This should be called whenever the child tab is closed.
+ *
+ * @param  {Object} tab
+ */
+tabUtils._onChildClose = (id) => {
+  let tab = arrayUtils.searchByKeyName(tabUtils.getAll(), 'id', id);
+
+  if (tab) {
+    if (tabUtils.config.removeClosedTabs) {
+      tabUtils._remove(tab);
+    } else {
+      tab.status = TabStatusEnum.CLOSE;
+    }
+
+    if (tabUtils.config.onChildStatusChange) {
+      tabUtils.config.onChildStatusChange(tab);
+    }
+  }
+};
+
+/**
  * As explained in `event-listeners/postmessage.js` file,
  * the data received from postmessage API is further processed based on our convention
  * @param  {String} msg

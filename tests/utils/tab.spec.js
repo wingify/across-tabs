@@ -4,6 +4,7 @@ import WarningTextEnum from '../../src/enums/WarningTextEnum';
 import PostMessageEventNamesEnum from '../../src/enums/PostMessageEventNamesEnum';
 
 import tabUtils from '../../src/utils/tab';
+import Parent from '../../src/parent';
 
 let mockedTab = {
 	url: 'http://localhost:3000/example/child.html',
@@ -28,6 +29,7 @@ function addTabs() {
 describe('tabUtils', () => {
 	beforeEach(() => {
 		tabUtils.tabs = [];
+		tabUtils.config = {};
 	});
 	afterEach(() => {
 		tab1 = null;
@@ -63,6 +65,36 @@ describe('tabUtils', () => {
 
 			expect(arrayUtils.searchByKeyName).toHaveBeenCalled();
 			expect(tabUtils.tabs.length).toBe(0);
+		});
+	});
+	describe('method: _onChildClose', () => {
+		it('should update the tab status to closed it \'removeClosedTabs\' is set to false', () => {
+			spyOn(tabUtils, '_remove');
+
+			addTabs();
+
+			expect(tabUtils.tabs[0].status).toBe(TabStatusEnum.OPEN);
+			tabUtils._onChildClose(tabUtils.tabs[0].id);
+			expect(tabUtils.tabs[0].status).toBe(TabStatusEnum.CLOSE);
+		});
+		it('should remove tab from tab list if \'removeClosedTabs\' is set to true', () => {
+			tabUtils.config.removeClosedTabs = true
+			tabUtils.tabs.push(mockedTab);
+
+			tabUtils._onChildClose(tabUtils.tabs[0].id);
+
+			expect(tabUtils.tabs.length).toBe(0);
+		});
+		it('should call the onChildStatusChange hook', () => {
+			let parent = new Parent({
+				onChildStatusChange: function () {}
+			});
+
+			spyOn(tabUtils.config, 'onChildStatusChange');
+
+			addTabs();
+			tabUtils._onChildClose(tabUtils.tabs[0].id);
+			expect(tabUtils.config.onChildStatusChange).toHaveBeenCalledWith(tabUtils.tabs[0]);
 		});
 	});
 	describe('method: _preProcessMessage', () => {

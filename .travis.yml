@@ -2,15 +2,13 @@ language: node_js
 node_js:
   - '9.11.2'
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.10.1
-  - export PATH="$HOME/.yarn/bin:$PATH"
   - npm install -g webpack
 install:
-  - npm install
-  - npm run build
+  - yarn install
+  - yarn run build
 script:
-  - npm run build-test
-  - npm run coverage
+  - yarn run build-test
+  - yarn run coverage
 after_success: 'npm run coveralls'
 cache:
   yarn: true

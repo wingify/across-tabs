@@ -270,7 +270,7 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
   |     msg       |        msg to be ent        |
 
   ```
-    parent.broadCastAll('Hello my dear Child! A greeting from Parent.'});
+    parent.broadCastAll('Hello my dear Child! A greeting from Parent.');
   ```
 
 * **`broadCastTo`**

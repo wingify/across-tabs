@@ -19,7 +19,7 @@
     "babel-plugin-add-module-exports": "0.1.2",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-preset-env": "^1.6.0",
-    "coveralls": "^2.11.16",
+    "coveralls": "^3.0.3",
     "eslint": "^4.7.2",
     "eslint-loader": "^1.9.0",
     "isparta-loader": "^2.0.0",

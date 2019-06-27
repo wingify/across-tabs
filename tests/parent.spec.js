@@ -2,6 +2,7 @@ import Tab from '../src/tab';
 
 import tabUtils from '../src/utils/tab';
 import domUtils from '../src/utils/dom';
+import arrayUtils from '../src/utils/array';
 
 import TabStatusEnum from '../src/enums/TabStatusEnum';
 import WarningTextEnum from '../src/enums/WarningTextEnum';
@@ -10,6 +11,7 @@ import PostMessageEventNamesEnum from '../src/enums/PostMessageEventNamesEnum';
 import PostMessageListener from '../src/event-listeners/postmessage';
 
 import Parent from '../src/parent';
+import Child from '../src/child';
 
 let parent,
 	mockedTab = {
@@ -48,8 +50,7 @@ describe('Parent', () => {
 			expect(Parent).toBeDefined();
 
 			let parent = new Parent();
-			expect(parent.startPollingTabs).toBeDefined();
-			expect(parent.watchStatus).toBeDefined();
+			expect(parent.onChildUnload).toBeDefined();
 			expect(parent.customEventUnListener).toBeDefined();
 			expect(parent.addEventListeners).toBeDefined();
 
@@ -68,112 +69,48 @@ describe('Parent', () => {
 
 	describe('constructor', () => {
 		it('should be called on object instantiation with NO config passed', () => {
-			expect(parent.heartBeatInterval).toBeDefined();
 			expect(parent.Tab).toBeDefined();
-			expect(parent.shouldInitImmediately).toBeDefined();
-			expect(parent.heartBeatInterval).toBeDefined();
-
-			expect(parent.heartBeatInterval).toBe(500);
 			expect(parent.shouldInitImmediately).toBe(true);
 		});
 
 		it('should be called on object instantiation with config', () => {
 			let parent = new Parent({
-				heartBeatInterval: 1000,
 				shouldInitImmediately: false,
 				removeClosedTabs: true,
 				onHandshakeCallback: function () {},
-				onPollingCallback: function () {}
+				onChildDisconnect: function () {},
+				onChildCommunication: function () {},
+				onChildStatusChange: function () {},
 			});
 
-			expect(parent.heartBeatInterval).toBeDefined();
 			expect(parent.Tab).toBeDefined();
 			expect(parent.shouldInitImmediately).toBeDefined();
-			expect(parent.heartBeatInterval).toBeDefined();
 			expect(parent.onHandshakeCallback).toBeDefined();
-			expect(parent.onPollingCallback).toBeDefined();
+			expect(parent.onChildDisconnect).toBeDefined();
+			expect(parent.onChildCommunication).toBeDefined();
+			expect(parent.onChildStatusChange).toBeDefined();
 
-			expect(parent.heartBeatInterval).toBe(1000);
 			expect(parent.shouldInitImmediately).toBe(false);
 			expect(parent.removeClosedTabs).toBe(true);
 		});
 	});
 
-	describe('method: addInterval', () => {
-		it('should return if no opened tabs', () => {
-			spyOn(window, 'clearInterval');
-
-			expect(parent.addInterval()).toBe(false);
-			expect(window.clearInterval).toHaveBeenCalled();
-		});
-		it('should return if no opened tabs', () => {
-			addTabs();
-
-			tab1.status	= 'close';
-			tab2.status	= 'close';
-			tab3.status	= 'close';
-
-			spyOn(window, 'clearInterval');
-
-			expect(parent.addInterval()).toBe(false);
-			expect(window.clearInterval).toHaveBeenCalled();
-		});
-		it('should watch status if at least one opened tab and remove the closed tabs', () => {
-			addTabs();
-
-			tab1.status	= 'close';
-			tab2.status	= 'open';
-			tab3.status	= 'close';
-
-			parent.removeClosedTabs = true;
-
-			spyOn(parent, 'watchStatus');
-			parent.addInterval();
-			expect(parent.watchStatus).toHaveBeenCalled();
-		});
-		it('should call user-defined: onPollingCallback, if defined', () => {
+	describe('method: onChildUnload', () => {
+		
+		it('should call onChildDisconnect method and util\'s _onChildClose method', () => {
 			let parent = new Parent({
-					onPollingCallback: function () {}
-				});
+				onChildDisconnect: function () {},
+				onChildStatusChange: function () {}
+			});
 
-			addTabs();
+			parent.openNewTab({ url: 'http://example.com', windowName: 'AcrossTab' })
 
-			tab1.status	= 'close';
-			tab2.status	= 'open';
-			tab3.status	= 'open';
-
-			spyOn(parent, 'onPollingCallback');
-			parent.addInterval();
-			expect(parent.onPollingCallback).toHaveBeenCalled();
-		});
-	});
-
-	describe('method: watchStatus', () => {
-		it('should return if no tab is passed as argument', () => {
-			expect(parent.watchStatus()).toBe(false);
-		});
-		it('should return if current and last state is same', () => {
-			let tab1 = Object.create(mockedTab);
-
-			tab1.status = 'close';
-			tab1.ref = { closed: true };
-
-			expect(parent.watchStatus(tab1)).toBe(false);
-		});
-		it('should return if current and last state is same', () => {
-			let tab1 = Object.create(mockedTab);
-
-			tab1.status = 'open';
-			tab1.ref.closed = false;
-
-			expect(parent.watchStatus(tab1)).toBe(false);
-		});
-		it('should remove closed tab from array on child tab closing', () => {
-			let tab1 = Object.create(mockedTab);
-
-			tab1.status = 'open';
-			tab1.ref = { closed: true } // tab closed
-			expect(parent.watchStatus(tab1)).toBeUndefined();
+			spyOn(parent, 'onChildDisconnect');
+			spyOn(tabUtils, '_onChildClose');
+			
+			parent.onChildUnload({ detail: { id: parent.getAllTabs()[0].id } })
+			expect(tabUtils._onChildClose).toHaveBeenCalledWith(parent.getAllTabs()[0].id);
+			expect(parent.onChildDisconnect).toHaveBeenCalledWith({ id: parent.getAllTabs()[0].id });
 		});
 	});
 
@@ -372,11 +309,20 @@ describe('Parent', () => {
 	});
 
 	describe('method: openNewTab', () => {
+		let parent = new Parent({
+			onChildStatusChange: function () {}
+		});
+
 		it('should throw error if config is not passed', () => {
 			expect(parent.openNewTab).toThrow(new Error(WarningTextEnum.CONFIG_REQUIRED));
 		});
 		it('should throw error if config url is not passed', () => {
 			expect(parent.openNewTab, {}).toThrow(new Error(WarningTextEnum.CONFIG_REQUIRED));
+		});
+		it('should call onChildStatusChange if child opened successfully', () => {
+			spyOn(parent, 'onChildStatusChange');			
+			parent.openNewTab({ url: 'http://example.com', windowName: 'AcrossTab' })
+			expect(parent.onChildStatusChange).toHaveBeenCalled()	;
 		});
 	});
 

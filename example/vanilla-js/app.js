@@ -153,6 +153,6 @@ function showList() {
 var parent = new AcrossTabs.default.Parent({
   onHandshakeCallback: onHandshakeCallback,
   onChildCommunication: onChildCommunication,
-  onPollingCallback: showList,
+  onChildStatusChange: showList,
   onChildDisconnect: onChildDisconnect
 });

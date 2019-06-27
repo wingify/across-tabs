@@ -16,7 +16,7 @@
 		exports["AcrossTabs"] = factory();
 	else
 		root["AcrossTabs"] = factory();
-})(this, function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -79,7 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -151,7 +151,7 @@ var _array = __webpack_require__(3);
 
 var _array2 = _interopRequireDefault(_array);
 
-var _TabStatusEnum = __webpack_require__(4);
+var _TabStatusEnum = __webpack_require__(8);
 
 var _TabStatusEnum2 = _interopRequireDefault(_TabStatusEnum);
 
@@ -181,6 +181,29 @@ tabUtils._remove = function (tab) {
 
   index = _array2.default.searchByKeyName(tabUtils.tabs, 'id', tab.id, 'index');
   tabUtils.tabs.splice(index, 1);
+};
+
+/**
+ * If 'removeClosedTabs' is true then this function deletes the tab from the list otherwise just update it's status to close
+ * This should be called whenever the child tab is closed.
+ *
+ * @param  {Object} tab
+ */
+tabUtils._onChildClose = function (id) {
+  var tab = _array2.default.searchByKeyName(tabUtils.getAll(), 'id', id);
+
+  if (tab) {
+    if (tabUtils.config.removeClosedTabs) {
+      tabUtils._remove(tab);
+    } else {
+      tab.status = _TabStatusEnum2.default.CLOSE;
+    }
+
+    // Call corresponding hooks
+    if (tabUtils.config.onChildStatusChange) {
+      tabUtils.config.onChildStatusChange(tab);
+    }
+  }
 };
 
 /**
@@ -417,27 +440,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 /**
- * Enum for Tab status(still opened / closed) used for tab-communication
- * @type {Object}
- */
-var TabStatusEnum = {
-  OPEN: 'open',
-  CLOSE: 'close'
-};
-
-exports.default = TabStatusEnum;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
  * This utility helps enabling/disabling the Link/Button on the Parent Tab.
  * As soon as, user clicks on link/btn to open a new tab, the link/btn gets disabled.
  * Once child communicates for the first time with the Parent, the link/btn is re-enabled to open up new tab.
@@ -475,7 +477,7 @@ var domUtils = {
 exports.default = domUtils;
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -485,7 +487,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _parent = __webpack_require__(7);
+var _parent = __webpack_require__(6);
 
 var _parent2 = _interopRequireDefault(_parent);
 
@@ -507,7 +509,7 @@ var AcrossTabs = {
 exports.default = AcrossTabs;
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -521,7 +523,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _tab = __webpack_require__(8);
+var _tab = __webpack_require__(7);
 
 var _tab2 = _interopRequireDefault(_tab);
 
@@ -529,13 +531,9 @@ var _tab3 = __webpack_require__(2);
 
 var _tab4 = _interopRequireDefault(_tab3);
 
-var _dom = __webpack_require__(5);
+var _dom = __webpack_require__(4);
 
 var _dom2 = _interopRequireDefault(_dom);
-
-var _TabStatusEnum = __webpack_require__(4);
-
-var _TabStatusEnum2 = _interopRequireDefault(_TabStatusEnum);
 
 var _WarningTextEnum = __webpack_require__(1);
 
@@ -553,8 +551,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var heartBeat = void 0,
-    tab = void 0;
+var tab = void 0;
 
 // Named Class expression
 
@@ -568,15 +565,16 @@ var Parent = function () {
     _classCallCheck(this, Parent);
 
     config = config || {};
-    if (typeof config.heartBeatInterval === 'undefined') {
-      config.heartBeatInterval = 500;
-    }
     if (typeof config.shouldInitImmediately === 'undefined') {
       config.shouldInitImmediately = true;
     }
 
     // reset tabs with every new Object
     _tab4.default.tabs = [];
+
+    // Bind event listener callbacks
+    this.customEventUnListenerCallback = this.customEventUnListener.bind(this);
+    this.onChildUnloadCallback = this.onChildUnload.bind(this);
 
     this.Tab = _tab2.default;
     _extends(this, config);
@@ -589,82 +587,6 @@ var Parent = function () {
   }
 
   _createClass(Parent, [{
-    key: 'addInterval',
-    value: function addInterval() {
-      var i = void 0,
-          tabs = _tab4.default.getAll(),
-          openedTabs = _tab4.default.getOpened();
-
-      // don't poll if all tabs are in CLOSED states
-      if (!openedTabs || !openedTabs.length) {
-        window.clearInterval(heartBeat); // stop the interval
-        heartBeat = null;
-        return false;
-      }
-
-      for (i = 0; i < tabs.length; i++) {
-        if (this.removeClosedTabs) {
-          this.watchStatus(tabs[i]);
-        }
-        /**
-         * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
-         * irrespective of heatbeat controller
-        */
-        if (tabs[i] && tabs[i].ref) {
-          tabs[i].status = tabs[i].ref.closed ? _TabStatusEnum2.default.CLOSE : _TabStatusEnum2.default.OPEN;
-        }
-      }
-
-      // Call the user-defined callback after every polling operation is operted in a single run
-      if (this.onPollingCallback) {
-        this.onPollingCallback();
-      }
-    }
-  }, {
-    key: 'startPollingTabs',
-
-
-    /**
-     * Poll all tabs for their status - OPENED / CLOSED
-     * An interval is created which checks for last and current status.
-     * There's a property on window i.e. `closed` which returns true for the closed window.
-     * And one can see `true` only in another tab when the tab was opened by the same `another` tab.
-     */
-    value: function startPollingTabs() {
-      var _this = this;
-
-      heartBeat = window.setInterval(function () {
-        return _this.addInterval();
-      }, this.heartBeatInterval);
-    }
-  }, {
-    key: 'watchStatus',
-
-
-    /**
-     * Compare tab status - OPEN vs CLOSE
-     * @param  {Object} tab
-     */
-    value: function watchStatus(tab) {
-      if (!tab || !tab.ref) {
-        return false;
-      }
-      var newStatus = tab.ref.closed ? _TabStatusEnum2.default.CLOSE : _TabStatusEnum2.default.OPEN,
-          oldStatus = tab.status;
-
-      // If last and current status(inside a polling interval) are same, don't do anything
-      if (!newStatus || newStatus === oldStatus) {
-        return false;
-      }
-
-      // OPEN to CLOSE state
-      if (oldStatus === _TabStatusEnum2.default.OPEN && newStatus === _TabStatusEnum2.default.CLOSE) {
-        // remove tab from tabUtils
-        _tab4.default._remove(tab);
-      }
-      // Change from CLOSE to OPEN state is never gonna happen ;)
-    }
-  }, {
     key: 'onChildUnload',
 
 
@@ -673,6 +595,8 @@ var Parent = function () {
      * @param  {Object} ev - Event
      */
     value: function onChildUnload(ev) {
+      _tab4.default._onChildClose(ev.detail.id);
+
       if (this.onChildDisconnect) {
         this.onChildDisconnect(ev.detail);
       }
@@ -703,20 +627,14 @@ var Parent = function () {
      * Attach postmessage, native and custom listeners to the window
      */
     value: function addEventListeners() {
-      var _this2 = this;
-
       window.removeEventListener('message', _postmessage2.default.onNewTab);
       window.addEventListener('message', _postmessage2.default.onNewTab);
 
-      window.removeEventListener('onCustomChildMessage', this.customEventUnListener);
-      window.addEventListener('onCustomChildMessage', function (ev) {
-        return _this2.customEventUnListener(ev);
-      });
+      window.removeEventListener('onCustomChildMessage', this.customEventUnListenerCallback);
+      window.addEventListener('onCustomChildMessage', this.customEventUnListenerCallback);
 
-      window.removeEventListener('onChildUnload', this.onChildUnload);
-      window.addEventListener('onChildUnload', function (ev) {
-        return _this2.onChildUnload(ev);
-      });
+      window.removeEventListener('onChildUnload', this.onChildUnloadCallback);
+      window.addEventListener('onChildUnload', this.onChildUnloadCallback);
 
       // Let children tabs know when Parent is closed / refereshed.
       window.onbeforeunload = function () {
@@ -834,11 +752,9 @@ var Parent = function () {
       tab = new this.Tab();
       tab.create(config);
 
-      // If polling is already there, don't set it again
-      if (!heartBeat) {
-        this.startPollingTabs();
+      if (this.onChildStatusChange) {
+        this.onChildStatusChange(tab);
       }
-
       return tab;
     }
   }, {
@@ -865,7 +781,7 @@ var Parent = function () {
 exports.default = Parent;
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -887,7 +803,7 @@ var _uuid = __webpack_require__(9);
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
-var _dom = __webpack_require__(5);
+var _dom = __webpack_require__(4);
 
 var _dom2 = _interopRequireDefault(_dom);
 
@@ -945,6 +861,27 @@ var Tab = function () {
 ;
 
 exports.default = Tab;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Enum for Tab status(still opened / closed) used for tab-communication
+ * @type {Object}
+ */
+var TabStatusEnum = {
+  OPEN: 'open',
+  CLOSE: 'close'
+};
+
+exports.default = TabStatusEnum;
 
 /***/ }),
 /* 9 */
@@ -1210,9 +1147,10 @@ PostMessageListener.onNewTab = function (message) {
   /**
    * Safe check - This happens when CHild Tab gets closed just after sending a message.
    * No need to go further from this point.
-   * Tab status is automatically fetched using our polling mechanism written in `Parent.js` file.
+   * Tab status is updated by fetching tab id from window.newlyTabOpened
    */
   if (!data || typeof data !== 'string' || !_tab2.default.tabs.length) {
+    _tab2.default.tabs.length && _tab2.default._onChildClose(window.newlyTabOpened.id);
     return false;
   }
 
@@ -1314,6 +1252,9 @@ var Child = function () {
     this.tabName = window.name;
     this.tabId = null;
     this.tabParentName = null;
+
+    // Bind event listener callback
+    this.onCommunicationCallback = this.onCommunication.bind(this);
 
     _extends(this, config);
     this.config = config;
@@ -1422,8 +1363,6 @@ var Child = function () {
      * @param  {String} message
      */
     value: function onCommunication(message) {
-      var _this = this;
-
       var dataReceived = void 0,
           data = message.data;
 
@@ -1447,9 +1386,7 @@ var Child = function () {
         }
 
         // remove postMessage listener since no Parent is there to communicate with
-        window.removeEventListener('message', function (evt) {
-          return _this.onCommunication(evt);
-        });
+        window.removeEventListener('message', this.onCommunicationCallback);
       }
 
       /**
@@ -1499,23 +1436,19 @@ var Child = function () {
      * Attach postmessage and onbeforeunload event listeners
      */
     value: function addListeners() {
-      var _this2 = this;
+      var _this = this;
 
       window.onbeforeunload = function (evt) {
         var msg = {
-          id: _this2.tabId,
-          isSiteInsideFrame: _this2.config.isSiteInsideFrame
+          id: _this.tabId,
+          isSiteInsideFrame: _this.config.isSiteInsideFrame
         };
 
-        _this2.sendMessageToParent(msg, _PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD);
+        _this.sendMessageToParent(msg, _PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD);
       };
 
-      window.removeEventListener('message', function (evt) {
-        return _this2.onCommunication(evt);
-      });
-      window.addEventListener('message', function (evt) {
-        return _this2.onCommunication(evt);
-      });
+      window.removeEventListener('message', this.onCommunicationCallback);
+      window.addEventListener('message', this.onCommunicationCallback);
     }
   }, {
     key: 'setHandshakeExpiry',
@@ -1527,11 +1460,11 @@ var Child = function () {
      * @return {Function}
      */
     value: function setHandshakeExpiry() {
-      var _this3 = this;
+      var _this2 = this;
 
       return window.setTimeout(function () {
-        if (_this3.config.onHandShakeExpiry) {
-          _this3.config.onHandShakeExpiry();
+        if (_this2.config.onHandShakeExpiry) {
+          _this2.config.onHandShakeExpiry();
         }
       }, this.handshakeExpiryLimit);
     }

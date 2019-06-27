@@ -137,9 +137,10 @@ PostMessageListener.onNewTab = (message) => {
   /**
    * Safe check - This happens when CHild Tab gets closed just after sending a message.
    * No need to go further from this point.
-   * Tab status is automatically fetched using our polling mechanism written in `Parent.js` file.
+   * Tab status is updated by fetching tab id from window.newlyTabOpened
    */
   if (!data || typeof data !== 'string' || !tabUtils.tabs.length) {
+    tabUtils.tabs.length && tabUtils._onChildClose(window.newlyTabOpened.id);
     return false;
   }
 

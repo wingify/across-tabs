@@ -25,6 +25,9 @@ class Child {
     this.tabId = null;
     this.tabParentName = null;
 
+    // Bind event listener callback
+    this.onCommunicationCallback = this.onCommunication.bind(this);
+
     Object.assign(this, config);
     this.config = config;
 
@@ -136,7 +139,7 @@ class Child {
       }
 
       // remove postMessage listener since no Parent is there to communicate with
-      window.removeEventListener('message', evt => this.onCommunication(evt));
+      window.removeEventListener('message', this.onCommunicationCallback);
     }
 
     /**
@@ -192,8 +195,8 @@ class Child {
       this.sendMessageToParent(msg, PostMessageEventNamesEnum.ON_BEFORE_UNLOAD);
     };
 
-    window.removeEventListener('message', evt => this.onCommunication(evt));
-    window.addEventListener('message', evt => this.onCommunication(evt));
+    window.removeEventListener('message', this.onCommunicationCallback);
+    window.addEventListener('message', this.onCommunicationCallback);
   };
 
   /**

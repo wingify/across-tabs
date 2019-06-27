@@ -125,20 +125,21 @@ Total Tabs Associated: **3** | Opened Tabs: **2** | Closed Tabs: **1**
 ```
 var config = {
   onHandshakeCallback: function () { ... },
-  onPollingCallback: function () { ... },
-  onChildCommunication: function () { .. }
+  onChildDisconnect: function () { ... },
+  onChildCommunication: function () { ... },
+  onChildStatusChange: function () { ... },
 }
 var parent = new AcrossTabs.Parent(config);
 ```
 
 `Constructor` accepts a configurable `Object` with the following keys.
 
-* `heartBeatInterval`: The time interval for polling tabs statuses
 * `removeClosedTabs`: Pass it as `true` to have only opened tabs in the list
 * `shouldInitImmediately`: Pass it as `false` to create an instance but initialize it later
 * `onHandshakeCallback`: Callback to be called when a successful connection has been established
 * `onChildCommunication`: Callback to be called when child sends message
-* `onPollingCallback`: Callback to be called every time a tab is polled for its status
+* `onChildDisconnect`: Callback to be called when child tab is closed or disconnects
+* `onChildStatusChange`: Callback to be called every time a tab status is updated i.e opened or closed
 * `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
 
 | Config Keys               |     default    |      accepts                              |
@@ -148,8 +149,11 @@ var parent = new AcrossTabs.Parent(config);
 | **shouldInitImmediately** |     true       |            Boolean                        |
 | **onHandshakeCallback**   |     Undefined  |        Function as callback               |
 | **onChildCommunication**  |     Undefined  |        Function as callback               |
-| **onPollingCallback**     |     Undefined  |        Function as callback               |
+| **onChildDisconnect**     |     Undefined  |        Function as callback               |
+| **onChildStatusChange**   |     Undefined  |        Function as callback               |
 | **origin**                |     '*'        |            String(url)                    |
+
+**Note:** The polling mechanism has been deprecated. 'onPollingCallback' will no longer work. Please use 'onChildStatusChange' instead.
 
 
 **New(Child tab)**

@@ -1,10 +1,10 @@
 /*!
  * 
  * across-tabs "1.2.1"
- * https://github.com/wingify/across-tabs.js
+ * https://github.com/wingify/across-tabs
  * MIT licensed
  * 
- * Copyright (C) 2017-2018 Wingify - A project by Varun Malhotra(https://github.com/softvar)
+ * Copyright (C) 2017-2019 Wingify Pvt. Ltd. - Authored by Varun Malhotra(https://github.com/softvar)
  * 
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -1168,7 +1168,7 @@ PostMessageListener._onCustomMessage = function (data, type) {
   event = new CustomEvent('onCustomChildMessage', { 'detail': eventData });
 
   window.dispatchEvent(event);
-  window.newlyTabOpened = null;
+  // window.newlyTabOpened = null;
 };
 
 /**

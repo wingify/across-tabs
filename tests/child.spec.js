@@ -49,12 +49,24 @@ describe('Child', () => {
 			child._getData();
 			expect(window.sessionStorage.getItem).toHaveBeenCalledWith(child.sessionStorageKey);
 		});
+
+		it('should return false if sessionStorage is not supported', () => {
+			// mock
+			child.isSessionStorageSupported = false;
+			expect(child._getData()).toBe(false);
+		});
 	});
 	describe('method: _setData', () => {
 		it('should set data in sessionStorage', () => {
 			spyOn(window.sessionStorage, 'setItem');
 			child._setData('');
 			expect(window.sessionStorage.setItem).toHaveBeenCalled();
+		});
+
+		it('should return false if sessionStorage is not supported', () => {
+			// mock
+			child.isSessionStorageSupported = false;
+			expect(child._setData('')).toBe(false);
 		});
 	});
 	describe('method: _restoreData', () => {
@@ -64,6 +76,12 @@ describe('Child', () => {
 			child._restoreData();
 			expect(sessionStorage.getItem).toHaveBeenCalled();
 			expect(child._parseData).toHaveBeenCalled();
+		});
+
+		it('should return false if sessionStorage is not supported', () => {
+			// mock
+			child.isSessionStorageSupported = false;
+			expect(child._restoreData()).toBe(false);
 		});
 	});
 	describe('method: _parseData', () => {

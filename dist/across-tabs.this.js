@@ -1,10 +1,10 @@
 /*!
  * 
- * across-tabs "1.2.1"
- * https://github.com/wingify/across-tabs.js
+ * across-tabs "1.2.2"
+ * https://github.com/wingify/across-tabs
  * MIT licensed
  * 
- * Copyright (C) 2017-2018 Wingify - A project by Varun Malhotra(https://github.com/softvar)
+ * Copyright (C) 2017-2019 Wingify Pvt. Ltd. - Authored by Varun Malhotra(https://github.com/softvar)
  * 
  */
 this["AcrossTabs"] =
@@ -188,7 +188,7 @@ tabUtils._preProcessMessage = function (msg) {
     throw new Error(_WarningTextEnum2.default.INVALID_JSON);
   }
 
-  if (msg.indexOf(_PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED) === -1) {
+  if (msg && msg.indexOf(_PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED) === -1) {
     msg = _PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED + msg;
   }
 
@@ -1159,7 +1159,7 @@ PostMessageListener._onCustomMessage = function (data, type) {
   event = new CustomEvent('onCustomChildMessage', { 'detail': eventData });
 
   window.dispatchEvent(event);
-  window.newlyTabOpened = null;
+  // window.newlyTabOpened = null;
 };
 
 /**

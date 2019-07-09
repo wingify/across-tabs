@@ -1,13 +1,10 @@
-import Tab from '../src/tab';
 
 import tabUtils from '../src/utils/tab';
 import domUtils from '../src/utils/dom';
 
-import TabStatusEnum from '../src/enums/TabStatusEnum';
 import WarningTextEnum from '../src/enums/WarningTextEnum';
 import PostMessageEventNamesEnum from '../src/enums/PostMessageEventNamesEnum';
 
-import PostMessageListener from '../src/event-listeners/postmessage';
 
 import Parent from '../src/parent';
 

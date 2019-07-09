@@ -96,7 +96,7 @@ PostMessageListener._onCustomMessage = (data, type) => {
   event = new CustomEvent('onCustomChildMessage', {'detail': eventData});
 
   window.dispatchEvent(event);
-  window.newlyTabOpened = null;
+  // window.newlyTabOpened = null;
 };
 
 /**

@@ -3,7 +3,6 @@ var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var createVariants = require('parallel-webpack').createVariants;
 
 // Import the plugin:
-var path = require('path');
 var argv = require('yargs').argv.env;
 var env = argv.mode;
 
@@ -15,10 +14,10 @@ var libVersion = JSON.stringify(require("./package.json").version);
 
 var libraryHeaderComment =  '\n' +
   'across-tabs ' + libVersion + '\n' +
-  'https://github.com/wingify/across-tabs.js\n' +
+  'https://github.com/wingify/across-tabs\n' +
   'MIT licensed\n' +
   '\n' +
-  'Copyright (C) 2017-2018 Wingify - A project by Varun Malhotra(https://github.com/softvar)\n';
+  'Copyright (C) 2017-2019 Wingify Pvt. Ltd. - Authored by Varun Malhotra(https://github.com/softvar)\n';
 
 
 var plugins = [
@@ -27,7 +26,6 @@ var plugins = [
     entryOnly: true
   })
 ];
-var outputFile;
 
 if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));

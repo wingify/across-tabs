@@ -45,8 +45,6 @@ describe('PostMessageListener', () => {
 	});
 	describe('PostMessageListener:_onLoad', () => {
 		it('should set newlyTabOpened info on window load', () => {
-			let spy = jasmine.createSpy('message');
-
 			unSetNewTabInfo();
 			tabUtils.tabs.push({id: 'c88347f9-6600-4575-b4ab-18c33e0c2151'});
 

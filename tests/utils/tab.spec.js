@@ -1,6 +1,4 @@
 import arrayUtils from '../../src/utils/array';
-import TabStatusEnum from '../../src/enums/TabStatusEnum';
-import WarningTextEnum from '../../src/enums/WarningTextEnum';
 import PostMessageEventNamesEnum from '../../src/enums/PostMessageEventNamesEnum';
 
 import tabUtils from '../../src/utils/tab';
@@ -66,12 +64,19 @@ describe('tabUtils', () => {
 		});
 	});
 	describe('method: _preProcessMessage', () => {
-		xit('should stringify msg sent', () => {
+		it('should stringify msg sent', () => {
 			spyOn(JSON, 'stringify');
-			let m = '12';
+			let msg = 'Some message';
 
-			tabUtils._preProcessMessage(m);
+			tabUtils._preProcessMessage(msg);
 			expect(JSON.stringify).toHaveBeenCalledWith(msg);
+		});
+
+		it('should prepend if message is of a particular type', () => {
+			let msg = 'Some message';
+			let value = tabUtils._preProcessMessage(msg);
+
+			expect(value.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED)).not.toBe(-1);
 		});
 	});
 	describe('method: addNew', () => {

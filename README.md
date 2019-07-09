@@ -141,14 +141,14 @@ var parent = new AcrossTabs.Parent(config);
 * `onPollingCallback`: Callback to be called every time a tab is polled for its status
 * `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
 
-| Config Keys               |     default    |      accepts                              |
+| Config Keys                |     default    |      accepts                              |
 | ---------------------     | -------------- | ----------------------------------------- |
 | **heartBeatInterval**     |     500 msec   |  A number representing milliseconds       |
 | **removeClosedTabs**      |     false      |            Boolean                        |
 | **shouldInitImmediately** |     true       |            Boolean                        |
-| **onHandshakeCallback**   |     Undefined  |        Function as callback               |
-| **onChildCommunication**  |     Undefined  |        Function as callback               |
-| **onPollingCallback**     |     Undefined  |        Function as callback               |
+| **onHandshakeCallback**   |     Undefined   |        Function as callback               |
+| **onChildCommunication**  |     Undefined   |        Function as callback               |
+| **onPollingCallback**     |     Undefined   |        Function as callback               |
 | **origin**                |     '*'        |            String(url)                    |
 
 
@@ -176,14 +176,14 @@ var child =  new AcrossTabs.Child(config);
 * `isSiteInsideFrame`: If the library is loaded inside an iframe in the child tab, this needs to be set `true` for maintaining proper window/frame(s) references
 * `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
 
-| Config Keys               |     default    |      accepts                              |
+| Config Keys                |     default    |      accepts                              |
 | ------------------------- | -------------- | ----------------------------------------- |
 | **handshakeExpiryLimit**  |    5000 msec   |    A number representing milliseconds     |
 | **isSiteInsideFrame**     |      null      |    If child tab has actual site in a fram |
-| **onReady**               |    Undefined   |        Function as callback               |
-| **onInitialize**          |    Undefined   |        Function as callback               |
-| **onParentDisconnect**    |    Undefined   |        Function as callback               |
-| **onParentCommunication** |    Undefined   |        Function as callback               |
+| **onReady**               |    Undefined    |        Function as callback               |
+| **onInitialize**          |    Undefined    |        Function as callback               |
+| **onParentDisconnect**    |    Undefined    |        Function as callback               |
+| **onParentCommunication** |    Undefined    |        Function as callback               |
 | **origin**                |     '*'        |            String(url)                    |
 
 **Example** is included in the `example` folder. `Vanilla JS` and `Vue js` versions are there to test out.
@@ -202,7 +202,7 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   |   Parameter   |        Description                                   |
   | ------------- | ---------------------------------------------------- |
-  |     config    |     For opening a new tab i.e. URL and windowName    |
+  |     config     |     For opening a new tab i.e. URL and windowName    |
 
   ```
     parent.openNewTab({url: 'http://example.com', windowName: 'AcrossTab'});
@@ -279,8 +279,8 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   |   Parameter   |        Description            |
   | ------------- | ----------------------------- |
-  |     id        |  id of the tab to send an msg  |
-  |     msg       |        msg to be sent          |
+  |     id        |  id of the tab to send an msg |
+  |     msg       |        msg to be sent         |
 
   ```
     parent.broadCastTo('57cd47da-d98e-4a2d-814c-9b07cb51059c', 'Hey! Can you run the script: worker.js? Thanks!');
@@ -375,7 +375,7 @@ ES6 source files
 
 >The [MIT license](https://opensource.org/licenses/MIT) (MIT)
 >
->Copyright (c) 2017-2018 Wingify Software Pvt. Ltd.
+>Copyright (c) 2017-2019 Wingify Software Pvt. Ltd.
 >
 >Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 >

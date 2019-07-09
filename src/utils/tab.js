@@ -39,7 +39,7 @@ tabUtils._preProcessMessage = (msg) => {
     throw new Error(WarningTextEnum.INVALID_JSON);
   }
 
-  if (msg.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED) === -1) {
+  if (msg && msg.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED) === -1) {
     msg = PostMessageEventNamesEnum.PARENT_COMMUNICATED + msg;
   }
 

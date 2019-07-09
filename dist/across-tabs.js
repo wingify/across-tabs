@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.2.1"
+ * across-tabs "1.2.2"
  * https://github.com/wingify/across-tabs
  * MIT licensed
  * 
@@ -197,7 +197,7 @@ tabUtils._preProcessMessage = function (msg) {
     throw new Error(_WarningTextEnum2.default.INVALID_JSON);
   }
 
-  if (msg.indexOf(_PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED) === -1) {
+  if (msg && msg.indexOf(_PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED) === -1) {
     msg = _PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED + msg;
   }
 

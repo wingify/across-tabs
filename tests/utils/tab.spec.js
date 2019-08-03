@@ -78,6 +78,21 @@ describe('tabUtils', () => {
 			tabUtils._preProcessMessage(msg);
 			expect(JSON.stringify).toHaveBeenCalledWith(msg);
 		});
+		
+		it('should stringify msg sent with custom stringifier', () => {
+			const custom = {
+				stringify: (msg) => typeof msg === 'string' ? msg : `${msg}`
+			};
+			
+			spyOn(custom, 'stringify');
+			
+			tabUtils.config.stringify = custom.stringify;
+			
+			let msg = 'Some message';
+
+			tabUtils._preProcessMessage(msg);
+			expect(custom.stringify).toHaveBeenCalledWith(msg);
+		});
 
 		it('should prepend if message is of a particular type', () => {
 			let msg = 'Some message';

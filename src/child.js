@@ -100,7 +100,7 @@ class Child {
 
     // Expecting JSON data
     try {
-      actualData = this.config.parse(dataReceived);
+      actualData = this.parse(dataReceived);
       this.tabId = actualData && actualData.id;
       this.tabName = actualData && actualData.name;
       this.tabParentName = actualData && actualData.parentName;
@@ -174,7 +174,7 @@ class Child {
       dataReceived = data.split(PostMessageEventNamesEnum.PARENT_COMMUNICATED)[1];
 
       try {
-        dataReceived = this.config.parse(dataReceived);
+        dataReceived = this.parse(dataReceived);
       } catch (e) {
         throw new Error(WarningTextEnum.INVALID_JSON);
       }
@@ -226,7 +226,7 @@ class Child {
 
     let type = _prefixType || PostMessageEventNamesEnum.CUSTOM;
 
-    msg = type + this.config.stringify(msg);
+    msg = type + this.stringify(msg);
 
     if (window.top.opener) {
       origin = this.config.origin || '*';

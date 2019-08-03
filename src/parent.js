@@ -26,20 +26,18 @@ class Parent {
     if (typeof config.shouldInitImmediately === 'undefined') {
       config.shouldInitImmediately = true;
     }
+    if (typeof config.parse === 'undefined') {
+      config.parse = JSON.parse;
+    }
+    if (typeof config.stringify === 'undefined') {
+      config.stringify = JSON.stringify;
+    }
 
     // reset tabs with every new Object
     tabUtils.tabs = [];
 
     this.Tab = Tab;
     Object.assign(this, config);
-
-    if (!config.parse) {
-      config.parse = JSON.parse;
-    }
-
-    if (!config.stringify) {
-      config.stringify = JSON.stringify;
-    }
 
     tabUtils.config = config;
 

@@ -90,7 +90,10 @@ describe('Child', () => {
 		});
 		it('should parse stringified data', () => {
 			spyOn(JSON, 'parse');
-			child._parseData(JSON.stringify({a: 1}));
+			
+			const _child = new Child();
+			
+			_child._parseData(JSON.stringify({a: 1}));
 			expect(JSON.parse).toHaveBeenCalled();
 		});
 	});
@@ -147,11 +150,12 @@ describe('Child', () => {
 			expect(child.config.onInitialize).toHaveBeenCalled();
 		});
 		it('should call user-defined method when PARENT_COMMUNICATED event', () => {
+			spyOn(JSON, 'parse');
+			
 			let child = new Child({
 				onParentCommunication: function () {}
 			});
 
-			spyOn(JSON, 'parse');
 			spyOn(child.config, 'onParentCommunication');
 
 			child.onCommunication({

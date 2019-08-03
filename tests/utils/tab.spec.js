@@ -26,6 +26,10 @@ function addTabs() {
 describe('tabUtils', () => {
 	beforeEach(() => {
 		tabUtils.tabs = [];
+		tabUtils.config = {
+			parse: JSON.parse,
+			stringify: JSON.stringify
+		};
 	});
 	afterEach(() => {
 		tab1 = null;
@@ -66,6 +70,9 @@ describe('tabUtils', () => {
 	describe('method: _preProcessMessage', () => {
 		it('should stringify msg sent', () => {
 			spyOn(JSON, 'stringify');
+			
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let msg = 'Some message';
 
 			tabUtils._preProcessMessage(msg);

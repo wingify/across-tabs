@@ -33,12 +33,20 @@ class Parent {
     this.Tab = Tab;
     Object.assign(this, config);
 
+    if (!config.parse) {
+      config.parse = JSON.parse;
+    }
+
+    if (!config.stringify) {
+      config.stringify = JSON.stringify;
+    }
+
     tabUtils.config = config;
 
     if (this.shouldInitImmediately) {
       this.init();
     }
-  };
+  }
 
   addInterval() {
     let i,
@@ -59,7 +67,7 @@ class Parent {
       /**
        * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
        * irrespective of heatbeat controller
-      */
+       */
       if (tabs[i] && tabs[i].ref) {
         tabs[i].status = tabs[i].ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN;
       }
@@ -69,7 +77,7 @@ class Parent {
     if (this.onPollingCallback) {
       this.onPollingCallback();
     }
-  };
+  }
 
   /**
    * Poll all tabs for their status - OPENED / CLOSED
@@ -79,19 +87,23 @@ class Parent {
    */
   startPollingTabs() {
     heartBeat = window.setInterval(() => this.addInterval(), this.heartBeatInterval);
-  };
+  }
 
   /**
    * Compare tab status - OPEN vs CLOSE
    * @param  {Object} tab
    */
   watchStatus(tab) {
-    if (!tab || !tab.ref) { return false; }
+    if (!tab || !tab.ref) {
+      return false;
+    }
     let newStatus = tab.ref.closed ? TabStatusEnum.CLOSE : TabStatusEnum.OPEN,
       oldStatus = tab.status;
 
     // If last and current status(inside a polling interval) are same, don't do anything
-    if (!newStatus || newStatus === oldStatus) { return false; }
+    if (!newStatus || newStatus === oldStatus) {
+      return false;
+    }
 
     // OPEN to CLOSE state
     if (oldStatus === TabStatusEnum.OPEN && newStatus === TabStatusEnum.CLOSE) {
@@ -99,7 +111,7 @@ class Parent {
       tabUtils._remove(tab);
     }
     // Change from CLOSE to OPEN state is never gonna happen ;)
-  };
+  }
 
   /**
    * Called when a child is refreshed/closed
@@ -119,12 +131,20 @@ class Parent {
   customEventUnListener(ev) {
     this.enableElements();
 
-    if (ev.detail && ev.detail.type === PostMessageEventNamesEnum.HANDSHAKE && this.onHandshakeCallback) {
+    if (
+      ev.detail &&
+      ev.detail.type === PostMessageEventNamesEnum.HANDSHAKE &&
+      this.onHandshakeCallback
+    ) {
       this.onHandshakeCallback(ev.detail.tabInfo);
-    } else if (ev.detail && ev.detail.type === PostMessageEventNamesEnum.CUSTOM && this.onChildCommunication) {
+    } else if (
+      ev.detail &&
+      ev.detail.type === PostMessageEventNamesEnum.CUSTOM &&
+      this.onChildCommunication
+    ) {
       this.onChildCommunication(ev.detail.tabInfo);
     }
-  };
+  }
 
   /**
    * Attach postmessage, native and custom listeners to the window
@@ -143,7 +163,7 @@ class Parent {
     window.onbeforeunload = () => {
       tabUtils.broadCastAll(PostMessageEventNamesEnum.PARENT_DISCONNECTED);
     };
-  };
+  }
 
   /**
    * API methods exposed for Public
@@ -152,7 +172,7 @@ class Parent {
    */
   enableElements() {
     domUtils.enable('data-tab-opener');
-  };
+  }
 
   /**
    * Return list of all tabs
@@ -160,7 +180,7 @@ class Parent {
    */
   getAllTabs() {
     return tabUtils.getAll();
-  };
+  }
 
   /**
    * Return list of all OPENED tabs
@@ -168,7 +188,7 @@ class Parent {
    */
   getOpenedTabs() {
     return tabUtils.getOpened();
-  };
+  }
 
   /**
    * Return list of all CLOSED tabs
@@ -184,7 +204,7 @@ class Parent {
    */
   closeAllTabs() {
     return tabUtils.closeAll();
-  };
+  }
 
   /**
    * Close a specific tab
@@ -192,7 +212,7 @@ class Parent {
    */
   closeTab(id) {
     return tabUtils.closeTab(id);
-  };
+  }
 
   /**
    * Send a postmessage to all OPENED tabs
@@ -234,7 +254,7 @@ class Parent {
     }
 
     return tab;
-  };
+  }
 
   /**
    * API methods exposed for Public ends here
@@ -245,7 +265,7 @@ class Parent {
    */
   init() {
     this.addEventListeners();
-  };
-};
+  }
+}
 
 export default Parent;

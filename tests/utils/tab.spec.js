@@ -26,10 +26,7 @@ function addTabs() {
 describe('tabUtils', () => {
 	beforeEach(() => {
 		tabUtils.tabs = [];
-		tabUtils.config = {
-			parse: JSON.parse,
-			stringify: JSON.stringify
-		};
+		tabUtils.config = {	};
 	});
 	afterEach(() => {
 		tab1 = null;
@@ -95,9 +92,11 @@ describe('tabUtils', () => {
 		});
 
 		it('should prepend if message is of a particular type', () => {
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let msg = 'Some message';
+			
 			let value = tabUtils._preProcessMessage(msg);
-
 			expect(value.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED)).not.toBe(-1);
 		});
 	});
@@ -206,6 +205,8 @@ describe('tabUtils', () => {
 	});
 	describe('method: broadCastAll', () => {
 		it('should broadcast a message to all the opened tabs', () => {
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let result;
 
 			addTabs();
@@ -227,6 +228,8 @@ describe('tabUtils', () => {
 	});
 	describe('method: broadCastTo', () => {
 		it('should broadcast a message to the specified tab', () => {
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let result;
 
 			addTabs();

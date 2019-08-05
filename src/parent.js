@@ -26,10 +26,10 @@ class Parent {
     if (typeof config.shouldInitImmediately === 'undefined') {
       config.shouldInitImmediately = true;
     }
-    if (typeof config.parse === 'undefined') {
+    if (typeof config.parse !== 'function') {
       config.parse = JSON.parse;
     }
-    if (typeof config.stringify === 'undefined') {
+    if (typeof config.stringify !== 'function') {
       config.stringify = JSON.stringify;
     }
 

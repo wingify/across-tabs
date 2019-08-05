@@ -9,10 +9,7 @@ import WarningTextEnum from '../enums/WarningTextEnum';
 
 let tabUtils = {
   tabs: [],
-  config: {
-    parse: JSON.parse,
-    stringify: JSON.stringify
-  }
+  config: {}
 };
 
 /**

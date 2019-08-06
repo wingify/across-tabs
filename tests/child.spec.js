@@ -90,8 +90,25 @@ describe('Child', () => {
 		});
 		it('should parse stringified data', () => {
 			spyOn(JSON, 'parse');
-			child._parseData(JSON.stringify({a: 1}));
+			
+			const _child = new Child();
+			
+			_child._parseData(JSON.stringify({a: 1}));
 			expect(JSON.parse).toHaveBeenCalled();
+		});
+		it('should parse stringified data with a custom parser', () => {
+			const custom = {
+				parse: (msg) => JSON.parse(msg, () => '')
+			};
+			
+			spyOn(custom, 'parse');
+			
+			const _child = new Child({
+				parse: custom.parse
+			});
+			
+			_child._parseData(JSON.stringify({a: 1}));
+			expect(custom.parse).toHaveBeenCalled();
 		});
 	});
 	describe('method: onCommunication', () => {
@@ -147,11 +164,12 @@ describe('Child', () => {
 			expect(child.config.onInitialize).toHaveBeenCalled();
 		});
 		it('should call user-defined method when PARENT_COMMUNICATED event', () => {
+			spyOn(JSON, 'parse');
+			
 			let child = new Child({
 				onParentCommunication: function () {}
 			});
 
-			spyOn(JSON, 'parse');
 			spyOn(child.config, 'onParentCommunication');
 
 			child.onCommunication({
@@ -159,6 +177,27 @@ describe('Child', () => {
 			});
 
 			expect(JSON.parse).toHaveBeenCalled();
+			expect(child.config.onParentCommunication).toHaveBeenCalled();
+		});
+		it('should call user-defined method when PARENT_COMMUNICATED event with a custom parser', () => {
+			const custom = {
+				parse: (msg) => JSON.parse(msg, () => '')
+			};
+			
+			spyOn(custom, 'parse');
+			
+			let child = new Child({
+				onParentCommunication: function () {},
+				parse: custom.parse
+			});
+
+			spyOn(child.config, 'onParentCommunication');
+
+			child.onCommunication({
+				data: PostMessageEventNamesEnum.PARENT_COMMUNICATED + JSON.stringify({a: 1})
+			});
+
+			expect(custom.parse).toHaveBeenCalled();
 			expect(child.config.onParentCommunication).toHaveBeenCalled();
 		});
 	});

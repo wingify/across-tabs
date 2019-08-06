@@ -7,7 +7,10 @@ import PostMessageListener from '../../src/event-listeners/postmessage';
 
 function beforeEveryEach() {
 	tabUtils.tabs = [];
-	tabUtils.config = {};
+	tabUtils.config = {
+		parse: JSON.parse,
+		stringify: JSON.stringify
+	};
 	setNewTabInfo();
 }
 function afterEveryEach() { // teardown

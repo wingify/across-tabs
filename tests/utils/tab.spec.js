@@ -26,6 +26,7 @@ function addTabs() {
 describe('tabUtils', () => {
 	beforeEach(() => {
 		tabUtils.tabs = [];
+		tabUtils.config = {	};
 	});
 	afterEach(() => {
 		tab1 = null;
@@ -66,16 +67,36 @@ describe('tabUtils', () => {
 	describe('method: _preProcessMessage', () => {
 		it('should stringify msg sent', () => {
 			spyOn(JSON, 'stringify');
+			
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let msg = 'Some message';
 
 			tabUtils._preProcessMessage(msg);
 			expect(JSON.stringify).toHaveBeenCalledWith(msg);
 		});
+		
+		it('should stringify msg sent with custom stringifier', () => {
+			const custom = {
+				stringify: (msg) => typeof msg === 'string' ? msg : `${msg}`
+			};
+			
+			spyOn(custom, 'stringify');
+			
+			tabUtils.config.stringify = custom.stringify;
+			
+			let msg = 'Some message';
+
+			tabUtils._preProcessMessage(msg);
+			expect(custom.stringify).toHaveBeenCalledWith(msg);
+		});
 
 		it('should prepend if message is of a particular type', () => {
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let msg = 'Some message';
+			
 			let value = tabUtils._preProcessMessage(msg);
-
 			expect(value.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED)).not.toBe(-1);
 		});
 	});
@@ -184,6 +205,8 @@ describe('tabUtils', () => {
 	});
 	describe('method: broadCastAll', () => {
 		it('should broadcast a message to all the opened tabs', () => {
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let result;
 
 			addTabs();
@@ -205,6 +228,8 @@ describe('tabUtils', () => {
 	});
 	describe('method: broadCastTo', () => {
 		it('should broadcast a message to the specified tab', () => {
+			tabUtils.config.stringify = JSON.stringify;
+			
 			let result;
 
 			addTabs();

@@ -126,7 +126,7 @@ Total Tabs Associated: **3** | Opened Tabs: **2** | Closed Tabs: **1**
 var config = {
   onHandshakeCallback: function () { ... },
   onPollingCallback: function () { ... },
-  onChildCommunication: function () { .. }
+  onChildCommunication: function () { ... }
 }
 var parent = new AcrossTabs.Parent(config);
 ```
@@ -140,16 +140,20 @@ var parent = new AcrossTabs.Parent(config);
 * `onChildCommunication`: Callback to be called when child sends message
 * `onPollingCallback`: Callback to be called every time a tab is polled for its status
 * `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
+* `parse`: parser used when parsing messages, defaults to `JSON.parse`
+* `stringify`: stringifier used when converting data into messages, defaults to `JSON.stringify`
 
-| Config Keys                |     default    |      accepts                              |
-| ---------------------     | -------------- | ----------------------------------------- |
-| **heartBeatInterval**     |     500 msec   |  A number representing milliseconds       |
-| **removeClosedTabs**      |     false      |            Boolean                        |
-| **shouldInitImmediately** |     true       |            Boolean                        |
-| **onHandshakeCallback**   |     Undefined   |        Function as callback               |
-| **onChildCommunication**  |     Undefined   |        Function as callback               |
-| **onPollingCallback**     |     Undefined   |        Function as callback               |
-| **origin**                |     '*'        |            String(url)                    |
+| Config Keys               | default        | accepts                            |
+| ------------------------- | -------------- | ---------------------------------- |
+| **heartBeatInterval**     | 500 msec       | A number representing milliseconds |
+| **removeClosedTabs**      | false          | Boolean                            |
+| **shouldInitImmediately** | true           | Boolean                            |
+| **onHandshakeCallback**   | Undefined      | Function as callback               |
+| **onChildCommunication**  | Undefined      | Function as callback               |
+| **onPollingCallback**     | Undefined      | Function as callback               |
+| **origin**                | '*'            | String(url)                        |
+| **parse**                 | JSON.parse     | Function                           |
+| **stringify**             | JSON.stringify | Function                           |
 
 
 **New(Child tab)**
@@ -175,16 +179,20 @@ var child =  new AcrossTabs.Child(config);
 * `onParentCommunication`: Callback to be invoked whenever Parent communicates with the child tab
 * `isSiteInsideFrame`: If the library is loaded inside an iframe in the child tab, this needs to be set `true` for maintaining proper window/frame(s) references
 * `origin`: whitelist `origin` for securing `postMessage` communication. It will discard the malicious messages trying to trick the behavior. Eg. http://example.com
+* `parse`: parser used when parsing messages, defaults to `JSON.parse`
+* `stringify`: stringifier used when converting data into messages, defaults to `JSON.stringify`
 
-| Config Keys                |     default    |      accepts                              |
-| ------------------------- | -------------- | ----------------------------------------- |
-| **handshakeExpiryLimit**  |    5000 msec   |    A number representing milliseconds     |
-| **isSiteInsideFrame**     |      null      |    If child tab has actual site in a fram |
-| **onReady**               |    Undefined    |        Function as callback               |
-| **onInitialize**          |    Undefined    |        Function as callback               |
-| **onParentDisconnect**    |    Undefined    |        Function as callback               |
-| **onParentCommunication** |    Undefined    |        Function as callback               |
-| **origin**                |     '*'        |            String(url)                    |
+| Config Keys               | default        | accepts                                |
+| ------------------------- | -------------- | -------------------------------------- |
+| **handshakeExpiryLimit**  | 5000 msec      | A number representing milliseconds     |
+| **isSiteInsideFrame**     | null           | If child tab has actual site in a fram |
+| **onReady**               | Undefined      | Function as callback                   |
+| **onInitialize**          | Undefined      | Function as callback                   |
+| **onParentDisconnect**    | Undefined      | Function as callback                   |
+| **onParentCommunication** | Undefined      | Function as callback                   |
+| **origin**                | '*'            | String(url)                            |
+| **parse**                 | JSON.parse     | Function                               |
+| **stringify**             | JSON.stringify | Function                               |
 
 **Example** is included in the `example` folder. `Vanilla JS` and `Vue js` versions are there to test out.
 *Note:* Run `npm install` if you wish to run `vuejs` example since the example needs the `vue-js` library to work.
@@ -200,9 +208,9 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
   Saves `data` in specific `key` in sessionStorage. If the key is not provided, the library will warn.
   Following types of JavaScript objects are supported:
 
-  |   Parameter   |        Description                                   |
-  | ------------- | ---------------------------------------------------- |
-  |     config     |     For opening a new tab i.e. URL and windowName    |
+  | Parameter | Description                                   |
+  | --------- | --------------------------------------------- |
+  | config    | For opening a new tab i.e. URL and windowName |
 
   ```
     parent.openNewTab({url: 'http://example.com', windowName: 'AcrossTab'});
@@ -253,9 +261,9 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   Closes a particular tab whose id is provided.
 
-  |   Parameter   |        Description                |
-  | ------------- | --------------------------------- |
-  |     id        |     id of the tab to be closed    |
+  | Parameter | Description                |
+  | --------- | -------------------------- |
+  | id        | id of the tab to be closed |
 
   ```
     parent.closeTab('57cd47da-d98e-4a2d-814c-9b07cb51059c');
@@ -265,9 +273,9 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   Sends a same `message` to all the opened tabs.
 
-  |   Parameter   |        Description          |
-  | ------------- | --------------------------- |
-  |     msg       |        msg to be ent        |
+  | Parameter | Description   |
+  | --------- | ------------- |
+  | msg       | msg to be ent |
 
   ```
     parent.broadCastAll('Hello my dear Child! A greeting from Parent.');
@@ -277,10 +285,10 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   Sends a `message` to a particular opened tab.
 
-  |   Parameter   |        Description            |
-  | ------------- | ----------------------------- |
-  |     id        |  id of the tab to send an msg |
-  |     msg       |        msg to be sent         |
+  | Parameter | Description                  |
+  | --------- | ---------------------------- |
+  | id        | id of the tab to send an msg |
+  | msg       | msg to be sent               |
 
   ```
     parent.broadCastTo('57cd47da-d98e-4a2d-814c-9b07cb51059c', 'Hey! Can you run the script: worker.js? Thanks!');
@@ -300,9 +308,9 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   Sends a `message` to the `Parent` tab.
 
-  |   Parameter   |        Description            |
-  | ------------- | ----------------------------- |
-  |     msg       |       msg to be sent          |
+  | Parameter | Description    |
+  | --------- | -------------- |
+  | msg       | msg to be sent |
 
   ```
     child.sendMessageToParent('Hey Parent! I\'m done with my work.');

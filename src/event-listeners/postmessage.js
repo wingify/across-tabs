@@ -119,8 +119,7 @@ PostMessageListener._onBeforeUnload = data => {
 
   if (tabUtils.tabs.length) {
     tabs = tabUtils.getAll();
-    window.newlyTabOpened =
-      arrayUtils.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
+    window.newlyTabOpened = arrayUtils.searchByKeyName(tabs, 'id', tabInfo.id) || window.newlyTabOpened;
   }
 
   // CustomEvent is not supported in IE, but polyfill will take care of it

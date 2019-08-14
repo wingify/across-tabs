@@ -129,17 +129,9 @@ class Parent {
   customEventUnListener(ev) {
     this.enableElements();
 
-    if (
-      ev.detail &&
-      ev.detail.type === PostMessageEventNamesEnum.HANDSHAKE &&
-      this.onHandshakeCallback
-    ) {
+    if (ev.detail && ev.detail.type === PostMessageEventNamesEnum.HANDSHAKE && this.onHandshakeCallback) {
       this.onHandshakeCallback(ev.detail.tabInfo);
-    } else if (
-      ev.detail &&
-      ev.detail.type === PostMessageEventNamesEnum.CUSTOM &&
-      this.onChildCommunication
-    ) {
+    } else if (ev.detail && ev.detail.type === PostMessageEventNamesEnum.CUSTOM && this.onChildCommunication) {
       this.onChildCommunication(ev.detail.tabInfo);
     }
   }

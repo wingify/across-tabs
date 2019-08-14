@@ -10,7 +10,7 @@ class Tab {
   constructor() {
     // Set name of Parent tab if not already defined
     window.name = window.name || 'PARENT_TAB';
-  };
+  }
   /**
    * Open a new tab
    * @param  {Object} config - Refer API for config keys
@@ -19,13 +19,10 @@ class Tab {
   create(config) {
     config = config || {};
     Object.assign(this, config);
-    this.id = UUID.generate() || (tabUtils.tabs.length + 1);
+    this.id = UUID.generate() || tabUtils.tabs.length + 1;
     this.status = 'open';
     // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
-    this.ref = window.open(
-      this.url,
-      '_blank',
-      config.windowFeatures);
+    this.ref = window.open(this.url, '_blank', config.windowFeatures);
 
     domUtils.disable('data-tab-opener');
 
@@ -40,7 +37,7 @@ class Tab {
 
     // Return reference for chaining purpose
     return this;
-  };
-};
+  }
+}
 
 export default Tab;

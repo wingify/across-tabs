@@ -1,5 +1,9 @@
-var newTab, i = 0;
-var postMessageEvents = [], allTabs = [], openedTabs = [], closedTabs = [];
+var newTab,
+  i = 0;
+var postMessageEvents = [],
+  allTabs = [],
+  openedTabs = [],
+  closedTabs = [];
 
 function openNewTab(ev) {
   var config = {
@@ -34,9 +38,7 @@ function showPMList() {
     } else if (postMessageEvents[i].type === 'close') {
       msg = 'Tab: <strong>' + postMessageEvents[i].id + '</strong> closed';
     }
-    list += '<li>' +
-      '<span>' + msg + '</span>' +
-    '</li>';
+    list += '<li>' + '<span>' + msg + '</span>' + '</li>';
   }
 
   document.getElementById('pm-list').innerHTML = list;
@@ -59,9 +61,7 @@ function onChildCommunication(data) {
 function showList() {
   // if (!newTab) { return; }
 
-  allTabs = parent.getAllTabs(),
-  openedTabs = parent.getOpenedTabs(),
-  closedTabs = parent.getClosedTabs();
+  (allTabs = parent.getAllTabs()), (openedTabs = parent.getOpenedTabs()), (closedTabs = parent.getClosedTabs());
 
   if (allTabs) {
     document.getElementById('tabs-list').style.display = 'inline-block';
@@ -71,65 +71,94 @@ function showList() {
     document.getElementById('pm-section').style.display = 'none';
   }
 
-  var allTabsList = '', openedTabsList = '', closedTabsList = '', btnGroup;
+  var allTabsList = '',
+    openedTabsList = '',
+    closedTabsList = '',
+    btnGroup;
 
   for (var i = 0; i < allTabs.length; i++) {
     var tab = allTabs[i];
-    allTabsList += '<li>' +
+    allTabsList +=
+      '<li>' +
       '<div>' +
-        '<span>name: </span>' +
-        '<strong class="text--info">' + tab.windowName + '</strong>' +
+      '<span>name: </span>' +
+      '<strong class="text--info">' +
+      tab.windowName +
+      '</strong>' +
       '</div>' +
       '<div>' +
-        '<span>id: </span>' +
-        '<strong class="text--info">' + tab.id + '</strong>' +
+      '<span>id: </span>' +
+      '<strong class="text--info">' +
+      tab.id +
+      '</strong>' +
       '</div>' +
       '<div>' +
-        '<span>status: </span>' +
-        '<strong class="text--info">' + tab.status + '</strong>' +
+      '<span>status: </span>' +
+      '<strong class="text--info">' +
+      tab.status +
+      '</strong>' +
       '</div>' +
-    '</li>';
+      '</li>';
   }
 
   for (var i = 0; i < openedTabs.length; i++) {
     var tab = openedTabs[i];
-    openedTabsList += '<li>' +
+    openedTabsList +=
+      '<li>' +
       '<div>' +
-        '<span>name: </span>' +
-        '<strong class="text--info">' + tab.windowName + '</strong>' +
+      '<span>name: </span>' +
+      '<strong class="text--info">' +
+      tab.windowName +
+      '</strong>' +
       '</div>' +
       '<div>' +
-        '<span>id: </span>' +
-        '<strong class="text--info">' + tab.id + '</strong>' +
+      '<span>id: </span>' +
+      '<strong class="text--info">' +
+      tab.id +
+      '</strong>' +
       '</div>' +
       '<div>' +
-        '<span>status: </span>' +
-        '<strong class="text--info">' + tab.status + '</strong>' +
+      '<span>status: </span>' +
+      '<strong class="text--info">' +
+      tab.status +
+      '</strong>' +
       '</div>' +
-      '<button class="btn btn--success" onclick="broadCastTo(\'' + tab.id + '\', \'Yo! Message from parent!\')">Send Message</button>' +
-      '<button class="btn btn--danger margin--half-left" onclick="closeTab(\'' + tab.id + '\')">Close me</button>' +
-    '</li>'
+      '<button class="btn btn--success" onclick="broadCastTo(\'' +
+      tab.id +
+      "', 'Yo! Message from parent!')\">Send Message</button>" +
+      '<button class="btn btn--danger margin--half-left" onclick="closeTab(\'' +
+      tab.id +
+      '\')">Close me</button>' +
+      '</li>';
   }
 
   for (var i = 0; i < closedTabs.length; i++) {
     var tab = closedTabs[i];
-    closedTabsList += '<li>' +
+    closedTabsList +=
+      '<li>' +
       '<div>' +
-        '<span>name: </span>' +
-        '<strong class="text--info">' + tab.windowName + '</strong>' +
+      '<span>name: </span>' +
+      '<strong class="text--info">' +
+      tab.windowName +
+      '</strong>' +
       '</div>' +
       '<div>' +
-        '<span>id: </span>' +
-        '<strong class="text--info">' + tab.id + '</strong>' +
+      '<span>id: </span>' +
+      '<strong class="text--info">' +
+      tab.id +
+      '</strong>' +
       '</div>' +
       '<div>' +
-        '<span>status: </span>' +
-        '<strong class="text--info">' + tab.status + '</strong>' +
+      '<span>status: </span>' +
+      '<strong class="text--info">' +
+      tab.status +
+      '</strong>' +
       '</div>' +
-    '</li>'
+      '</li>';
   }
 
-  btnGroup = ''+
+  btnGroup =
+    '' +
     '<button class="btn btn--success" style="width:15%;" onclick="broadCastAll()">Send To All</button>' +
     '<button class="btn btn--danger" style="width:15%;float:right;" onclick="closeAllTabs()">Close All</button>';
 
@@ -141,7 +170,7 @@ function showList() {
     btnGroup = ''; // dont show generic btns
   }
   if (!closedTabsList) {
-    closedTabsList = 'There\'s no closed tab.';
+    closedTabsList = "There's no closed tab.";
   }
 
   document.getElementById('all-tabs-list').innerHTML = allTabsList;

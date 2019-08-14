@@ -1,92 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Child Tab</title>
-	<style type="text/css">
-		.margin--half-left {
-			margin-left: 10px;
-		}
-		.btn {
-			min-width: 70px;
-			height: 34px;
-			background: #61bdff;
-			border: 0;
-			color: #fff;
-			font-size: 15px;
-		}
-		.btn--success {
-			background: #30b986;
-		}
-		.btn--danger {
-			background: #e86a6a;
-		}
-	</style>
-</head>
-<body>
-	<div id="info"></div>
-	<script type="text/javascript" src="../../dist/across-tabs.js"></script>
-	<script type="text/javascript">
-		var child = new AcrossTabs.default.Child({
-			onReady: onReady,
-			onInitialize: onInitialize,
-			handshakeExpiryLimit: 4000, // msec
-			onParentDisconnect: onParentDisconnect,
-			onParentCommunication: onParentCommunication
-		});
-		// child.init()
+  <head>
+    <meta charset="UTF-8" />
+    <title>Child Tab</title>
+    <style type="text/css">
+      .margin--half-left {
+        margin-left: 10px;
+      }
+      .btn {
+        min-width: 70px;
+        height: 34px;
+        background: #61bdff;
+        border: 0;
+        color: #fff;
+        font-size: 15px;
+      }
+      .btn--success {
+        background: #30b986;
+      }
+      .btn--danger {
+        background: #e86a6a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="info"></div>
+    <script type="text/javascript" src="../../dist/across-tabs.js"></script>
+    <script type="text/javascript">
+      var child = new AcrossTabs.default.Child({
+        onReady: onReady,
+        onInitialize: onInitialize,
+        handshakeExpiryLimit: 4000, // msec
+        onParentDisconnect: onParentDisconnect,
+        onParentCommunication: onParentCommunication
+      });
+      // child.init()
 
-		var html = '';
+      var html = '';
 
-		function onParentDisconnect() {
-			var data = '<li>Uhh no! Parent disconnected :(</li>';
-			showList(data);
-			// window.close();
-		}
+      function onParentDisconnect() {
+        var data = '<li>Uhh no! Parent disconnected :(</li>';
+        showList(data);
+        // window.close();
+      }
 
-		function sendToParent(msg) {
-			var tabInfo = child.getTabInfo();
-			var data = {
-				msg: msg,
-				id: tabInfo.id
-			};
-			child.sendMessageToParent(data);
-		}
+      function sendToParent(msg) {
+        var tabInfo = child.getTabInfo();
+        var data = {
+          msg: msg,
+          id: tabInfo.id
+        };
+        child.sendMessageToParent(data);
+      }
 
-		function closeTab() {
-			window.close();
-		}
+      function closeTab() {
+        window.close();
+      }
 
-		function onInitialize() {
-			var tabInfo = child.getTabInfo();
+      function onInitialize() {
+        var tabInfo = child.getTabInfo();
 
-			var data = '' +
-				'I am a <strong>CHILD TAB</strong>, opened by my Master: <strong>' + tabInfo.parentName +
-				'</strong>.<br/>' +
-				'My id is: <strong>' + tabInfo.id + '</strong>.<br/>' +
-				'My name is: <strong>' + tabInfo.name + '</strong>' +
-				'<br/><br/>' +
-				'<button class="btn btn--success" onclick="sendToParent(\'Yo! Message from child!\')">Send message to Parent</button>' +
-      			'<button class="btn btn--danger margin--half-left" onclick="closeTab()">Close me</button>' +
-				'<br/><br/>Events:<br/><br/>';
+        var data =
+          '' +
+          'I am a <strong>CHILD TAB</strong>, opened by my Master: <strong>' +
+          tabInfo.parentName +
+          '</strong>.<br/>' +
+          'My id is: <strong>' +
+          tabInfo.id +
+          '</strong>.<br/>' +
+          'My name is: <strong>' +
+          tabInfo.name +
+          '</strong>' +
+          '<br/><br/>' +
+          '<button class="btn btn--success" onclick="sendToParent(\'Yo! Message from child!\')">Send message to Parent</button>' +
+          '<button class="btn btn--danger margin--half-left" onclick="closeTab()">Close me</button>' +
+          '<br/><br/>Events:<br/><br/>';
 
-			showList(data);
-		}
+        showList(data);
+      }
 
-		function onReady() {
-			var data = '<li>Loaded</li>';
-			showList(data);
-		}
+      function onReady() {
+        var data = '<li>Loaded</li>';
+        showList(data);
+      }
 
-		function onParentCommunication(dataReceived) {
-			var data = '<li>Message recieved from parent - ' + dataReceived + '</li>';
-			showList(data);
-		}
+      function onParentCommunication(dataReceived) {
+        var data = '<li>Message recieved from parent - ' + dataReceived + '</li>';
+        showList(data);
+      }
 
-		function showList(data) {
-			html += data;
-			document.getElementById('info').innerHTML = html;
-		}
-	</script>
-</body>
+      function showList(data) {
+        html += data;
+        document.getElementById('info').innerHTML = html;
+      }
+    </script>
+  </body>
 </html>

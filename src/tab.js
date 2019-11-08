@@ -22,7 +22,7 @@ class Tab {
     this.id = UUID.generate() || tabUtils.tabs.length + 1;
     this.status = 'open';
     // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
-    this.ref = window.open(this.url, '_blank', config.windowFeatures);
+    this.ref = window.open(this.url, config.windowName || '_blank', config.windowFeatures);
 
     domUtils.disable('data-tab-opener');
 

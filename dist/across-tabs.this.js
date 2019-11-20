@@ -303,10 +303,12 @@ tabUtils.broadCastTo = function (id, msg, isSiteInsideFrame) {
  * @param  {String}  msg
  * @param  {Boolean} isSiteInsideFrame
  */
-tabUtils.sendMessage = function (target, msg, isSiteInsideFrame) {
+tabUtils.sendMessage = function (target, msg, isSiteInsideFrame, name) {
   var origin = tabUtils.config.origin || '*';
-
-  if (isSiteInsideFrame && target.ref[0]) {
+  if (isSiteInsideFrame && name) {
+    var refIndex = target.ref.length > 1 ? 1 : 0;
+    target.ref[refIndex].postMessage(msg, origin);
+  } else if (isSiteInsideFrame && target.ref[0]) {
     target.ref[0].postMessage(msg, origin);
   } else if (target.ref && target.ref.top) {
     target.ref.top.postMessage(msg, origin);
@@ -1126,10 +1128,10 @@ PostMessageListener._onLoad = function (data) {
       dataToSend = _PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT;
       dataToSend += _tab2.default.config.stringify({
         id: window.newlyTabOpened.id,
-        name: window.newlyTabOpened.name,
+        name: window.newlyTabOpened.name || window.newlyTabOpened.windowName,
         parentName: window.name
       });
-      _tab2.default.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);
+      _tab2.default.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame, window.newlyTabOpened.windowName);
     } catch (e) {
       throw new Error(_WarningTextEnum2.default.INVALID_JSON);
     }

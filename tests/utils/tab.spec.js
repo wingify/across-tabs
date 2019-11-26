@@ -272,7 +272,7 @@ describe('tabUtils', () => {
       expect(tab1.ref[0].postMessage).toHaveBeenCalled();
     });
 
-    it('should send message to the iframe window in which the site resides', () => {
+    it('should send message to the all ref windows existing', () => {
       let result;
 
       addTabs();
@@ -284,8 +284,10 @@ describe('tabUtils', () => {
       tab1.ref = [{ postMessage: function() {} }, { postMessage: function() {} }]; // mock length
 
       spyOn(tab1.ref[1], 'postMessage');
+      spyOn(tab1.ref[0], 'postMessage');
       tabUtils.sendMessage(tab1, 'hello', true, 'Hey');
       expect(tab1.ref[1].postMessage).toHaveBeenCalled();
+      expect(tab1.ref[0].postMessage).toHaveBeenCalled();
     });
   });
 });

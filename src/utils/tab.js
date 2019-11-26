@@ -153,8 +153,9 @@ tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
 tabUtils.sendMessage = (target, msg, isSiteInsideFrame, name) => {
   let origin = tabUtils.config.origin || '*';
   if (isSiteInsideFrame && name) {
-    const refIndex = target.ref.length > 1 ? 1 : 0;
-    target.ref[refIndex].postMessage(msg, origin);
+    for (let i = 0; i < target.ref.length; i++) {
+      target.ref[i].postMessage(msg, origin);
+    }
   } else if (isSiteInsideFrame && target.ref[0]) {
     target.ref[0].postMessage(msg, origin);
   } else if (target.ref && target.ref.top) {

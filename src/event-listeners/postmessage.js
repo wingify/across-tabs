@@ -64,7 +64,7 @@ PostMessageListener._onLoad = data => {
         name: window.newlyTabOpened.name || window.newlyTabOpened.windowName,
         parentName: window.name
       });
-      tabUtils.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame, window.newlyTabOpened.windowName);
+      tabUtils.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);
     } catch (e) {
       throw new Error(WarningTextEnum.INVALID_JSON);
     }

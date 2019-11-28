@@ -150,7 +150,7 @@ tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
  * @param  {String}  msg
  * @param  {Boolean} isSiteInsideFrame
  */
-tabUtils.sendMessage = (target, msg, isSiteInsideFrame, name) => {
+tabUtils.sendMessage = (target, msg, isSiteInsideFrame) => {
   let origin = tabUtils.config.origin || '*';
   if (isSiteInsideFrame && target.ref[0]) {
     for (let i = 0; i < target.ref.length; i++) {

@@ -61,7 +61,7 @@ PostMessageListener._onLoad = data => {
       dataToSend = PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT;
       dataToSend += tabUtils.config.stringify({
         id: window.newlyTabOpened.id,
-        name: window.newlyTabOpened.name,
+        name: window.newlyTabOpened.name || window.newlyTabOpened.windowName,
         parentName: window.name
       });
       tabUtils.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);

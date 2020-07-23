@@ -9,7 +9,7 @@ class Child {
    * @param  {Object} config - Refer API/docs for config keys
    */
   constructor(config) {
-    this.sessionStorageKey = '__vwo_new_tab_info__';
+    this.windowNameKey = '__vwo_new_tab_info__';
 
     if (!config) {
       config = {};
@@ -39,60 +39,25 @@ class Child {
     }
   }
 
-  /**
-   * Check is sessionStorage is present on window
-   * @return {Boolean} [description]
-   */
-  _isSessionStorage() {
-    if ('sessionStorage' in window && window.sessionStorage) {
-      return true;
-    }
-    return false;
-  }
 
   /**
-   * Get stored data from sessionStorage
-   * @return {Object} data
-   */
-  _getData() {
-    if (!this.isSessionStorageSupported) {
-      return false;
-    }
-
-    return window.sessionStorage.getItem(this.sessionStorageKey);
-  }
-
-  /**
-   * Set stored data from sessionStorage
+   * Set data to window.name
    * @return {Object} data
    */
   _setData(dataReceived) {
-    if (!this.isSessionStorageSupported) {
-      return false;
-    }
+    // if (this.isWindowNameOverriden) {
+    //   return false;
+    // }
 
-    window.sessionStorage.setItem(this.sessionStorageKey, dataReceived);
+    let windowName = this.config.parse(window.name);
+    windowName.windowNameKey = dataReceived;
+    window.name = JSON.stringify(windowName);
     return dataReceived;
   }
 
-  /**
-   * Get stored data from sessionStorage and parse it
-   * @return {Object} data
-   */
-  _restoreData() {
-    if (!this.isSessionStorageSupported) {
-      return false;
-    }
-
-    if (this.isSessionStorageSupported) {
-      let storedData = this._getData();
-
-      this._parseData(storedData);
-    }
-  }
 
   /**
-   * Parse data fetched from sessionStorage
+   * Parse data fetched from windowName
    * @param  {String} dataReceived
    */
   _parseData(dataReceived) {
@@ -154,7 +119,7 @@ class Child {
 
       dataReceived = data.split(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT)[1];
 
-      // Set data to sessionStorage so that when page reloads it can directly read the past info till the session lives
+      // Set data to window.name
       this._setData(dataReceived);
       this._parseData(dataReceived);
 
@@ -241,7 +206,7 @@ class Child {
   getTabInfo() {
     return {
       id: this.tabId,
-      name: this.tabName,
+      name: window.name,
       parentName: this.tabParentName,
       isSiteInsideFrame: this.config.isSiteInsideFrame
     };
@@ -254,7 +219,7 @@ class Child {
    * Invoked on object instantiation unless user pass a key to call it explicitly
    */
   init() {
-    this.isSessionStorageSupported = this._isSessionStorage();
+    this.isWindowNameOverriden = this._isWindowNameOverriden();
     this.addListeners();
     this._restoreData();
     this.sendMessageToParent(this.getTabInfo(), PostMessageEventNamesEnum.LOADED);

@@ -55,7 +55,7 @@ class Child {
     return dataReceived;
   }
 
-
+  
   /**
    * Parse data fetched from windowName
    * @param  {String} dataReceived

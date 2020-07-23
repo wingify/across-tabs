@@ -23,7 +23,6 @@ describe('Child', () => {
   describe('Basic tests', () => {
     it('verify it is defined and its methods', () => {
       expect(child).toBeDefined();
-      expect(child._isSessionStorage).toBeDefined();
       expect(child._getData).toBeDefined();
       expect(child._setData).toBeDefined();
       expect(child._restoreData).toBeDefined();
@@ -37,52 +36,6 @@ describe('Child', () => {
     });
   });
 
-  describe('method: _isSessionStorage', () => {
-    it('should check if session storage is defined', () => {
-      expect(child._isSessionStorage()).toBe(true);
-    });
-  });
-  describe('method: _getData', () => {
-    it('should get data from sessionStorage', () => {
-      spyOn(window.sessionStorage, 'getItem');
-      child._getData();
-      expect(window.sessionStorage.getItem).toHaveBeenCalledWith(child.sessionStorageKey);
-    });
-
-    it('should return false if sessionStorage is not supported', () => {
-      // mock
-      child.isSessionStorageSupported = false;
-      expect(child._getData()).toBe(false);
-    });
-  });
-  describe('method: _setData', () => {
-    it('should set data in sessionStorage', () => {
-      spyOn(window.sessionStorage, 'setItem');
-      child._setData('');
-      expect(window.sessionStorage.setItem).toHaveBeenCalled();
-    });
-
-    it('should return false if sessionStorage is not supported', () => {
-      // mock
-      child.isSessionStorageSupported = false;
-      expect(child._setData('')).toBe(false);
-    });
-  });
-  describe('method: _restoreData', () => {
-    it('should get data from sessionStorage adn parse it', () => {
-      spyOn(sessionStorage, 'getItem');
-      spyOn(child, '_parseData');
-      child._restoreData();
-      expect(sessionStorage.getItem).toHaveBeenCalled();
-      expect(child._parseData).toHaveBeenCalled();
-    });
-
-    it('should return false if sessionStorage is not supported', () => {
-      // mock
-      child.isSessionStorageSupported = false;
-      expect(child._restoreData()).toBe(false);
-    });
-  });
   describe('method: _parseData', () => {
     it('should throw error if data passed is not valid JSON', () => {
       expect(child._parseData).toThrow(new Error(WarningTextEnum.INVALID_DATA));
@@ -257,7 +210,6 @@ describe('Child', () => {
 
       child.init();
 
-      expect(child.isSessionStorageSupported).toBe(true);
       expect(child.addListeners).toHaveBeenCalled();
       expect(child._restoreData).toHaveBeenCalled();
       expect(child.setHandshakeExpiry).toHaveBeenCalled();

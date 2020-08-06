@@ -1,6 +1,7 @@
 import tabUtils from './utils/tab';
 import UUID from './vendor/uuid';
 import domUtils from './utils/dom';
+import TabDataTypesEnum from './enums/TabDataEnum';
 
 // Named Class expression
 class Tab {
@@ -21,8 +22,11 @@ class Tab {
     Object.assign(this, config);
     this.id = UUID.generate() || tabUtils.tabs.length + 1;
     this.status = 'open';
+    // set new tab data to window.name
+    let windowName = {};
+    windowName[TabDataTypesEnum.NEW_TAB_DATA] = config.windowName;
     // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
-    this.ref = window.open(this.url, config.windowName || '_blank', config.windowFeatures);
+    this.ref = window.open(this.url, JSON.stringify(windowName) || '_blank', config.windowFeatures);
 
     domUtils.disable('data-tab-opener');
 

@@ -6,6 +6,7 @@ import domUtils from './utils/dom';
 import TabStatusEnum from './enums/TabStatusEnum';
 import WarningTextEnum from './enums/WarningTextEnum';
 import PostMessageEventNamesEnum from './enums/PostMessageEventNamesEnum';
+import TabDataTypesEnum from './enums/TabDataEnum';
 
 import PostMessageListener from './event-listeners/postmessage';
 
@@ -137,6 +138,27 @@ class Parent {
   }
 
   /**
+   * Called when a child is refreshed/closed
+   * @param  {Object} ev - Event
+   */
+  onWindowNameOverriden(ev) {
+    let tabInfo = this.parse(ev.detail.tabInfo);
+    let tabs = tabUtils.getAll();
+    let overridenTab = tabs.find(tab => tab.id === tabInfo.id);
+
+    // close the tab where window.name is overriden
+    this.closeTab(tabInfo.id);
+
+    // reopen tab using query parameter as fallback
+    let url = new URL(overridenTab.url);
+    url.searchParams.append(TabDataTypesEnum.NEW_TAB_DATA, overridenTab.windowName);
+    let config = {
+      url: url.href,
+      windowFeatures: overridenTab.windowFeatures
+    };
+    this.openNewTab(config);
+  }
+  /**
    * Attach postmessage, native and custom listeners to the window
    */
   addEventListeners() {
@@ -148,6 +170,9 @@ class Parent {
 
     window.removeEventListener('onChildUnload', this.onChildUnload);
     window.addEventListener('onChildUnload', ev => this.onChildUnload(ev));
+
+    window.removeEventListener('onWindowNameOverriden', this.onWindowNameOverriden);
+    window.addEventListener('onWindowNameOverriden', ev => this.onWindowNameOverriden(ev));
 
     // Let children tabs know when Parent is closed / refereshed.
     window.onbeforeunload = () => {

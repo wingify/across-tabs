@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.2.4"
+ * across-tabs "1.3.1"
  * https://github.com/wingify/across-tabs
  * MIT licensed
  * 
@@ -79,7 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -103,7 +103,8 @@ var PostMessageEventNamesEnum = {
   ON_BEFORE_UNLOAD: '__TAB__ON_BEFORE_UNLOAD__',
   PARENT_DISCONNECTED: '__PARENT_DISCONNECTED__',
   HANDSHAKE_WITH_PARENT: '__HANDSHAKE_WITH_PARENT__',
-  PARENT_COMMUNICATED: '__PARENT_COMMUNICATED__'
+  PARENT_COMMUNICATED: '__PARENT_COMMUNICATED__',
+  WINDOW_NAME_OVERRIDEN: '__WINDOW_NAME_OVERRIDEN__'
 };
 
 exports.default = PostMessageEventNamesEnum;
@@ -147,11 +148,11 @@ var _PostMessageEventNamesEnum = __webpack_require__(0);
 
 var _PostMessageEventNamesEnum2 = _interopRequireDefault(_PostMessageEventNamesEnum);
 
-var _array = __webpack_require__(3);
+var _array = __webpack_require__(4);
 
 var _array2 = _interopRequireDefault(_array);
 
-var _TabStatusEnum = __webpack_require__(4);
+var _TabStatusEnum = __webpack_require__(5);
 
 var _TabStatusEnum2 = _interopRequireDefault(_TabStatusEnum);
 
@@ -335,6 +336,27 @@ exports.default = tabUtils;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+/**
+ * Enum for different data passed to tab, used for tab-communication
+ * @type {Object}
+ */
+var TabDataTypesEnum = {
+  NEW_TAB_DATA: '__NEW_TAB_DATA__',
+  CONNECTED_TAB_DATA: '__ACTIVE_TAB_DATA__'
+};
+
+exports.default = TabDataTypesEnum;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var arrayUtils = {};
 
 /**
@@ -408,7 +430,7 @@ arrayUtils.searchByKeyName = function (data, key, value, returnPreference) {
 exports.default = arrayUtils;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -429,7 +451,7 @@ var TabStatusEnum = {
 exports.default = TabStatusEnum;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -476,7 +498,7 @@ var domUtils = {
 exports.default = domUtils;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -486,11 +508,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _parent = __webpack_require__(7);
+var _parent = __webpack_require__(8);
 
 var _parent2 = _interopRequireDefault(_parent);
 
-var _child = __webpack_require__(12);
+var _child = __webpack_require__(13);
 
 var _child2 = _interopRequireDefault(_child);
 
@@ -508,7 +530,7 @@ var AcrossTabs = {
 exports.default = AcrossTabs;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -522,7 +544,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _tab = __webpack_require__(8);
+var _tab = __webpack_require__(9);
 
 var _tab2 = _interopRequireDefault(_tab);
 
@@ -530,11 +552,11 @@ var _tab3 = __webpack_require__(2);
 
 var _tab4 = _interopRequireDefault(_tab3);
 
-var _dom = __webpack_require__(5);
+var _dom = __webpack_require__(6);
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _TabStatusEnum = __webpack_require__(4);
+var _TabStatusEnum = __webpack_require__(5);
 
 var _TabStatusEnum2 = _interopRequireDefault(_TabStatusEnum);
 
@@ -546,7 +568,11 @@ var _PostMessageEventNamesEnum = __webpack_require__(0);
 
 var _PostMessageEventNamesEnum2 = _interopRequireDefault(_PostMessageEventNamesEnum);
 
-var _postmessage = __webpack_require__(10);
+var _TabDataEnum = __webpack_require__(3);
+
+var _TabDataEnum2 = _interopRequireDefault(_TabDataEnum);
+
+var _postmessage = __webpack_require__(11);
 
 var _postmessage2 = _interopRequireDefault(_postmessage);
 
@@ -704,6 +730,32 @@ var Parent = function () {
     }
 
     /**
+     * Called when a child is refreshed/closed
+     * @param  {Object} ev - Event
+     */
+
+  }, {
+    key: 'onWindowNameOverriden',
+    value: function onWindowNameOverriden(ev) {
+      var tabInfo = this.parse(ev.detail.tabInfo);
+      var tabs = _tab4.default.getAll();
+      var overridenTab = tabs.find(function (tab) {
+        return tab.id === tabInfo.id;
+      });
+
+      // close the tab where window.name is overriden
+      this.closeTab(tabInfo.id);
+
+      // reopen tab using query parameter as fallback
+      var url = new URL(overridenTab.url);
+      url.searchParams.append(_TabDataEnum2.default.NEW_TAB_DATA, overridenTab.windowName);
+      var config = {
+        url: url.href,
+        windowFeatures: overridenTab.windowFeatures
+      };
+      this.openNewTab(config);
+    }
+    /**
      * Attach postmessage, native and custom listeners to the window
      */
 
@@ -723,6 +775,11 @@ var Parent = function () {
       window.removeEventListener('onChildUnload', this.onChildUnload);
       window.addEventListener('onChildUnload', function (ev) {
         return _this2.onChildUnload(ev);
+      });
+
+      window.removeEventListener('onWindowNameOverriden', this.onWindowNameOverriden);
+      window.addEventListener('onWindowNameOverriden', function (ev) {
+        return _this2.onWindowNameOverriden(ev);
       });
 
       // Let children tabs know when Parent is closed / refereshed.
@@ -870,7 +927,7 @@ var Parent = function () {
 exports.default = Parent;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -888,13 +945,17 @@ var _tab = __webpack_require__(2);
 
 var _tab2 = _interopRequireDefault(_tab);
 
-var _uuid = __webpack_require__(9);
+var _uuid = __webpack_require__(10);
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
-var _dom = __webpack_require__(5);
+var _dom = __webpack_require__(6);
 
 var _dom2 = _interopRequireDefault(_dom);
+
+var _TabDataEnum = __webpack_require__(3);
+
+var _TabDataEnum2 = _interopRequireDefault(_TabDataEnum);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -925,8 +986,11 @@ var Tab = function () {
       _extends(this, config);
       this.id = _uuid2.default.generate() || _tab2.default.tabs.length + 1;
       this.status = 'open';
+      // set new tab data to window.name
+      var windowName = {};
+      windowName[_TabDataEnum2.default.NEW_TAB_DATA] = config.windowName;
       // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
-      this.ref = window.open(this.url, config.windowName || '_blank', config.windowFeatures);
+      this.ref = window.open(this.url, JSON.stringify(windowName) || '_blank', config.windowFeatures);
 
       _dom2.default.disable('data-tab-opener');
 
@@ -950,7 +1014,7 @@ var Tab = function () {
 exports.default = Tab;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1049,7 +1113,7 @@ UUID = function () {
 exports.default = UUID;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1059,7 +1123,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _array = __webpack_require__(3);
+var _array = __webpack_require__(4);
 
 var _array2 = _interopRequireDefault(_array);
 
@@ -1075,7 +1139,7 @@ var _PostMessageEventNamesEnum = __webpack_require__(0);
 
 var _PostMessageEventNamesEnum2 = _interopRequireDefault(_PostMessageEventNamesEnum);
 
-__webpack_require__(11);
+__webpack_require__(12);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1204,6 +1268,25 @@ PostMessageListener._onBeforeUnload = function (data) {
 };
 
 /**
+ *
+ * @param {Object} data
+ */
+PostMessageListener._onWindowNameOverriden = function (data) {
+  var tabInfo = data.split(_PostMessageEventNamesEnum2.default.WINDOW_NAME_OVERRIDEN)[1];
+
+  try {
+    tabInfo = _tab2.default.config.parse(tabInfo);
+  } catch (e) {
+    throw new Error(_WarningTextEnum2.default.INVALID_JSON);
+  }
+
+  // CustomEvent is not supported in IE, but polyfill will take care of it
+  var event = new CustomEvent('onWindowNameOverriden', { detail: tabInfo });
+
+  window.dispatchEvent(event);
+};
+
+/**
  * onNewTab - It's the entry point for data processing after receiving any postmessage form any Child Tab
  * @param  {Object} message
  */
@@ -1232,13 +1315,15 @@ PostMessageListener.onNewTab = function (message) {
     PostMessageListener._onCustomMessage(data, _PostMessageEventNamesEnum2.default.HANDSHAKE);
   } else if (data.indexOf(_PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD) > -1) {
     PostMessageListener._onBeforeUnload(data);
+  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.WINDOW_NAME_OVERRIDEN) > -1) {
+    PostMessageListener._onWindowNameOverriden(data);
   }
 };
 
 exports.default = PostMessageListener;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1266,7 +1351,7 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1288,6 +1373,10 @@ var _WarningTextEnum = __webpack_require__(1);
 
 var _WarningTextEnum2 = _interopRequireDefault(_WarningTextEnum);
 
+var _TabDataEnum = __webpack_require__(3);
+
+var _TabDataEnum2 = _interopRequireDefault(_TabDataEnum);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1301,8 +1390,6 @@ var Child = function () {
    */
   function Child(config) {
     _classCallCheck(this, Child);
-
-    this.sessionStorageKey = '__vwo_new_tab_info__';
 
     if (!config) {
       config = {};
@@ -1333,72 +1420,32 @@ var Child = function () {
   }
 
   /**
-   * Check is sessionStorage is present on window
-   * @return {Boolean} [description]
+   * Check if window.name is overridden
    */
 
 
   _createClass(Child, [{
-    key: '_isSessionStorage',
-    value: function _isSessionStorage() {
-      if ('sessionStorage' in window && window.sessionStorage) {
-        return true;
-      }
-      return false;
+    key: '_isWindowNameOverriden',
+    value: function _isWindowNameOverriden() {
+      return !window.name.includes(_TabDataEnum2.default.NEW_TAB_DATA);
     }
 
     /**
-     * Get stored data from sessionStorage
-     * @return {Object} data
-     */
-
-  }, {
-    key: '_getData',
-    value: function _getData() {
-      if (!this.isSessionStorageSupported) {
-        return false;
-      }
-
-      return window.sessionStorage.getItem(this.sessionStorageKey);
-    }
-
-    /**
-     * Set stored data from sessionStorage
+     * Set connected tab data to window.name
      * @return {Object} data
      */
 
   }, {
     key: '_setData',
     value: function _setData(dataReceived) {
-      if (!this.isSessionStorageSupported) {
-        return false;
-      }
-
-      window.sessionStorage.setItem(this.sessionStorageKey, dataReceived);
+      var windowNameObj = this.config.parse(window.name);
+      windowNameObj[_TabDataEnum2.default.CONNECTED_TAB_DATA] = dataReceived;
+      window.name = this.config.stringify(windowNameObj);
       return dataReceived;
     }
 
     /**
-     * Get stored data from sessionStorage and parse it
-     * @return {Object} data
-     */
-
-  }, {
-    key: '_restoreData',
-    value: function _restoreData() {
-      if (!this.isSessionStorageSupported) {
-        return false;
-      }
-
-      if (this.isSessionStorageSupported) {
-        var storedData = this._getData();
-
-        this._parseData(storedData);
-      }
-    }
-
-    /**
-     * Parse data fetched from sessionStorage
+     * Parse data fetched from windowName
      * @param  {String} dataReceived
      */
 
@@ -1470,8 +1517,15 @@ var Child = function () {
 
         dataReceived = data.split(_PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT)[1];
 
-        // Set data to sessionStorage so that when page reloads it can directly read the past info till the session lives
-        this._setData(dataReceived);
+        if (this._isWindowNameOverriden()) {
+          msg = {
+            tabInfo: dataReceived
+          };
+          this.sendMessageToParent(msg, _PostMessageEventNamesEnum2.default.WINDOW_NAME_OVERRIDEN);
+          return;
+        }
+
+        // // Set data to window.name
         this._parseData(dataReceived);
 
         msg = {
@@ -1493,6 +1547,10 @@ var Child = function () {
           dataReceived = this.config.parse(dataReceived);
         } catch (e) {
           throw new Error(_WarningTextEnum2.default.INVALID_JSON);
+        }
+        // Update connected tab data on window.name as communicated by Parent
+        if (!this._isWindowNameOverriden()) {
+          this._setData(dataReceived);
         }
         // Call user-defined `onParentCommunication` callback when Parent sends a message to Parent tab
         if (this.config.onParentCommunication) {
@@ -1577,7 +1635,7 @@ var Child = function () {
     value: function getTabInfo() {
       return {
         id: this.tabId,
-        name: this.tabName,
+        name: window.name,
         parentName: this.tabParentName,
         isSiteInsideFrame: this.config.isSiteInsideFrame
       };
@@ -1593,9 +1651,7 @@ var Child = function () {
   }, {
     key: 'init',
     value: function init() {
-      this.isSessionStorageSupported = this._isSessionStorage();
       this.addListeners();
-      this._restoreData();
       this.sendMessageToParent(this.getTabInfo(), _PostMessageEventNamesEnum2.default.LOADED);
       this.timeout = this.setHandshakeExpiry();
 

@@ -1,5 +1,6 @@
 import PostMessageEventNamesEnum from './enums/PostMessageEventNamesEnum';
 import WarningTextEnum from './enums/WarningTextEnum';
+import TabDataTypesEnum from './enums/TabDataEnum';
 
 // Named Class expression
 class Child {
@@ -9,8 +10,6 @@ class Child {
    * @param  {Object} config - Refer API/docs for config keys
    */
   constructor(config) {
-    this.windowNameKey = '__vwo_new_tab_info__';
-
     if (!config) {
       config = {};
     }
@@ -39,23 +38,24 @@ class Child {
     }
   }
 
+  /**
+   * Check if window.name is overridden
+   */
+  _isWindowNameOverriden() {
+    return !window.name.includes(TabDataTypesEnum.NEW_TAB_DATA);
+  }
 
   /**
-   * Set data to window.name
+   * Set connected tab data to window.name
    * @return {Object} data
    */
   _setData(dataReceived) {
-    // if (this.isWindowNameOverriden) {
-    //   return false;
-    // }
-
-    let windowName = this.config.parse(window.name);
-    windowName.windowNameKey = dataReceived;
-    window.name = JSON.stringify(windowName);
+    let windowNameObj = this.config.parse(window.name);
+    windowNameObj[TabDataTypesEnum.CONNECTED_TAB_DATA] = dataReceived;
+    window.name = this.config.stringify(windowNameObj);
     return dataReceived;
   }
 
-  
   /**
    * Parse data fetched from windowName
    * @param  {String} dataReceived
@@ -119,8 +119,15 @@ class Child {
 
       dataReceived = data.split(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT)[1];
 
-      // Set data to window.name
-      this._setData(dataReceived);
+      if (this._isWindowNameOverriden()) {
+        msg = {
+          tabInfo: dataReceived
+        };
+        this.sendMessageToParent(msg, PostMessageEventNamesEnum.WINDOW_NAME_OVERRIDEN);
+        return;
+      }
+
+      // // Set data to window.name
       this._parseData(dataReceived);
 
       msg = {
@@ -142,6 +149,10 @@ class Child {
         dataReceived = this.config.parse(dataReceived);
       } catch (e) {
         throw new Error(WarningTextEnum.INVALID_JSON);
+      }
+      // Update connected tab data on window.name as communicated by Parent
+      if (!this._isWindowNameOverriden()) {
+        this._setData(dataReceived);
       }
       // Call user-defined `onParentCommunication` callback when Parent sends a message to Parent tab
       if (this.config.onParentCommunication) {
@@ -219,9 +230,7 @@ class Child {
    * Invoked on object instantiation unless user pass a key to call it explicitly
    */
   init() {
-    this.isWindowNameOverriden = this._isWindowNameOverriden();
     this.addListeners();
-    this._restoreData();
     this.sendMessageToParent(this.getTabInfo(), PostMessageEventNamesEnum.LOADED);
     this.timeout = this.setHandshakeExpiry();
 

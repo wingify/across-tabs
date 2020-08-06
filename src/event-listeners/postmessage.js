@@ -129,6 +129,25 @@ PostMessageListener._onBeforeUnload = data => {
 };
 
 /**
+ *
+ * @param {Object} data
+ */
+PostMessageListener._onWindowNameOverriden = data => {
+  let tabInfo = data.split(PostMessageEventNamesEnum.WINDOW_NAME_OVERRIDEN)[1];
+
+  try {
+    tabInfo = tabUtils.config.parse(tabInfo);
+  } catch (e) {
+    throw new Error(WarningTextEnum.INVALID_JSON);
+  }
+
+  // CustomEvent is not supported in IE, but polyfill will take care of it
+  let event = new CustomEvent('onWindowNameOverriden', { detail: tabInfo });
+
+  window.dispatchEvent(event);
+};
+
+/**
  * onNewTab - It's the entry point for data processing after receiving any postmessage form any Child Tab
  * @param  {Object} message
  */
@@ -157,6 +176,8 @@ PostMessageListener.onNewTab = message => {
     PostMessageListener._onCustomMessage(data, PostMessageEventNamesEnum.HANDSHAKE);
   } else if (data.indexOf(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD) > -1) {
     PostMessageListener._onBeforeUnload(data);
+  } else if (data.indexOf(PostMessageEventNamesEnum.WINDOW_NAME_OVERRIDEN) > -1) {
+    PostMessageListener._onWindowNameOverriden(data);
   }
 };
 

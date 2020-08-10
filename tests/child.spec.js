@@ -23,9 +23,8 @@ describe('Child', () => {
   describe('Basic tests', () => {
     it('verify it is defined and its methods', () => {
       expect(child).toBeDefined();
-      expect(child._getData).toBeDefined();
+      expect(child._isWindowNameOverriden).toBeDefined();
       expect(child._setData).toBeDefined();
-      expect(child._restoreData).toBeDefined();
       expect(child._parseData).toBeDefined();
       expect(child.onCommunication).toBeDefined();
       expect(child.addListeners).toBeDefined();
@@ -100,8 +99,8 @@ describe('Child', () => {
         onInitialize: function() {}
       });
 
-      spyOn(child, '_setData');
       spyOn(child, '_parseData');
+      spyOn(child, '_isWindowNameOverriden');
       spyOn(child, 'sendMessageToParent');
 
       spyOn(child.config, 'onInitialize');
@@ -110,7 +109,7 @@ describe('Child', () => {
         data: PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT + JSON.stringify({ a: 1 })
       });
 
-      expect(child._setData).toHaveBeenCalled();
+      expect(child._isWindowNameOverriden).toHaveBeenCalled();
       expect(child._parseData).toHaveBeenCalled();
       expect(child.sendMessageToParent).toHaveBeenCalled();
       expect(child.config.onInitialize).toHaveBeenCalled();
@@ -122,12 +121,14 @@ describe('Child', () => {
         onParentCommunication: function() {}
       });
 
+      spyOn(child, '_isWindowNameOverriden');
       spyOn(child.config, 'onParentCommunication');
 
       child.onCommunication({
         data: PostMessageEventNamesEnum.PARENT_COMMUNICATED + JSON.stringify({ a: 1 })
       });
 
+      expect(child._isWindowNameOverriden).toHaveBeenCalled();
       expect(JSON.parse).toHaveBeenCalled();
       expect(child.config.onParentCommunication).toHaveBeenCalled();
     });
@@ -136,6 +137,7 @@ describe('Child', () => {
         parse: msg => JSON.parse(msg, () => '')
       };
 
+      spyOn(child, '_isWindowNameOverriden');
       spyOn(custom, 'parse');
 
       let child = new Child({
@@ -149,6 +151,7 @@ describe('Child', () => {
         data: PostMessageEventNamesEnum.PARENT_COMMUNICATED + JSON.stringify({ a: 1 })
       });
 
+      expect(child._isWindowNameOverriden).toHaveBeenCalled();
       expect(custom.parse).toHaveBeenCalled();
       expect(child.config.onParentCommunication).toHaveBeenCalled();
     });
@@ -205,13 +208,11 @@ describe('Child', () => {
   describe('method: init', () => {
     it('should be called on init', () => {
       spyOn(child, 'addListeners');
-      spyOn(child, '_restoreData');
       spyOn(child, 'setHandshakeExpiry');
 
       child.init();
 
       expect(child.addListeners).toHaveBeenCalled();
-      expect(child._restoreData).toHaveBeenCalled();
       expect(child.setHandshakeExpiry).toHaveBeenCalled();
     });
   });

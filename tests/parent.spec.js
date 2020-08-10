@@ -46,6 +46,7 @@ describe('Parent', () => {
       expect(parent.customEventUnListener).toBeDefined();
       expect(parent.addEventListeners).toBeDefined();
 
+      expect(parent.onWindowNameOverriden).toBeDefined();
       expect(parent.enableElements).toBeDefined();
       expect(parent.getAllTabs).toBeDefined();
       expect(parent.getOpenedTabs).toBeDefined();

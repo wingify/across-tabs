@@ -1,7 +1,7 @@
-var newTab, i = 0;
+var newTab,
+  i = 0;
 
 var app = new Vue({
-
   // We want to target the div with an id of 'llist'
   // el: '#example-container',
 
@@ -15,13 +15,11 @@ var app = new Vue({
   },
 
   // Anything within the ready function will run when the application loads
-  ready: function() {
-
-  },
+  ready: function() {},
 
   // Methods we want to use in our application are registered here
   methods: {
-    openNewTab: function (ev) {
+    openNewTab: function(ev) {
       var config = {
         url: 'http://localhost:3000/example/vue-js/child.html',
         windowName: 'Child - ' + ++i,
@@ -29,25 +27,25 @@ var app = new Vue({
       };
       parent.openNewTab(config);
     },
-    closeAllTabs: function () {
+    closeAllTabs: function() {
       parent.closeAllTabs();
       app.showList();
     },
-    closeTab: function (id) {
+    closeTab: function(id) {
       parent.closeTab(id);
       app.showList();
     },
-    broadCastTo: function (tab) {
+    broadCastTo: function(tab) {
       parent.broadCastTo(tab, 'Yo! Message from parent!!');
     },
-    broadCastAll: function () {
+    broadCastAll: function() {
       parent.broadCastAll('Yo! Broadcasted Message from parent to ALL!');
     },
-    onHandshakeCallback: function (data) {
+    onHandshakeCallback: function(data) {
       data.type = 'open';
       this.showPMList(data);
     },
-    onChildCommunication: function (data) {
+    onChildCommunication: function(data) {
       data.type = 'custom';
       this.showPMList(data);
     },
@@ -55,15 +53,15 @@ var app = new Vue({
       data.type = 'close';
       this.showPMList(data);
     },
-    showPMList: function (data) {
+    showPMList: function(data) {
       this.postMessageEvents.push(data);
     },
-    showList: function () {
+    showList: function() {
       // if (!newTab) { return; }
 
-      this.allTabs = parent.getAllTabs(),
-      this.openedTabs = parent.getOpenedTabs(),
-      this.closedTabs = parent.getClosedTabs();
+      (this.allTabs = parent.getAllTabs()),
+      (this.openedTabs = parent.getOpenedTabs()),
+      (this.closedTabs = parent.getClosedTabs());
     }
   }
 });

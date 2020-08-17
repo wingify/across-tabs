@@ -32,7 +32,7 @@ let PostMessageListener = {};
 /**
  * OnLoad Event - it serves as an communication establishment source from Child tab
  */
-PostMessageListener._onLoad = (data) => {
+PostMessageListener._onLoad = data => {
   let tabs,
     dataToSend,
     tabInfo = data.split(PostMessageEventNamesEnum.LOADED)[1];
@@ -41,7 +41,7 @@ PostMessageListener._onLoad = (data) => {
   // last opened tab will get refreshed(browser behavior). WOW! Handle this now.
   if (tabInfo) {
     try {
-      tabInfo = JSON.parse(tabInfo);
+      tabInfo = tabUtils.config.parse(tabInfo);
       // If Child knows its UUID, means Parent was refreshed and Child did not
       if (tabInfo.id) {
         tabs = tabUtils.getAll();
@@ -59,9 +59,9 @@ PostMessageListener._onLoad = (data) => {
   if (window.newlyTabOpened) {
     try {
       dataToSend = PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT;
-      dataToSend += JSON.stringify({
+      dataToSend += tabUtils.config.stringify({
         id: window.newlyTabOpened.id,
-        name: window.newlyTabOpened.name,
+        name: window.newlyTabOpened.name || window.newlyTabOpened.windowName,
         parentName: window.name
       });
       tabUtils.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);
@@ -83,7 +83,7 @@ PostMessageListener._onCustomMessage = (data, type) => {
     tabInfo = data.split(type)[1];
 
   try {
-    tabInfo = JSON.parse(tabInfo);
+    tabInfo = tabUtils.config.parse(tabInfo);
   } catch (e) {
     throw new Error(WarningTextEnum.INVALID_JSON);
   }
@@ -93,7 +93,7 @@ PostMessageListener._onCustomMessage = (data, type) => {
     type
   };
 
-  event = new CustomEvent('onCustomChildMessage', {'detail': eventData});
+  event = new CustomEvent('onCustomChildMessage', { detail: eventData });
 
   window.dispatchEvent(event);
   // window.newlyTabOpened = null;
@@ -107,11 +107,12 @@ PostMessageListener._onCustomMessage = (data, type) => {
  *
  * @param  {Object} data
  */
-PostMessageListener._onBeforeUnload = (data) => {
-  let tabs, tabInfo = data.split(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD)[1];
+PostMessageListener._onBeforeUnload = data => {
+  let tabs,
+    tabInfo = data.split(PostMessageEventNamesEnum.ON_BEFORE_UNLOAD)[1];
 
   try {
-    tabInfo = JSON.parse(tabInfo);
+    tabInfo = tabUtils.config.parse(tabInfo);
   } catch (e) {
     throw new Error(WarningTextEnum.INVALID_JSON);
   }
@@ -122,7 +123,7 @@ PostMessageListener._onBeforeUnload = (data) => {
   }
 
   // CustomEvent is not supported in IE, but polyfill will take care of it
-  let event = new CustomEvent('onChildUnload', {'detail': tabInfo});
+  let event = new CustomEvent('onChildUnload', { detail: tabInfo });
 
   window.dispatchEvent(event);
 };
@@ -131,7 +132,7 @@ PostMessageListener._onBeforeUnload = (data) => {
  * onNewTab - It's the entry point for data processing after receiving any postmessage form any Child Tab
  * @param  {Object} message
  */
-PostMessageListener.onNewTab = (message) => {
+PostMessageListener.onNewTab = message => {
   let data = message.data;
 
   /**

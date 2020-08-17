@@ -1,248 +1,278 @@
 import arrayUtils from '../../src/utils/array';
-import TabStatusEnum from '../../src/enums/TabStatusEnum';
-import WarningTextEnum from '../../src/enums/WarningTextEnum';
 import PostMessageEventNamesEnum from '../../src/enums/PostMessageEventNamesEnum';
 
 import tabUtils from '../../src/utils/tab';
 
 let mockedTab = {
-	url: 'http://localhost:3000/example/child.html',
-	id: '57cd47da-d98e-4a2d-814c-9b07cb51059c',
-	name: 'heatmap1',
-	status: 'open',
-	ref: window
+  url: 'http://localhost:3000/example/child.html',
+  id: '57cd47da-d98e-4a2d-814c-9b07cb51059c',
+  name: 'heatmap1',
+  status: 'open',
+  ref: window
 };
 
 let tab1, tab2, tab3;
 
 function addTabs() {
-	tab1 = Object.create(mockedTab),
-	tab2 = Object.create(mockedTab),
-	tab3 = Object.create(mockedTab);
+  (tab1 = Object.create(mockedTab)), (tab2 = Object.create(mockedTab)), (tab3 = Object.create(mockedTab));
 
-	tabUtils.tabs.push(tab1);
-	tabUtils.tabs.push(tab2);
-	tabUtils.tabs.push(tab3);
+  tabUtils.tabs.push(tab1);
+  tabUtils.tabs.push(tab2);
+  tabUtils.tabs.push(tab3);
 }
 
 describe('tabUtils', () => {
-	beforeEach(() => {
-		tabUtils.tabs = [];
-	});
-	afterEach(() => {
-		tab1 = null;
-		tab2 = null;
-		tab3 = null;
-	});
+  beforeEach(() => {
+    tabUtils.tabs = [];
+    tabUtils.config = {};
+  });
+  afterEach(() => {
+    tab1 = null;
+    tab2 = null;
+    tab3 = null;
+  });
 
-	describe('Basic tests', () => {
-		it('verify it is defined and its methods', () => {
-			expect(tabUtils).toBeDefined();
-			expect(tabUtils._remove).toBeDefined();
-			expect(tabUtils._preProcessMessage).toBeDefined();
+  describe('Basic tests', () => {
+    it('verify it is defined and its methods', () => {
+      expect(tabUtils).toBeDefined();
+      expect(tabUtils._remove).toBeDefined();
+      expect(tabUtils._preProcessMessage).toBeDefined();
 
-			expect(tabUtils.addNew).toBeDefined();
-			expect(tabUtils.getOpened).toBeDefined();
-			expect(tabUtils.getClosed).toBeDefined();
-			expect(tabUtils.getAll).toBeDefined();
-			expect(tabUtils.closeTab).toBeDefined();
-			expect(tabUtils.closeAll).toBeDefined();
-			expect(tabUtils.broadCastAll).toBeDefined();
-			expect(tabUtils.broadCastTo).toBeDefined();
-		});
-	});
+      expect(tabUtils.addNew).toBeDefined();
+      expect(tabUtils.getOpened).toBeDefined();
+      expect(tabUtils.getClosed).toBeDefined();
+      expect(tabUtils.getAll).toBeDefined();
+      expect(tabUtils.closeTab).toBeDefined();
+      expect(tabUtils.closeAll).toBeDefined();
+      expect(tabUtils.broadCastAll).toBeDefined();
+      expect(tabUtils.broadCastTo).toBeDefined();
+    });
+  });
 
-	describe('method: _remove', () => {
-		it('should remove tab from tab list', () => {
-			spyOn(arrayUtils, 'searchByKeyName');
-			tabUtils.tabs.push(mockedTab);
+  describe('method: _remove', () => {
+    it('should remove tab from tab list', () => {
+      spyOn(arrayUtils, 'searchByKeyName');
+      tabUtils.tabs.push(mockedTab);
 
-			expect(tabUtils.tabs.length).toBe(1);
+      expect(tabUtils.tabs.length).toBe(1);
 
-			tabUtils._remove(mockedTab);
+      tabUtils._remove(mockedTab);
 
-			expect(arrayUtils.searchByKeyName).toHaveBeenCalled();
-			expect(tabUtils.tabs.length).toBe(0);
-		});
-	});
-	describe('method: _preProcessMessage', () => {
-		xit('should stringify msg sent', () => {
-			spyOn(JSON, 'stringify');
-			let m = '12';
+      expect(arrayUtils.searchByKeyName).toHaveBeenCalled();
+      expect(tabUtils.tabs.length).toBe(0);
+    });
+  });
+  describe('method: _preProcessMessage', () => {
+    it('should stringify msg sent', () => {
+      spyOn(JSON, 'stringify');
 
-			tabUtils._preProcessMessage(m);
-			expect(JSON.stringify).toHaveBeenCalledWith(msg);
-		});
-	});
-	describe('method: addNew', () => {
-		it('should push a new tab to the list', () => {
-			expect(tabUtils.tabs.length).toBe(0);
+      tabUtils.config.stringify = JSON.stringify;
 
-			tabUtils.tabs.push(mockedTab);
-			expect(tabUtils.tabs.length).toBe(1);
+      let msg = 'Some message';
 
-			tabUtils.tabs.push(mockedTab);
-			expect(tabUtils.tabs.length).toBe(2);
+      tabUtils._preProcessMessage(msg);
+      expect(JSON.stringify).toHaveBeenCalledWith(msg);
+    });
 
-		});
-	});
-	describe('method: getOpened', () => {
-		it('should return all opened tabs', () => {
-			let result;
+    it('should stringify msg sent with custom stringifier', () => {
+      const custom = {
+        stringify: msg => (typeof msg === 'string' ? msg : `${msg}`)
+      };
 
-			addTabs();
+      spyOn(custom, 'stringify');
 
-			tab1.status = 'open';
-			tab2.status = 'close';
-			tab3.status = 'open';
+      tabUtils.config.stringify = custom.stringify;
 
-			result = tabUtils.getOpened();
+      let msg = 'Some message';
 
-			expect(result.length).toBe(2);
+      tabUtils._preProcessMessage(msg);
+      expect(custom.stringify).toHaveBeenCalledWith(msg);
+    });
 
-			for (var i = 0; i < result.length; i++) {
-				expect(result[i].status).toEqual('open');
-			}
-		});
-	});
-	describe('method: getClosed', () => {
-		it('should return all closed tabs', () => {
-			let result;
+    it('should prepend if message is of a particular type', () => {
+      tabUtils.config.stringify = JSON.stringify;
 
-			addTabs();
+      let msg = 'Some message';
 
-			tab1.status = 'open';
-			tab2.status = 'close';
-			tab3.status = 'open';
+      let value = tabUtils._preProcessMessage(msg);
+      expect(value.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED)).not.toBe(-1);
+    });
+  });
+  describe('method: addNew', () => {
+    it('should push a new tab to the list', () => {
+      expect(tabUtils.tabs.length).toBe(0);
 
-			result = tabUtils.getClosed();
+      tabUtils.tabs.push(mockedTab);
+      expect(tabUtils.tabs.length).toBe(1);
 
-			expect(result.length).toBe(1);
+      tabUtils.tabs.push(mockedTab);
+      expect(tabUtils.tabs.length).toBe(2);
+    });
+  });
+  describe('method: getOpened', () => {
+    it('should return all opened tabs', () => {
+      let result;
 
-			for (var i = 0; i < result.length; i++) {
-				expect(result[i].status).toEqual('close');
-			}
-		});
-	});
-	describe('method: getAll', () => {
-		it('should return all tabs', () => {
-			let result;
+      addTabs();
 
-			tabUtils.tabs.push(mockedTab);
-			tabUtils.tabs.push(mockedTab);
-			tabUtils.tabs.push(mockedTab);
+      tab1.status = 'open';
+      tab2.status = 'close';
+      tab3.status = 'open';
 
-			result = tabUtils.getAll();
+      result = tabUtils.getOpened();
 
-			expect(result.length).toBe(3);
+      expect(result.length).toBe(2);
 
-			for (var i = 0; i < result.length; i++) {
-				expect(result[i].id).toBeDefined();
-			}
-		});
-	});
-	describe('method: closeTab', () => {
-		it('should close the tab whose id is specified', () => {
-			let result;
+      for (var i = 0; i < result.length; i++) {
+        expect(result[i].status).toEqual('open');
+      }
+    });
+  });
+  describe('method: getClosed', () => {
+    it('should return all closed tabs', () => {
+      let result;
 
-			addTabs();
+      addTabs();
 
-			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
-			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
-			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+      tab1.status = 'open';
+      tab2.status = 'close';
+      tab3.status = 'open';
 
-			spyOn(tab1.ref, 'close');
+      result = tabUtils.getClosed();
 
-			tabUtils.closeTab(tab1.id);
+      expect(result.length).toBe(1);
 
-			expect(tab1.ref.close).toHaveBeenCalled();
-		});
-	});
-	describe('method: closeAll', () => {
-		it('should close all opened tabs', () => {
-			let result;
+      for (var i = 0; i < result.length; i++) {
+        expect(result[i].status).toEqual('close');
+      }
+    });
+  });
+  describe('method: getAll', () => {
+    it('should return all tabs', () => {
+      let result;
 
-			addTabs();
+      tabUtils.tabs.push(mockedTab);
+      tabUtils.tabs.push(mockedTab);
+      tabUtils.tabs.push(mockedTab);
 
-			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
-			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
-			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+      result = tabUtils.getAll();
 
-			spyOn(tab1.ref, 'close');
+      expect(result.length).toBe(3);
 
-			tabUtils.closeAll(tab1.id);
+      for (var i = 0; i < result.length; i++) {
+        expect(result[i].id).toBeDefined();
+      }
+    });
+  });
+  describe('method: closeTab', () => {
+    it('should close the tab whose id is specified', () => {
+      let result;
 
-			expect(tab1.ref.close).toHaveBeenCalled();
-			expect(tab2.ref.close).toHaveBeenCalled();
-			expect(tab3.ref.close).toHaveBeenCalled();
-		});
-	});
-	describe('method: broadCastAll', () => {
-		it('should broadcast a message to all the opened tabs', () => {
-			let result;
+      addTabs();
 
-			addTabs();
+      tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+      tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+      tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
 
-			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
-			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
-			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+      spyOn(tab1.ref, 'close');
 
-			let i, tabs = tabUtils.getOpened();
+      tabUtils.closeTab(tab1.id);
 
-			spyOn(tabs[0].ref.top, 'postMessage');
-			tabUtils.broadCastAll('custom_message@12345');
+      expect(tab1.ref.close).toHaveBeenCalled();
+    });
+  });
+  describe('method: closeAll', () => {
+    it('should close all opened tabs', () => {
+      let result;
 
+      addTabs();
 
-			for (i = 0; i < tabs.length; i++) {
-				expect(tabs[i].ref.top.postMessage).toHaveBeenCalled();
-			}
-		});
-	});
-	describe('method: broadCastTo', () => {
-		it('should broadcast a message to the specified tab', () => {
-			let result;
+      tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+      tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+      tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
 
-			addTabs();
+      spyOn(tab1.ref, 'close');
 
-			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
-			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
-			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+      tabUtils.closeAll(tab1.id);
 
-			spyOn(tab1.ref.top, 'postMessage');
+      expect(tab1.ref.close).toHaveBeenCalled();
+      expect(tab2.ref.close).toHaveBeenCalled();
+      expect(tab3.ref.close).toHaveBeenCalled();
+    });
+  });
+  describe('method: broadCastAll', () => {
+    it('should broadcast a message to all the opened tabs', () => {
+      tabUtils.config.stringify = JSON.stringify;
 
-			tabUtils.broadCastTo(tab1.id, 'hello');
+      let result;
 
-			expect(tab1.ref.top.postMessage).toHaveBeenCalled();
-		});
-	});
-	describe('method: sendMessage', () => {
-		it('should send message to correct child window', () => {
-			let result;
+      addTabs();
 
-			addTabs();
+      tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+      tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+      tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
 
-			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
-			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
-			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+      let i,
+        tabs = tabUtils.getOpened();
 
-			spyOn(tab1.ref.top, 'postMessage');
-			tabUtils.sendMessage(tab1, 'hello');
-			expect(tab1.ref.top.postMessage).toHaveBeenCalled();
-		});
-		it('should send message to the first window i.e. parent window', () => {
-			let result;
+      spyOn(tabs[0].ref.top, 'postMessage');
+      tabUtils.broadCastAll('custom_message@12345');
 
-			addTabs();
+      for (i = 0; i < tabs.length; i++) {
+        expect(tabs[i].ref.top.postMessage).toHaveBeenCalled();
+      }
+    });
+  });
+  describe('method: broadCastTo', () => {
+    it('should broadcast a message to the specified tab', () => {
+      tabUtils.config.stringify = JSON.stringify;
 
-			tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
-			tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
-			tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+      let result;
 
-			tab1.ref = [{postMessage: function () {} }, {postMessage: function () {} }]; // mock length
+      addTabs();
 
-			spyOn(tab1.ref[0], 'postMessage');
-			tabUtils.sendMessage(tab1, 'hello', true);
-			expect(tab1.ref[0].postMessage).toHaveBeenCalled();
-		});
-	});
+      tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+      tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+      tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+
+      spyOn(tab1.ref.top, 'postMessage');
+
+      tabUtils.broadCastTo(tab1.id, 'hello');
+
+      expect(tab1.ref.top.postMessage).toHaveBeenCalled();
+    });
+  });
+  describe('method: sendMessage', () => {
+    it('should send message to correct child window', () => {
+      let result;
+
+      addTabs();
+
+      tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+      tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+      tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+
+      spyOn(tab1.ref.top, 'postMessage');
+      tabUtils.sendMessage(tab1, 'hello');
+      expect(tab1.ref.top.postMessage).toHaveBeenCalled();
+    });
+
+    it('should send message to the all ref windows existing', () => {
+      let result;
+
+      addTabs();
+
+      tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+      tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+      tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+
+      tab1.ref = [{ postMessage: function() {} }, { postMessage: function() {} }]; // mock length
+
+      spyOn(tab1.ref[1], 'postMessage');
+      spyOn(tab1.ref[0], 'postMessage');
+      tabUtils.sendMessage(tab1, 'hello', true, 'Hey');
+      expect(tab1.ref[1].postMessage).toHaveBeenCalled();
+      expect(tab1.ref[0].postMessage).toHaveBeenCalled();
+    });
+  });
 });

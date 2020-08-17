@@ -21,10 +21,15 @@ let returnPreferenceEnum = {
  * @return {Object}
  */
 arrayUtils.searchByKeyName = (data, key, value, returnPreference) => {
-  if (!data || !key) { return false; }
+  if (!data || !key) {
+    return false;
+  }
 
   returnPreference = returnPreference || returnPreferenceEnum[1]; // default to Object
-  let i, obj, returnData, index = -1;
+  let i,
+    obj,
+    returnData,
+    index = -1;
 
   for (i = 0; i < data.length; i++) {
     obj = data[i];
@@ -32,13 +37,15 @@ arrayUtils.searchByKeyName = (data, key, value, returnPreference) => {
     if (!isNaN(value) && parseInt(obj[key], 10) === parseInt(value, 10)) {
       index = i;
       break;
-    } else if (isNaN(value) && obj[key] === value) { // String exact matching support
+    } else if (isNaN(value) && obj[key] === value) {
+      // String exact matching support
       index = i;
       break;
     }
   }
 
-  if (index === -1) { // item not found
+  if (index === -1) {
+    // item not found
     data[index] = {}; // for consistency
   }
 

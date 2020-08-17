@@ -1,15 +1,16 @@
 language: node_js
 node_js:
-  - '4.0.0'
+  - '9.11.2'
 before_install:
   - npm install -g webpack
 install:
-  - npm install
-  - npm run build
+  - yarn install
+  - yarn run build
 script:
-  - npm run build-test
-  - npm run coverage
+  - yarn run build-test
+  - yarn run coverage
 after_success: 'npm run coveralls'
 cache:
+  yarn: true
   directories:
     - node_modules

@@ -1,53 +1,56 @@
 var path = require('path');
 
-module.exports = function (config) {
+module.exports = function(config) {
   config.set({
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
     // list of files / patterns to exclude
     exclude: [],
-    browsers: [ 'PhantomJS' ],
-    files: [
-      'tests/**/*.spec.js',
-    ],
-    frameworks: [ 'jasmine' ],
+    browsers: ['PhantomJS'],
+    files: ['tests/**/*.spec.js'],
+    frameworks: ['jasmine'],
     preprocessors: {
-      'tests/**/*.spec.js': [ 'webpack' ]
+      'tests/**/*.spec.js': ['webpack']
     },
-    reporters: [ 'progress', 'coverage' ],
+    reporters: ['progress', 'coverage'],
     coverageReporter: {
       dir: 'coverage',
       reporters: [
         // reporters not supporting the `file` property
         // { type: 'html', subdir: 'report-html' }, // fro dev
-        { type: 'lcov', subdir: 'report-lcov' }, // for coveralls
+        { type: 'lcov', subdir: 'report-lcov' } // for coveralls
       ]
     },
     webpack: {
       cache: true,
       module: {
-        loaders: [{
-          test: /(\.js)$/,
-          loader: 'babel-loader',
-          exclude: /(node_modules)/,
-          query: {
-            presets: ['env']
-          }
-        }, {
-          test: /\.spec.js$/,
-          exclude: /(node_modules)/,
-          loader: 'babel-loader',
-          query: {
-            cacheDirectory: true,
-            presets: ['env']
+        loaders: [
+          {
+            test: /(\.js)$/,
+            loader: 'babel-loader',
+            exclude: /(node_modules)/,
+            query: {
+              presets: ['env']
+            }
           },
-        }, {// transpile and instrument only testing sources with isparta
-          test: /\.js$/,
-          include: path.resolve('src/'),
-          exclude: /(src\/vendor\/)/,
-          loader: 'isparta-loader'
-        }],
-      },
+          {
+            test: /\.spec.js$/,
+            exclude: /(node_modules)/,
+            loader: 'babel-loader',
+            query: {
+              cacheDirectory: true,
+              presets: ['env']
+            }
+          },
+          {
+            // transpile and instrument only testing sources with isparta
+            test: /\.js$/,
+            include: path.resolve('src/'),
+            exclude: /(src\/vendor\/)/,
+            loader: 'isparta-loader'
+          }
+        ]
+      }
     },
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit

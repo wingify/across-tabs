@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.2.2"
+ * across-tabs "1.2.4"
  * https://github.com/wingify/across-tabs
  * MIT licensed
  * 
@@ -117,7 +117,7 @@ var WarningTextEnum = {
   INVALID_JSON: 'Invalid JSON Object!',
   INVALID_DATA: 'Some wrong message is being sent by Parent.',
   CONFIG_REQUIRED: 'Configuration options required. Please read docs.',
-  CUSTOM_EVENT: 'CustomEvent(and it\'s polyfill) is not supported in this browser.',
+  CUSTOM_EVENT: "CustomEvent(and it's polyfill) is not supported in this browser.",
   URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.'
 };
 
@@ -183,7 +183,7 @@ tabUtils._remove = function (tab) {
 tabUtils._preProcessMessage = function (msg) {
   // make msg always an object to support JSON support
   try {
-    msg = JSON.stringify(msg);
+    msg = tabUtils.config.stringify(msg);
   } catch (e) {
     throw new Error(_WarningTextEnum2.default.INVALID_JSON);
   }
@@ -305,9 +305,10 @@ tabUtils.broadCastTo = function (id, msg, isSiteInsideFrame) {
  */
 tabUtils.sendMessage = function (target, msg, isSiteInsideFrame) {
   var origin = tabUtils.config.origin || '*';
-
   if (isSiteInsideFrame && target.ref[0]) {
-    target.ref[0].postMessage(msg, origin);
+    for (var i = 0; i < target.ref.length; i++) {
+      target.ref[i].postMessage(msg, origin);
+    }
   } else if (target.ref && target.ref.top) {
     target.ref.top.postMessage(msg, origin);
   }
@@ -565,6 +566,12 @@ var Parent = function () {
     if (typeof config.shouldInitImmediately === 'undefined') {
       config.shouldInitImmediately = true;
     }
+    if (typeof config.parse !== 'function') {
+      config.parse = JSON.parse;
+    }
+    if (typeof config.stringify !== 'function') {
+      config.stringify = JSON.stringify;
+    }
 
     // reset tabs with every new Object
     _tab4.default.tabs = [];
@@ -600,7 +607,7 @@ var Parent = function () {
         /**
          * The check is required since tab would be removed when closed(in case of `removeClosedTabs` flag),
          * irrespective of heatbeat controller
-        */
+         */
         if (tabs[i] && tabs[i].ref) {
           tabs[i].status = tabs[i].ref.closed ? _TabStatusEnum2.default.CLOSE : _TabStatusEnum2.default.OPEN;
         }
@@ -611,9 +618,6 @@ var Parent = function () {
         this.onPollingCallback();
       }
     }
-  }, {
-    key: 'startPollingTabs',
-
 
     /**
      * Poll all tabs for their status - OPENED / CLOSED
@@ -621,6 +625,9 @@ var Parent = function () {
      * There's a property on window i.e. `closed` which returns true for the closed window.
      * And one can see `true` only in another tab when the tab was opened by the same `another` tab.
      */
+
+  }, {
+    key: 'startPollingTabs',
     value: function startPollingTabs() {
       var _this = this;
 
@@ -628,14 +635,14 @@ var Parent = function () {
         return _this.addInterval();
       }, this.heartBeatInterval);
     }
-  }, {
-    key: 'watchStatus',
-
 
     /**
      * Compare tab status - OPEN vs CLOSE
      * @param  {Object} tab
      */
+
+  }, {
+    key: 'watchStatus',
     value: function watchStatus(tab) {
       if (!tab || !tab.ref) {
         return false;
@@ -655,14 +662,14 @@ var Parent = function () {
       }
       // Change from CLOSE to OPEN state is never gonna happen ;)
     }
-  }, {
-    key: 'onChildUnload',
-
 
     /**
      * Called when a child is refreshed/closed
      * @param  {Object} ev - Event
      */
+
+  }, {
+    key: 'onChildUnload',
     value: function onChildUnload(ev) {
       if (this.onChildDisconnect) {
         this.onChildDisconnect(ev.detail);
@@ -686,13 +693,13 @@ var Parent = function () {
         this.onChildCommunication(ev.detail.tabInfo);
       }
     }
-  }, {
-    key: 'addEventListeners',
-
 
     /**
      * Attach postmessage, native and custom listeners to the window
      */
+
+  }, {
+    key: 'addEventListeners',
     value: function addEventListeners() {
       var _this2 = this;
 
@@ -714,48 +721,48 @@ var Parent = function () {
         _tab4.default.broadCastAll(_PostMessageEventNamesEnum2.default.PARENT_DISCONNECTED);
       };
     }
-  }, {
-    key: 'enableElements',
-
 
     /**
      * API methods exposed for Public
      *
      * Re-enable the link/btn which got disabled on clicking
      */
+
+  }, {
+    key: 'enableElements',
     value: function enableElements() {
       _dom2.default.enable('data-tab-opener');
     }
-  }, {
-    key: 'getAllTabs',
-
 
     /**
      * Return list of all tabs
      * @return {Array}
      */
+
+  }, {
+    key: 'getAllTabs',
     value: function getAllTabs() {
       return _tab4.default.getAll();
     }
-  }, {
-    key: 'getOpenedTabs',
-
 
     /**
      * Return list of all OPENED tabs
      * @return {Array}
      */
+
+  }, {
+    key: 'getOpenedTabs',
     value: function getOpenedTabs() {
       return _tab4.default.getOpened();
     }
-  }, {
-    key: 'getClosedTabs',
-
 
     /**
      * Return list of all CLOSED tabs
      * @return {Array}
      */
+
+  }, {
+    key: 'getClosedTabs',
     value: function getClosedTabs() {
       return _tab4.default.getClosed();
     }
@@ -770,25 +777,25 @@ var Parent = function () {
     value: function closeAllTabs() {
       return _tab4.default.closeAll();
     }
-  }, {
-    key: 'closeTab',
-
 
     /**
      * Close a specific tab
      * @return {Object}
      */
+
+  }, {
+    key: 'closeTab',
     value: function closeTab(id) {
       return _tab4.default.closeTab(id);
     }
-  }, {
-    key: 'broadCastAll',
-
 
     /**
      * Send a postmessage to all OPENED tabs
      * @return {Object}
      */
+
+  }, {
+    key: 'broadCastAll',
     value: function broadCastAll(msg) {
       return _tab4.default.broadCastAll(msg);
     }
@@ -832,9 +839,6 @@ var Parent = function () {
 
       return tab;
     }
-  }, {
-    key: 'init',
-
 
     /**
      * API methods exposed for Public ends here
@@ -843,6 +847,9 @@ var Parent = function () {
     /**
      * Invoked on object instantiation unless user pass a key to call it explicitly
      */
+
+  }, {
+    key: 'init',
     value: function init() {
       this.addEventListeners();
     }
@@ -850,8 +857,6 @@ var Parent = function () {
 
   return Parent;
 }();
-
-;
 
 exports.default = Parent;
 
@@ -897,22 +902,22 @@ var Tab = function () {
     // Set name of Parent tab if not already defined
     window.name = window.name || 'PARENT_TAB';
   }
+  /**
+   * Open a new tab
+   * @param  {Object} config - Refer API for config keys
+   * @return {Object} this
+   */
+
 
   _createClass(Tab, [{
     key: 'create',
-
-    /**
-     * Open a new tab
-     * @param  {Object} config - Refer API for config keys
-     * @return {Object} this
-     */
     value: function create(config) {
       config = config || {};
       _extends(this, config);
       this.id = _uuid2.default.generate() || _tab2.default.tabs.length + 1;
       this.status = 'open';
       // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
-      this.ref = window.open(this.url, '_blank', config.windowFeatures);
+      this.ref = window.open(this.url, config.windowName || '_blank', config.windowFeatures);
 
       _dom2.default.disable('data-tab-opener');
 
@@ -932,8 +937,6 @@ var Tab = function () {
 
   return Tab;
 }();
-
-;
 
 exports.default = Tab;
 
@@ -1104,7 +1107,7 @@ PostMessageListener._onLoad = function (data) {
   // last opened tab will get refreshed(browser behavior). WOW! Handle this now.
   if (tabInfo) {
     try {
-      tabInfo = JSON.parse(tabInfo);
+      tabInfo = _tab2.default.config.parse(tabInfo);
       // If Child knows its UUID, means Parent was refreshed and Child did not
       if (tabInfo.id) {
         tabs = _tab2.default.getAll();
@@ -1122,9 +1125,9 @@ PostMessageListener._onLoad = function (data) {
   if (window.newlyTabOpened) {
     try {
       dataToSend = _PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT;
-      dataToSend += JSON.stringify({
+      dataToSend += _tab2.default.config.stringify({
         id: window.newlyTabOpened.id,
-        name: window.newlyTabOpened.name,
+        name: window.newlyTabOpened.name || window.newlyTabOpened.windowName,
         parentName: window.name
       });
       _tab2.default.sendMessage(window.newlyTabOpened, dataToSend, tabInfo.isSiteInsideFrame);
@@ -1146,7 +1149,7 @@ PostMessageListener._onCustomMessage = function (data, type) {
       tabInfo = data.split(type)[1];
 
   try {
-    tabInfo = JSON.parse(tabInfo);
+    tabInfo = _tab2.default.config.parse(tabInfo);
   } catch (e) {
     throw new Error(_WarningTextEnum2.default.INVALID_JSON);
   }
@@ -1156,7 +1159,7 @@ PostMessageListener._onCustomMessage = function (data, type) {
     type: type
   };
 
-  event = new CustomEvent('onCustomChildMessage', { 'detail': eventData });
+  event = new CustomEvent('onCustomChildMessage', { detail: eventData });
 
   window.dispatchEvent(event);
   // window.newlyTabOpened = null;
@@ -1175,7 +1178,7 @@ PostMessageListener._onBeforeUnload = function (data) {
       tabInfo = data.split(_PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD)[1];
 
   try {
-    tabInfo = JSON.parse(tabInfo);
+    tabInfo = _tab2.default.config.parse(tabInfo);
   } catch (e) {
     throw new Error(_WarningTextEnum2.default.INVALID_JSON);
   }
@@ -1186,7 +1189,7 @@ PostMessageListener._onBeforeUnload = function (data) {
   }
 
   // CustomEvent is not supported in IE, but polyfill will take care of it
-  var event = new CustomEvent('onChildUnload', { 'detail': tabInfo });
+  var event = new CustomEvent('onChildUnload', { detail: tabInfo });
 
   window.dispatchEvent(event);
 };
@@ -1301,6 +1304,12 @@ var Child = function () {
     if (typeof config.shouldInitImmediately === 'undefined') {
       config.shouldInitImmediately = true;
     }
+    if (typeof config.parse !== 'function') {
+      config.parse = JSON.parse;
+    }
+    if (typeof config.stringify !== 'function') {
+      config.stringify = JSON.stringify;
+    }
 
     this.tabName = window.name;
     this.tabId = null;
@@ -1314,28 +1323,28 @@ var Child = function () {
     }
   }
 
+  /**
+   * Check is sessionStorage is present on window
+   * @return {Boolean} [description]
+   */
+
+
   _createClass(Child, [{
     key: '_isSessionStorage',
-
-
-    /**
-     * Check is sessionStorage is present on window
-     * @return {Boolean} [description]
-     */
     value: function _isSessionStorage() {
       if ('sessionStorage' in window && window.sessionStorage) {
         return true;
       }
       return false;
     }
-  }, {
-    key: '_getData',
-
 
     /**
      * Get stored data from sessionStorage
      * @return {Object} data
      */
+
+  }, {
+    key: '_getData',
     value: function _getData() {
       if (!this.isSessionStorageSupported) {
         return false;
@@ -1343,14 +1352,14 @@ var Child = function () {
 
       return window.sessionStorage.getItem(this.sessionStorageKey);
     }
-  }, {
-    key: '_setData',
-
 
     /**
      * Set stored data from sessionStorage
      * @return {Object} data
      */
+
+  }, {
+    key: '_setData',
     value: function _setData(dataReceived) {
       if (!this.isSessionStorageSupported) {
         return false;
@@ -1359,14 +1368,14 @@ var Child = function () {
       window.sessionStorage.setItem(this.sessionStorageKey, dataReceived);
       return dataReceived;
     }
-  }, {
-    key: '_restoreData',
-
 
     /**
      * Get stored data from sessionStorage and parse it
      * @return {Object} data
      */
+
+  }, {
+    key: '_restoreData',
     value: function _restoreData() {
       if (!this.isSessionStorageSupported) {
         return false;
@@ -1378,30 +1387,27 @@ var Child = function () {
         this._parseData(storedData);
       }
     }
-  }, {
-    key: '_parseData',
-
 
     /**
      * Parse data fetched from sessionStorage
      * @param  {String} dataReceived
      */
+
+  }, {
+    key: '_parseData',
     value: function _parseData(dataReceived) {
       var actualData = void 0;
 
       // Expecting JSON data
       try {
-        actualData = JSON.parse(dataReceived);
+        actualData = this.config.parse(dataReceived);
         this.tabId = actualData && actualData.id;
         this.tabName = actualData && actualData.name;
         this.tabParentName = actualData && actualData.parentName;
       } catch (e) {
         throw new Error(_WarningTextEnum2.default.INVALID_DATA);
-      };
+      }
     }
-  }, {
-    key: 'onCommunication',
-
 
     /**
      * The core of this file
@@ -1412,6 +1418,9 @@ var Child = function () {
      *
      * @param  {String} message
      */
+
+  }, {
+    key: 'onCommunication',
     value: function onCommunication(message) {
       var _this = this;
 
@@ -1446,7 +1455,7 @@ var Child = function () {
       /**
        * When Parent sends an Acknowledgement to the Child's request of setting up a communication channel
        * along with the tab's identity i.e. id, name and it's parent(itself) to the child tab.
-      */
+       */
       if (data.indexOf(_PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT) > -1) {
         var msg = void 0;
 
@@ -1472,7 +1481,7 @@ var Child = function () {
         dataReceived = data.split(_PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED)[1];
 
         try {
-          dataReceived = JSON.parse(dataReceived);
+          dataReceived = this.config.parse(dataReceived);
         } catch (e) {
           throw new Error(_WarningTextEnum2.default.INVALID_JSON);
         }
@@ -1482,13 +1491,13 @@ var Child = function () {
         }
       }
     }
-  }, {
-    key: 'addListeners',
-
 
     /**
      * Attach postmessage and onbeforeunload event listeners
      */
+
+  }, {
+    key: 'addListeners',
     value: function addListeners() {
       var _this2 = this;
 
@@ -1508,15 +1517,15 @@ var Child = function () {
         return _this2.onCommunication(evt);
       });
     }
-  }, {
-    key: 'setHandshakeExpiry',
-
 
     /**
      * Call a user-defined method `onHandShakeExpiry`
      * if the Parent doesn't recieve a first handshake message within the configurable `handshakeExpiryLimit`
      * @return {Function}
      */
+
+  }, {
+    key: 'setHandshakeExpiry',
     value: function setHandshakeExpiry() {
       var _this3 = this;
 
@@ -1541,21 +1550,21 @@ var Child = function () {
 
       var type = _prefixType || _PostMessageEventNamesEnum2.default.CUSTOM;
 
-      msg = type + JSON.stringify(msg);
+      msg = type + this.config.stringify(msg);
 
       if (window.top.opener) {
         origin = this.config.origin || '*';
         window.top.opener.postMessage(msg, origin);
       }
     }
-  }, {
-    key: 'getTabInfo',
-
 
     /**
      * Get current Tab info i.e. id, name and parentName
      * @return {Object} tab-info
      */
+
+  }, {
+    key: 'getTabInfo',
     value: function getTabInfo() {
       return {
         id: this.tabId,
@@ -1564,9 +1573,6 @@ var Child = function () {
         isSiteInsideFrame: this.config.isSiteInsideFrame
       };
     }
-  }, {
-    key: 'init',
-
     /**
      * API ends here ->
      */
@@ -1574,6 +1580,9 @@ var Child = function () {
     /**
      * Invoked on object instantiation unless user pass a key to call it explicitly
      */
+
+  }, {
+    key: 'init',
     value: function init() {
       this.isSessionStorageSupported = this._isSessionStorage();
       this.addListeners();
@@ -1589,8 +1598,6 @@ var Child = function () {
 
   return Child;
 }();
-
-;
 
 exports.default = Child;
 

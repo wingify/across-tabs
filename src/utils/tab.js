@@ -18,7 +18,7 @@ let tabUtils = {
  * This can be done explictly by passing `removeClosedTabs` key while instantiating Parent.
  * @param  {Object} tab
  */
-tabUtils._remove = (tab) => {
+tabUtils._remove = tab => {
   let index;
 
   index = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', tab.id, 'index');
@@ -31,10 +31,10 @@ tabUtils._remove = (tab) => {
  * @param  {String} msg
  * @return {String} modified msg
  */
-tabUtils._preProcessMessage = (msg) => {
+tabUtils._preProcessMessage = msg => {
   // make msg always an object to support JSON support
   try {
-    msg = JSON.stringify(msg);
+    msg = tabUtils.config.stringify(msg);
   } catch (e) {
     throw new Error(WarningTextEnum.INVALID_JSON);
   }
@@ -50,7 +50,7 @@ tabUtils._preProcessMessage = (msg) => {
  * @param  {Object} tab
  * @return {Object} - this
  */
-tabUtils.addNew = (tab) => {
+tabUtils.addNew = tab => {
   tabUtils.tabs.push(tab);
   return this;
 };
@@ -82,7 +82,7 @@ tabUtils.getAll = () => {
  * @param  {String} id
  * @return {Object} this
  */
-tabUtils.closeTab = (id) => {
+tabUtils.closeTab = id => {
   let tab = arrayUtils.searchByKeyName(tabUtils.tabs, 'id', id);
 
   if (tab && tab.ref) {
@@ -115,7 +115,8 @@ tabUtils.closeAll = () => {
  * @param  {Boolean} isSiteInsideFrame
  */
 tabUtils.broadCastAll = (msg, isSiteInsideFrame) => {
-  let i, tabs = tabUtils.getOpened();
+  let i,
+    tabs = tabUtils.getOpened();
 
   msg = tabUtils._preProcessMessage(msg);
 
@@ -151,9 +152,10 @@ tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
  */
 tabUtils.sendMessage = (target, msg, isSiteInsideFrame) => {
   let origin = tabUtils.config.origin || '*';
-
   if (isSiteInsideFrame && target.ref[0]) {
-    target.ref[0].postMessage(msg, origin);
+    for (let i = 0; i < target.ref.length; i++) {
+      target.ref[i].postMessage(msg, origin);
+    }
   } else if (target.ref && target.ref.top) {
     target.ref.top.postMessage(msg, origin);
   }

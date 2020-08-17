@@ -20,6 +20,12 @@ class Child {
     if (typeof config.shouldInitImmediately === 'undefined') {
       config.shouldInitImmediately = true;
     }
+    if (typeof config.parse !== 'function') {
+      config.parse = JSON.parse;
+    }
+    if (typeof config.stringify !== 'function') {
+      config.stringify = JSON.stringify;
+    }
 
     this.tabName = window.name;
     this.tabId = null;
@@ -31,7 +37,7 @@ class Child {
     if (this.shouldInitImmediately) {
       this.init();
     }
-  };
+  }
 
   /**
    * Check is sessionStorage is present on window
@@ -42,7 +48,7 @@ class Child {
       return true;
     }
     return false;
-  };
+  }
 
   /**
    * Get stored data from sessionStorage
@@ -54,7 +60,7 @@ class Child {
     }
 
     return window.sessionStorage.getItem(this.sessionStorageKey);
-  };
+  }
 
   /**
    * Set stored data from sessionStorage
@@ -67,7 +73,7 @@ class Child {
 
     window.sessionStorage.setItem(this.sessionStorageKey, dataReceived);
     return dataReceived;
-  };
+  }
 
   /**
    * Get stored data from sessionStorage and parse it
@@ -83,7 +89,7 @@ class Child {
 
       this._parseData(storedData);
     }
-  };
+  }
 
   /**
    * Parse data fetched from sessionStorage
@@ -94,14 +100,14 @@ class Child {
 
     // Expecting JSON data
     try {
-      actualData = JSON.parse(dataReceived);
+      actualData = this.config.parse(dataReceived);
       this.tabId = actualData && actualData.id;
       this.tabName = actualData && actualData.name;
       this.tabParentName = actualData && actualData.parentName;
     } catch (e) {
       throw new Error(WarningTextEnum.INVALID_DATA);
-    };
-  };
+    }
+  }
 
   /**
    * The core of this file
@@ -142,7 +148,7 @@ class Child {
     /**
      * When Parent sends an Acknowledgement to the Child's request of setting up a communication channel
      * along with the tab's identity i.e. id, name and it's parent(itself) to the child tab.
-    */
+     */
     if (data.indexOf(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT) > -1) {
       let msg;
 
@@ -168,7 +174,7 @@ class Child {
       dataReceived = data.split(PostMessageEventNamesEnum.PARENT_COMMUNICATED)[1];
 
       try {
-        dataReceived = JSON.parse(dataReceived);
+        dataReceived = this.config.parse(dataReceived);
       } catch (e) {
         throw new Error(WarningTextEnum.INVALID_JSON);
       }
@@ -177,13 +183,13 @@ class Child {
         this.config.onParentCommunication(dataReceived);
       }
     }
-  };
+  }
 
   /**
    * Attach postmessage and onbeforeunload event listeners
    */
   addListeners() {
-    window.onbeforeunload = (evt) => {
+    window.onbeforeunload = evt => {
       let msg = {
         id: this.tabId,
         isSiteInsideFrame: this.config.isSiteInsideFrame
@@ -194,7 +200,7 @@ class Child {
 
     window.removeEventListener('message', evt => this.onCommunication(evt));
     window.addEventListener('message', evt => this.onCommunication(evt));
-  };
+  }
 
   /**
    * Call a user-defined method `onHandShakeExpiry`
@@ -220,13 +226,13 @@ class Child {
 
     let type = _prefixType || PostMessageEventNamesEnum.CUSTOM;
 
-    msg = type + JSON.stringify(msg);
+    msg = type + this.config.stringify(msg);
 
     if (window.top.opener) {
       origin = this.config.origin || '*';
       window.top.opener.postMessage(msg, origin);
     }
-  };
+  }
 
   /**
    * Get current Tab info i.e. id, name and parentName
@@ -239,7 +245,7 @@ class Child {
       parentName: this.tabParentName,
       isSiteInsideFrame: this.config.isSiteInsideFrame
     };
-  };
+  }
   /**
    * API ends here ->
    */
@@ -258,6 +264,6 @@ class Child {
       this.config.onReady();
     }
   }
-};
+}
 
 export default Child;

@@ -121,14 +121,12 @@ describe('Child', () => {
         onParentCommunication: function() {}
       });
 
-      spyOn(child, '_isWindowNameOverriden');
       spyOn(child.config, 'onParentCommunication');
 
       child.onCommunication({
         data: PostMessageEventNamesEnum.PARENT_COMMUNICATED + JSON.stringify({ a: 1 })
       });
 
-      expect(child._isWindowNameOverriden).toHaveBeenCalled();
       expect(JSON.parse).toHaveBeenCalled();
       expect(child.config.onParentCommunication).toHaveBeenCalled();
     });
@@ -137,7 +135,6 @@ describe('Child', () => {
         parse: msg => JSON.parse(msg, () => '')
       };
 
-      spyOn(child, '_isWindowNameOverriden');
       spyOn(custom, 'parse');
 
       let child = new Child({
@@ -151,7 +148,6 @@ describe('Child', () => {
         data: PostMessageEventNamesEnum.PARENT_COMMUNICATED + JSON.stringify({ a: 1 })
       });
 
-      expect(child._isWindowNameOverriden).toHaveBeenCalled();
       expect(custom.parse).toHaveBeenCalled();
       expect(child.config.onParentCommunication).toHaveBeenCalled();
     });

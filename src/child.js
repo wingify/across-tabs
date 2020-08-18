@@ -42,7 +42,7 @@ class Child {
    * Check if window.name is overridden
    */
   _isWindowNameOverriden() {
-    return !window.name.includes(TabDataTypesEnum.NEW_TAB_DATA);
+    return window.name.indexOf(TabDataTypesEnum.NEW_TAB_DATA) < 0;
   }
 
   /**

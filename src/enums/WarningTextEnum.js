@@ -7,7 +7,8 @@ const WarningTextEnum = {
   INVALID_DATA: 'Some wrong message is being sent by Parent.',
   CONFIG_REQUIRED: 'Configuration options required. Please read docs.',
   CUSTOM_EVENT: "CustomEvent(and it's polyfill) is not supported in this browser.",
-  URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.'
+  URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.',
+  ACROSS_TABS_UNAVAILABLE: 'AcrossTabs was not available on the child tab'
 };
 
 export default WarningTextEnum;

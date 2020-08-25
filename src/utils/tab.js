@@ -143,7 +143,27 @@ tabUtils.broadCastTo = (id, msg, isSiteInsideFrame) => {
 
   return tabUtils;
 };
+/**
+ * Send a storage data via postmessage to a specific Child tab
+ * @param  {String} id
+ * @param  {Object} data
+ * @param  {Boolean} isSiteInsideFrame
+ */
+tabUtils.sendStorageDataTo = (id, data, isSiteInsideFrame) => {
+  let targetedTab,
+    tabs = tabUtils.getAll();
 
+  try {
+    data = tabUtils.config.stringify(data);
+    data = PostMessageEventNamesEnum.PARENT_COMMUNCATED_STORAGE_DATA + data;
+    targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
+    tabUtils.sendMessage(targetedTab, data, isSiteInsideFrame);
+  } catch (e) {
+    throw new Error(WarningTextEnum.INVALID_JSON);
+  }
+
+  return tabUtils;
+};
 /**
  * Send a postMessage to the desired window/frame
  * @param  {Object}  target

@@ -10,7 +10,7 @@ let parent,
   mockedTab = {
     url: 'http://localhost:3000/example/child.html',
     id: '57cd47da-d98e-4a2d-814c-9b07cb51059c',
-    name: 'heatmap1',
+    windowName: 'heatmap1',
     status: 'open',
     ref: window
   };
@@ -45,8 +45,6 @@ describe('Parent', () => {
       expect(parent.watchStatus).toBeDefined();
       expect(parent.customEventUnListener).toBeDefined();
       expect(parent.addEventListeners).toBeDefined();
-
-      expect(parent.onWindowNameOverriden).toBeDefined();
       expect(parent.enableElements).toBeDefined();
       expect(parent.getAllTabs).toBeDefined();
       expect(parent.getOpenedTabs).toBeDefined();
@@ -158,7 +156,6 @@ describe('Parent', () => {
       let tab1 = Object.create(mockedTab);
 
       tab1.status = 'open';
-      tab1.ref.closed = false;
 
       expect(parent.watchStatus(tab1)).toBe(false);
     });

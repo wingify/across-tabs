@@ -1,6 +1,7 @@
 import PostMessageEventNamesEnum from './enums/PostMessageEventNamesEnum';
 import WarningTextEnum from './enums/WarningTextEnum';
 import TabDataTypesEnum from './enums/TabDataEnum';
+import TabStorage from './tabStorage';
 
 // Named Class expression
 class Child {
@@ -29,6 +30,7 @@ class Child {
     this.tabName = window.name;
     this.tabId = null;
     this.tabParentName = null;
+    this.storage = new TabStorage();
 
     Object.assign(this, config);
     this.config = config;
@@ -41,24 +43,13 @@ class Child {
   /**
    * Check if window.name is overridden
    */
-  _isWindowNameOverriden() {
+  _isWindowNameOverridden() {
     return window.name.indexOf(TabDataTypesEnum.NEW_TAB_DATA) < 0;
   }
 
   /**
-   * Set connected tab data to window.name
-   * @return {Object} data
-   */
-  _setData(dataReceived) {
-    let windowNameObj = this.config.parse(window.name);
-    windowNameObj[TabDataTypesEnum.CONNECTED_TAB_DATA] = dataReceived;
-    window.name = this.config.stringify(windowNameObj);
-    return dataReceived;
-  }
-
-  /**
    * Parse data fetched from windowName
-   * @param  {String} dataReceived
+   * @param {String} dataReceived
    */
   _parseData(dataReceived) {
     let actualData;
@@ -69,6 +60,8 @@ class Child {
       this.tabId = actualData && actualData.id;
       this.tabName = actualData && actualData.name;
       this.tabParentName = actualData && actualData.parentName;
+      this.tabStorage = new TabStorage(this._isWindowNameOverridden());
+      this.tabStorage.set(TabDataTypesEnum.NEW_TAB_DATA, dataReceived);
     } catch (e) {
       throw new Error(WarningTextEnum.INVALID_DATA);
     }
@@ -118,16 +111,6 @@ class Child {
       let msg;
 
       dataReceived = data.split(PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT)[1];
-
-      if (this._isWindowNameOverriden()) {
-        msg = {
-          tabInfo: dataReceived
-        };
-        this.sendMessageToParent(msg, PostMessageEventNamesEnum.WINDOW_NAME_OVERRIDEN);
-        return;
-      }
-
-      // // Set data to window.name
       this._parseData(dataReceived);
 
       msg = {
@@ -150,13 +133,24 @@ class Child {
       } catch (e) {
         throw new Error(WarningTextEnum.INVALID_JSON);
       }
-      // Update connected tab data on window.name as communicated by Parent
-      if (!this._isWindowNameOverriden()) {
-        this._setData(dataReceived);
-      }
       // Call user-defined `onParentCommunication` callback when Parent sends a message to Parent tab
       if (this.config.onParentCommunication) {
         this.config.onParentCommunication(dataReceived);
+      }
+    }
+
+    // Whenever Parent tab asks to store data at child once communication channel is established
+    if (data.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNCATED_STORAGE_DATA) > -1) {
+      dataReceived = data.split(PostMessageEventNamesEnum.PARENT_COMMUNCATED_STORAGE_DATA)[1];
+
+      try {
+        dataReceived = this.config.parse(dataReceived);
+        // Update connected tab data at tabStorage as communicated by Parent
+        Object.entries(dataReceived).map(obj => {
+          this.tabStorage.set(obj[0], obj[1]);
+        });
+      } catch (e) {
+        throw new Error(WarningTextEnum.INVALID_JSON);
       }
     }
   }

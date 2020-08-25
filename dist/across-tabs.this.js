@@ -95,7 +95,7 @@ var PostMessageEventNamesEnum = {
   PARENT_DISCONNECTED: '__PARENT_DISCONNECTED__',
   HANDSHAKE_WITH_PARENT: '__HANDSHAKE_WITH_PARENT__',
   PARENT_COMMUNICATED: '__PARENT_COMMUNICATED__',
-  WINDOW_NAME_OVERRIDEN: '__WINDOW_NAME_OVERRIDEN__'
+  PARENT_COMMUNCATED_STORAGE_DATA: '__PARENT_COMMUNCATED_STORAGE_DATA__'
 };
 
 exports.default = PostMessageEventNamesEnum;
@@ -119,7 +119,8 @@ var WarningTextEnum = {
   INVALID_DATA: 'Some wrong message is being sent by Parent.',
   CONFIG_REQUIRED: 'Configuration options required. Please read docs.',
   CUSTOM_EVENT: "CustomEvent(and it's polyfill) is not supported in this browser.",
-  URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.'
+  URL_REQUIRED: 'Url is needed for creating and opening a new window/tab. Please read docs.',
+  ACROSS_TABS_UNAVAILABLE: 'AcrossTabs was not available on the child tab'
 };
 
 exports.default = WarningTextEnum;
@@ -139,11 +140,11 @@ var _PostMessageEventNamesEnum = __webpack_require__(0);
 
 var _PostMessageEventNamesEnum2 = _interopRequireDefault(_PostMessageEventNamesEnum);
 
-var _array = __webpack_require__(4);
+var _array = __webpack_require__(3);
 
 var _array2 = _interopRequireDefault(_array);
 
-var _TabStatusEnum = __webpack_require__(5);
+var _TabStatusEnum = __webpack_require__(4);
 
 var _TabStatusEnum2 = _interopRequireDefault(_TabStatusEnum);
 
@@ -297,7 +298,27 @@ tabUtils.broadCastTo = function (id, msg, isSiteInsideFrame) {
 
   return tabUtils;
 };
+/**
+ * Send a storage data via postmessage to a specific Child tab
+ * @param  {String} id
+ * @param  {Object} data
+ * @param  {Boolean} isSiteInsideFrame
+ */
+tabUtils.sendStorageDataTo = function (id, data, isSiteInsideFrame) {
+  var targetedTab = void 0,
+      tabs = tabUtils.getAll();
 
+  try {
+    data = tabUtils.config.stringify(data);
+    data = _PostMessageEventNamesEnum2.default.PARENT_COMMUNCATED_STORAGE_DATA + data;
+    targetedTab = _array2.default.searchByKeyName(tabs, 'id', id); // TODO: tab.id
+    tabUtils.sendMessage(targetedTab, data, isSiteInsideFrame);
+  } catch (e) {
+    throw new Error(_WarningTextEnum2.default.INVALID_JSON);
+  }
+
+  return tabUtils;
+};
 /**
  * Send a postMessage to the desired window/frame
  * @param  {Object}  target
@@ -319,27 +340,6 @@ exports.default = tabUtils;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Enum for different data passed to tab, used for tab-communication
- * @type {Object}
- */
-var TabDataTypesEnum = {
-  NEW_TAB_DATA: '__NEW_TAB_DATA__',
-  CONNECTED_TAB_DATA: '__ACTIVE_TAB_DATA__'
-};
-
-exports.default = TabDataTypesEnum;
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -421,7 +421,7 @@ arrayUtils.searchByKeyName = function (data, key, value, returnPreference) {
 exports.default = arrayUtils;
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -442,7 +442,7 @@ var TabStatusEnum = {
 exports.default = TabStatusEnum;
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -487,6 +487,27 @@ var domUtils = {
 };
 
 exports.default = domUtils;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Enum for different data passed to tab, used for tab-communication
+ * @type {Object}
+ */
+var TabDataTypesEnum = {
+  NEW_TAB_DATA: '__NEW_TAB_DATA__',
+  CONNECTED_TAB_DATA: '__ACTIVE_TAB_DATA__'
+};
+
+exports.default = TabDataTypesEnum;
 
 /***/ }),
 /* 7 */
@@ -543,11 +564,11 @@ var _tab3 = __webpack_require__(2);
 
 var _tab4 = _interopRequireDefault(_tab3);
 
-var _dom = __webpack_require__(6);
+var _dom = __webpack_require__(5);
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _TabStatusEnum = __webpack_require__(5);
+var _TabStatusEnum = __webpack_require__(4);
 
 var _TabStatusEnum2 = _interopRequireDefault(_TabStatusEnum);
 
@@ -558,10 +579,6 @@ var _WarningTextEnum2 = _interopRequireDefault(_WarningTextEnum);
 var _PostMessageEventNamesEnum = __webpack_require__(0);
 
 var _PostMessageEventNamesEnum2 = _interopRequireDefault(_PostMessageEventNamesEnum);
-
-var _TabDataEnum = __webpack_require__(3);
-
-var _TabDataEnum2 = _interopRequireDefault(_TabDataEnum);
 
 var _postmessage = __webpack_require__(11);
 
@@ -721,32 +738,6 @@ var Parent = function () {
     }
 
     /**
-     * Called when a child is refreshed/closed
-     * @param  {Object} ev - Event
-     */
-
-  }, {
-    key: 'onWindowNameOverriden',
-    value: function onWindowNameOverriden(ev) {
-      var tabInfo = this.parse(ev.detail.tabInfo);
-      var tabs = _tab4.default.getAll();
-      var overridenTab = tabs.find(function (tab) {
-        return tab.id === tabInfo.id;
-      });
-
-      // close the tab where window.name is overriden
-      this.closeTab(tabInfo.id);
-
-      // reopen tab using query parameter as fallback
-      var url = new URL(overridenTab.url);
-      url.searchParams.append(_TabDataEnum2.default.NEW_TAB_DATA, overridenTab.windowName);
-      var config = {
-        url: url.href,
-        windowFeatures: overridenTab.windowFeatures
-      };
-      this.openNewTab(config);
-    }
-    /**
      * Attach postmessage, native and custom listeners to the window
      */
 
@@ -766,11 +757,6 @@ var Parent = function () {
       window.removeEventListener('onChildUnload', this.onChildUnload);
       window.addEventListener('onChildUnload', function (ev) {
         return _this2.onChildUnload(ev);
-      });
-
-      window.removeEventListener('onWindowNameOverriden', this.onWindowNameOverriden);
-      window.addEventListener('onWindowNameOverriden', function (ev) {
-        return _this2.onWindowNameOverriden(ev);
       });
 
       // Let children tabs know when Parent is closed / refereshed.
@@ -869,6 +855,17 @@ var Parent = function () {
     }
 
     /**
+     * Send a postmessage to a specific tab
+     * @return {Object}
+     */
+
+  }, {
+    key: 'sendStorageDataTo',
+    value: function sendStorageDataTo(id, data) {
+      return _tab4.default.sendStorageDataTo(id, data);
+    }
+
+    /**
      * Open a new tab. Config has to be passed with some required keys
      * @return {Object} tab
      */
@@ -888,6 +885,25 @@ var Parent = function () {
 
       tab = new this.Tab();
       tab.create(config);
+
+      // to confirm if child tab was loaded properly with across-tabs
+      setTimeout(function () {
+        var tabs = _tab4.default.getAll();
+        var newlyOpenedTab = tabs.find(function (tab) {
+          return tab.id === window.newlyTabOpened.id;
+        });
+        if (!newlyOpenedTab.wasSuccessfullyLoaded) {
+          // maybe window.name was overriden and across tabs could not be loaded
+          this.closeTab(newlyOpenedTab.id);
+          // open tab with query params
+          tab.create(config, true);
+          setTimeout(function () {
+            if (!newlyOpenedTab.wasSuccessfullyLoaded) {
+              throw new Error(_WarningTextEnum2.default.ACROSS_TABS_UNAVAILABLE);
+            }
+          }, 10000);
+        }
+      }, 10000);
 
       // If polling is already there, don't set it again
       if (!heartBeat) {
@@ -940,11 +956,11 @@ var _uuid = __webpack_require__(10);
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
-var _dom = __webpack_require__(6);
+var _dom = __webpack_require__(5);
 
 var _dom2 = _interopRequireDefault(_dom);
 
-var _TabDataEnum = __webpack_require__(3);
+var _TabDataEnum = __webpack_require__(6);
 
 var _TabDataEnum2 = _interopRequireDefault(_TabDataEnum);
 
@@ -966,6 +982,7 @@ var Tab = function () {
   /**
    * Open a new tab
    * @param  {Object} config - Refer API for config keys
+   * @param  {Boolean} isWindowNameOverridden - for storage reference
    * @return {Object} this
    */
 
@@ -973,15 +990,28 @@ var Tab = function () {
   _createClass(Tab, [{
     key: 'create',
     value: function create(config) {
+      var isWindowNameOverridden = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
       config = config || {};
       _extends(this, config);
       this.id = _uuid2.default.generate() || _tab2.default.tabs.length + 1;
       this.status = 'open';
+      this.wasSuccessfullyLoaded = false;
       // set new tab data to window.name
-      var windowName = {};
-      windowName[_TabDataEnum2.default.NEW_TAB_DATA] = config.windowName;
+      var adjustedWindowName = {};
+      try {
+        var name = JSON.parse(config.windowName);
+        adjustedWindowName = name;
+        adjustedWindowName[_TabDataEnum2.default.NEW_TAB_DATA] = '';
+      } catch (e) {
+        adjustedWindowName[_TabDataEnum2.default.NEW_TAB_DATA] = config.windowName;
+      }
       // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
-      this.ref = window.open(this.url, JSON.stringify(windowName) || '_blank', config.windowFeatures);
+      if (isWindowNameOverridden) {
+        this.url = new URL(this.url);
+        this.url.searchParams.append(_TabDataEnum2.default.NEW_TAB_DATA, config.windowName);
+      }
+      this.ref = window.open(this.url, JSON.stringify(adjustedWindowName) || '_blank', config.windowFeatures);
 
       _dom2.default.disable('data-tab-opener');
 
@@ -1114,7 +1144,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _array = __webpack_require__(4);
+var _array = __webpack_require__(3);
 
 var _array2 = _interopRequireDefault(_array);
 
@@ -1188,6 +1218,11 @@ PostMessageListener._onLoad = function (data) {
 
   if (window.newlyTabOpened) {
     try {
+      tabs = _tab2.default.getAll();
+      var newlyOpenedTab = tabs.find(function (tab) {
+        return tab.id === window.newlyTabOpened.id;
+      });
+      newlyOpenedTab.wasSuccessfullyLoaded = true;
       dataToSend = _PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT;
       dataToSend += _tab2.default.config.stringify({
         id: window.newlyTabOpened.id,
@@ -1259,25 +1294,6 @@ PostMessageListener._onBeforeUnload = function (data) {
 };
 
 /**
- *
- * @param {Object} data
- */
-PostMessageListener._onWindowNameOverriden = function (data) {
-  var tabInfo = data.split(_PostMessageEventNamesEnum2.default.WINDOW_NAME_OVERRIDEN)[1];
-
-  try {
-    tabInfo = _tab2.default.config.parse(tabInfo);
-  } catch (e) {
-    throw new Error(_WarningTextEnum2.default.INVALID_JSON);
-  }
-
-  // CustomEvent is not supported in IE, but polyfill will take care of it
-  var event = new CustomEvent('onWindowNameOverriden', { detail: tabInfo });
-
-  window.dispatchEvent(event);
-};
-
-/**
  * onNewTab - It's the entry point for data processing after receiving any postmessage form any Child Tab
  * @param  {Object} message
  */
@@ -1306,8 +1322,6 @@ PostMessageListener.onNewTab = function (message) {
     PostMessageListener._onCustomMessage(data, _PostMessageEventNamesEnum2.default.HANDSHAKE);
   } else if (data.indexOf(_PostMessageEventNamesEnum2.default.ON_BEFORE_UNLOAD) > -1) {
     PostMessageListener._onBeforeUnload(data);
-  } else if (data.indexOf(_PostMessageEventNamesEnum2.default.WINDOW_NAME_OVERRIDEN) > -1) {
-    PostMessageListener._onWindowNameOverriden(data);
   }
 };
 
@@ -1364,9 +1378,13 @@ var _WarningTextEnum = __webpack_require__(1);
 
 var _WarningTextEnum2 = _interopRequireDefault(_WarningTextEnum);
 
-var _TabDataEnum = __webpack_require__(3);
+var _TabDataEnum = __webpack_require__(6);
 
 var _TabDataEnum2 = _interopRequireDefault(_TabDataEnum);
+
+var _tabStorage = __webpack_require__(14);
+
+var _tabStorage2 = _interopRequireDefault(_tabStorage);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1401,6 +1419,7 @@ var Child = function () {
     this.tabName = window.name;
     this.tabId = null;
     this.tabParentName = null;
+    this.storage = new _tabStorage2.default();
 
     _extends(this, config);
     this.config = config;
@@ -1416,28 +1435,14 @@ var Child = function () {
 
 
   _createClass(Child, [{
-    key: '_isWindowNameOverriden',
-    value: function _isWindowNameOverriden() {
-      return !window.name.includes(_TabDataEnum2.default.NEW_TAB_DATA);
-    }
-
-    /**
-     * Set connected tab data to window.name
-     * @return {Object} data
-     */
-
-  }, {
-    key: '_setData',
-    value: function _setData(dataReceived) {
-      var windowNameObj = this.config.parse(window.name);
-      windowNameObj[_TabDataEnum2.default.CONNECTED_TAB_DATA] = dataReceived;
-      window.name = this.config.stringify(windowNameObj);
-      return dataReceived;
+    key: '_isWindowNameOverridden',
+    value: function _isWindowNameOverridden() {
+      return window.name.indexOf(_TabDataEnum2.default.NEW_TAB_DATA) < 0;
     }
 
     /**
      * Parse data fetched from windowName
-     * @param  {String} dataReceived
+     * @param {String} dataReceived
      */
 
   }, {
@@ -1451,6 +1456,8 @@ var Child = function () {
         this.tabId = actualData && actualData.id;
         this.tabName = actualData && actualData.name;
         this.tabParentName = actualData && actualData.parentName;
+        this.tabStorage = new _tabStorage2.default(this._isWindowNameOverridden());
+        this.tabStorage.set(_TabDataEnum2.default.NEW_TAB_DATA, dataReceived);
       } catch (e) {
         throw new Error(_WarningTextEnum2.default.INVALID_DATA);
       }
@@ -1507,16 +1514,6 @@ var Child = function () {
         var msg = void 0;
 
         dataReceived = data.split(_PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT)[1];
-
-        if (this._isWindowNameOverriden()) {
-          msg = {
-            tabInfo: dataReceived
-          };
-          this.sendMessageToParent(msg, _PostMessageEventNamesEnum2.default.WINDOW_NAME_OVERRIDEN);
-          return;
-        }
-
-        // // Set data to window.name
         this._parseData(dataReceived);
 
         msg = {
@@ -1539,13 +1536,24 @@ var Child = function () {
         } catch (e) {
           throw new Error(_WarningTextEnum2.default.INVALID_JSON);
         }
-        // Update connected tab data on window.name as communicated by Parent
-        if (!this._isWindowNameOverriden()) {
-          this._setData(dataReceived);
-        }
         // Call user-defined `onParentCommunication` callback when Parent sends a message to Parent tab
         if (this.config.onParentCommunication) {
           this.config.onParentCommunication(dataReceived);
+        }
+      }
+
+      // Whenever Parent tab asks to store data at child once communication channel is established
+      if (data.indexOf(_PostMessageEventNamesEnum2.default.PARENT_COMMUNCATED_STORAGE_DATA) > -1) {
+        dataReceived = data.split(_PostMessageEventNamesEnum2.default.PARENT_COMMUNCATED_STORAGE_DATA)[1];
+
+        try {
+          dataReceived = this.config.parse(dataReceived);
+          // Update connected tab data at tabStorage as communicated by Parent
+          Object.entries(dataReceived).map(function (obj) {
+            _this.tabStorage.set(obj[0], obj[1]);
+          });
+        } catch (e) {
+          throw new Error(_WarningTextEnum2.default.INVALID_JSON);
         }
       }
     }
@@ -1656,6 +1664,113 @@ var Child = function () {
 }();
 
 exports.default = Child;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _TabStorageLocationEnum = __webpack_require__(15);
+
+var _TabStorageLocationEnum2 = _interopRequireDefault(_TabStorageLocationEnum);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// Named Class expression
+var TabStorage = function () {
+  /**
+   * Invoked when the object is instantiated
+   */
+  function TabStorage() {
+    var isWindowNameOverridden = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    _classCallCheck(this, TabStorage);
+
+    // Set name of Parent tab if not already defined
+    if (!isWindowNameOverridden) {
+      this.storagePoint = _TabStorageLocationEnum2.default.WINDOW_NAME;
+    } else {
+      this.storagePoint = _TabStorageLocationEnum2.default.SESSION_STORAGE;
+    }
+  }
+  /**
+   * Get item from storage
+   * @param  {String} item - item to be fetched
+   * @return {Object} storage item
+   */
+
+
+  _createClass(TabStorage, [{
+    key: 'get',
+    value: function get(item) {
+      var result = void 0;
+      switch (this.storagePoint) {
+        case _TabStorageLocationEnum2.default.WINDOW_NAME:
+          result = JSON.parse(window.name)[item];
+          break;
+        case _TabStorageLocationEnum2.default.SESSION_STORAGE:
+          result = window.sessionStorage.getItem(item);
+          break;
+      }
+      return result;
+    }
+    /**
+     * Set item to storage
+     * @param  {String} item - item to be fetched
+     * @return {Object} storage item
+     */
+
+  }, {
+    key: 'set',
+    value: function set(key, value) {
+      switch (this.storagePoint) {
+        case _TabStorageLocationEnum2.default.WINDOW_NAME:
+          var name = JSON.parse(window.name);
+          name[key] = value;
+          window.name = JSON.stringify(name);
+          break;
+        case _TabStorageLocationEnum2.default.SESSION_STORAGE:
+          window.sessionStorage.setItem(key, value);
+          break;
+      }
+    }
+  }]);
+
+  return TabStorage;
+}();
+
+exports.default = TabStorage;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Enum for different data passed to tab, used for tab-communication
+ * @type {Object}
+ */
+var TabStorageLocationEnum = {
+  WINDOW_NAME: '__WINDOW_NAME__',
+  SESSION_STORAGE: '__SESSION_STORAGE__'
+};
+
+exports.default = TabStorageLocationEnum;
 
 /***/ })
 /******/ ]);

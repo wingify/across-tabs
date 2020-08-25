@@ -23,8 +23,7 @@ describe('Child', () => {
   describe('Basic tests', () => {
     it('verify it is defined and its methods', () => {
       expect(child).toBeDefined();
-      expect(child._isWindowNameOverriden).toBeDefined();
-      expect(child._setData).toBeDefined();
+      expect(child._isWindowNameOverridden).toBeDefined();
       expect(child._parseData).toBeDefined();
       expect(child.onCommunication).toBeDefined();
       expect(child.addListeners).toBeDefined();
@@ -100,7 +99,6 @@ describe('Child', () => {
       });
 
       spyOn(child, '_parseData');
-      spyOn(child, '_isWindowNameOverriden');
       spyOn(child, 'sendMessageToParent');
 
       spyOn(child.config, 'onInitialize');
@@ -109,7 +107,6 @@ describe('Child', () => {
         data: PostMessageEventNamesEnum.HANDSHAKE_WITH_PARENT + JSON.stringify({ a: 1 })
       });
 
-      expect(child._isWindowNameOverriden).toHaveBeenCalled();
       expect(child._parseData).toHaveBeenCalled();
       expect(child.sendMessageToParent).toHaveBeenCalled();
       expect(child.config.onInitialize).toHaveBeenCalled();

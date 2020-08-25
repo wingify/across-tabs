@@ -1,4 +1,5 @@
 var path = require('path');
+process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = function(config) {
   config.set({
@@ -6,7 +7,7 @@ module.exports = function(config) {
     autoWatch: true,
     // list of files / patterns to exclude
     exclude: [],
-    browsers: ['PhantomJS'],
+    browsers: ['ChromeHeadless'],
     files: ['tests/**/*.spec.js'],
     frameworks: ['jasmine'],
     preprocessors: {

@@ -95,7 +95,7 @@ var PostMessageEventNamesEnum = {
   PARENT_DISCONNECTED: '__PARENT_DISCONNECTED__',
   HANDSHAKE_WITH_PARENT: '__HANDSHAKE_WITH_PARENT__',
   PARENT_COMMUNICATED: '__PARENT_COMMUNICATED__',
-  PARENT_COMMUNCATED_STORAGE_DATA: '__PARENT_COMMUNCATED_STORAGE_DATA__'
+  PARENT_COMMUNICATED_STORAGE_DATA: '__PARENT_COMMUNICATED_STORAGE_DATA__'
 };
 
 exports.default = PostMessageEventNamesEnum;
@@ -310,7 +310,7 @@ tabUtils.sendStorageDataTo = function (id, data, isSiteInsideFrame) {
 
   try {
     data = tabUtils.config.stringify(data);
-    data = _PostMessageEventNamesEnum2.default.PARENT_COMMUNCATED_STORAGE_DATA + data;
+    data = _PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED_STORAGE_DATA + data;
     targetedTab = _array2.default.searchByKeyName(tabs, 'id', id); // TODO: tab.id
     tabUtils.sendMessage(targetedTab, data, isSiteInsideFrame);
   } catch (e) {
@@ -1543,8 +1543,8 @@ var Child = function () {
       }
 
       // Whenever Parent tab asks to store data at child once communication channel is established
-      if (data.indexOf(_PostMessageEventNamesEnum2.default.PARENT_COMMUNCATED_STORAGE_DATA) > -1) {
-        dataReceived = data.split(_PostMessageEventNamesEnum2.default.PARENT_COMMUNCATED_STORAGE_DATA)[1];
+      if (data.indexOf(_PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED_STORAGE_DATA) > -1) {
+        dataReceived = data.split(_PostMessageEventNamesEnum2.default.PARENT_COMMUNICATED_STORAGE_DATA)[1];
 
         try {
           dataReceived = this.config.parse(dataReceived);

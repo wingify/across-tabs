@@ -155,7 +155,7 @@ tabUtils.sendStorageDataTo = (id, data, isSiteInsideFrame) => {
 
   try {
     data = tabUtils.config.stringify(data);
-    data = PostMessageEventNamesEnum.PARENT_COMMUNCATED_STORAGE_DATA + data;
+    data = PostMessageEventNamesEnum.PARENT_COMMUNICATED_STORAGE_DATA + data;
     targetedTab = arrayUtils.searchByKeyName(tabs, 'id', id); // TODO: tab.id
     tabUtils.sendMessage(targetedTab, data, isSiteInsideFrame);
   } catch (e) {

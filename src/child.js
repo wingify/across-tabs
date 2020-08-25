@@ -30,7 +30,7 @@ class Child {
     this.tabName = window.name;
     this.tabId = null;
     this.tabParentName = null;
-    this.storage = new TabStorage();
+    this.tabStorage = new TabStorage(this._isWindowNameOverridden());
 
     Object.assign(this, config);
     this.config = config;
@@ -60,7 +60,6 @@ class Child {
       this.tabId = actualData && actualData.id;
       this.tabName = actualData && actualData.name;
       this.tabParentName = actualData && actualData.parentName;
-      this.tabStorage = new TabStorage(this._isWindowNameOverridden());
       this.tabStorage.set(TabDataTypesEnum.NEW_TAB_DATA, dataReceived);
     } catch (e) {
       throw new Error(WarningTextEnum.INVALID_DATA);
@@ -140,8 +139,8 @@ class Child {
     }
 
     // Whenever Parent tab asks to store data at child once communication channel is established
-    if (data.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNCATED_STORAGE_DATA) > -1) {
-      dataReceived = data.split(PostMessageEventNamesEnum.PARENT_COMMUNCATED_STORAGE_DATA)[1];
+    if (data.indexOf(PostMessageEventNamesEnum.PARENT_COMMUNICATED_STORAGE_DATA) > -1) {
+      dataReceived = data.split(PostMessageEventNamesEnum.PARENT_COMMUNICATED_STORAGE_DATA)[1];
 
       try {
         dataReceived = this.config.parse(dataReceived);
@@ -151,6 +150,10 @@ class Child {
         });
       } catch (e) {
         throw new Error(WarningTextEnum.INVALID_JSON);
+      }
+
+      if (this.config.onParentCommunicatedStorageData) {
+        this.config.onParentCommunicatedStorageData();
       }
     }
   }

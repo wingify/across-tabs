@@ -1,6 +1,7 @@
 import tabUtils from '../src/utils/tab';
 import UUID from '../src/vendor/uuid';
 import domUtils from '../src/utils/dom';
+import TabDataTypesEnum from '../src/enums/TabDataEnum';
 
 import Tab from '../src/tab';
 
@@ -70,5 +71,13 @@ describe('Tab', () => {
       expect(domUtils.disable).toHaveBeenCalled();
       expect(tabUtils.addNew).toHaveBeenCalledWith(tab);
     });
+    it('should pass queryParams if windowNameOverridden', () => {
+      let isWindowNameOverridden = true;
+      tab.create({
+        url: 'http://abc.xyz',
+        windowName: 'new tab'
+      }, isWindowNameOverridden);
+      expect(tab.url.href).toEqual(`http://abc.xyz/?${TabDataTypesEnum.NEW_TAB_DATA}=new+tab`)
+    })
   });
 });

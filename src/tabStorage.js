@@ -8,9 +8,9 @@ class TabStorage {
   constructor(isWindowNameOverridden = false) {
     // Set name of Parent tab if not already defined
     if (!isWindowNameOverridden) {
-      this.storagePoint = TabStorageLocationEnum.WINDOW_NAME;
+      this.storageLocation = TabStorageLocationEnum.WINDOW_NAME;
     } else {
-      this.storagePoint = TabStorageLocationEnum.SESSION_STORAGE;
+      this.storageLocation = TabStorageLocationEnum.SESSION_STORAGE;
     }
   }
   /**
@@ -19,10 +19,12 @@ class TabStorage {
    * @return {Object} storage item
    */
   get(item) {
-    let result;
-    switch (this.storagePoint) {
+    let result = null;
+    switch (this.storageLocation) {
       case TabStorageLocationEnum.WINDOW_NAME:
-        result = JSON.parse(window.name)[item];
+        if (window.name) {
+          result = JSON.parse(window.name)[item];
+        }
         break;
       case TabStorageLocationEnum.SESSION_STORAGE:
         result = window.sessionStorage.getItem(item);
@@ -36,9 +38,12 @@ class TabStorage {
    * @return {Object} storage item
    */
   set(key, value) {
-    switch (this.storagePoint) {
+    switch (this.storageLocation) {
       case TabStorageLocationEnum.WINDOW_NAME:
-        let name = JSON.parse(window.name);
+        let name = {};
+        if (window.name) {
+          name = JSON.parse(window.name);
+        }
         name[key] = value;
         window.name = JSON.stringify(name);
         break;

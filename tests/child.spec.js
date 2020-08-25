@@ -148,6 +148,19 @@ describe('Child', () => {
       expect(custom.parse).toHaveBeenCalled();
       expect(child.config.onParentCommunication).toHaveBeenCalled();
     });
+    it('should call user-defined method when PARENT_COMMUNICATED_STORAGE_DATA event', () => {
+      let child = new Child({
+        onParentCommunicatedStorageData: function() {}
+      });
+
+      spyOn(child.config, 'onParentCommunicatedStorageData');
+
+      child.onCommunication({
+        data: PostMessageEventNamesEnum.PARENT_COMMUNICATED_STORAGE_DATA + JSON.stringify({ a: 1 })
+      });
+
+      expect(child.config.onParentCommunicatedStorageData).toHaveBeenCalled();
+    });
   });
   describe('method: addListeners', () => {
     it('should attach events to window', () => {

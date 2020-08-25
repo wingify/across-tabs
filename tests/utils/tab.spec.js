@@ -242,6 +242,23 @@ describe('tabUtils', () => {
       expect(tab1.ref.top.postMessage).toHaveBeenCalled();
     });
   });
+  describe('method: sendStorageDataTo', () => {
+    it('should send storage data to the specified tab', () => {
+      tabUtils.config.stringify = JSON.stringify;
+
+      addTabs();
+
+      tab1.id = '57cd47da-d98e-4a2d-814c-9b07cb51059c';
+      tab2.id = 'bjjbnk32-d98e-4a2d-814c-9b07cb51059c';
+      tab3.id = 'pi0dn3dd-d98e-4a2d-814c-9b07cb51059c';
+
+      spyOn(tab1.ref.top, 'postMessage');
+
+      tabUtils.sendStorageDataTo(tab1.id, { data:1 });
+
+      expect(tab1.ref.top.postMessage).toHaveBeenCalled();
+    });
+  });
   describe('method: sendMessage', () => {
     it('should send message to correct child window', () => {
       let result;

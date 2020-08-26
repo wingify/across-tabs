@@ -219,6 +219,14 @@ class Child {
       isSiteInsideFrame: this.config.isSiteInsideFrame
     };
   }
+
+  /**
+   * Get particular item from TabStorage
+   * @return {Object} tab-info
+   */
+  getTabStorageItem(item) {
+    return this.tabStorage.get(item);
+  }
   /**
    * API ends here ->
    */

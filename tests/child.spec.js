@@ -30,6 +30,7 @@ describe('Child', () => {
       expect(child.setHandshakeExpiry).toBeDefined();
       expect(child.sendMessageToParent).toBeDefined();
       expect(child.getTabInfo).toBeDefined();
+      expect(child.getTabStorageItem).toBeDefined();
       expect(child.init).toBeDefined();
     });
   });
@@ -209,6 +210,14 @@ describe('Child', () => {
       expect(child.getTabInfo().id).toBeDefined();
       expect(child.getTabInfo().name).toBeDefined();
       expect(child.getTabInfo().parentName).toBeDefined();
+    });
+  });
+  describe('method: getTabStorageItem', () => {
+    it('should return requested data item', () => {
+      expect(child.getTabStorageItem()).toBeDefined();
+      child.tabStorage.set('data',1);
+      let result = child.getTabStorageItem('data');
+      expect(result).toEqual('1');
     });
   });
   describe('method: init', () => {

@@ -10,6 +10,7 @@ import PostMessageEventNamesEnum from './enums/PostMessageEventNamesEnum';
 import PostMessageListener from './event-listeners/postmessage';
 
 let heartBeat, tab;
+const timeLimit = 10000;
 
 // Named Class expression
 class Parent {
@@ -247,21 +248,22 @@ class Parent {
     tab.create(config);
 
     // to confirm if child tab was loaded properly with across-tabs
-    setTimeout(function() {
-      let tabs = tabUtils.getAll();
-      let newlyOpenedTab = tabs.find(tab => tab.id === window.newlyTabOpened.id);
-      if (!newlyOpenedTab.wasSuccessfullyLoaded) {
+    setTimeout(() => {
+      if (!tab.wasSuccessfullyLoaded) {
+        let windowNameOverridden = true;
         // maybe window.name was overriden and across tabs could not be loaded
-        this.closeTab(newlyOpenedTab.id);
+        this.closeTab(tab.id);
         // open tab with query params
-        tab.create(config, true);
-        setTimeout(function() {
-          if (!newlyOpenedTab.wasSuccessfullyLoaded) {
+        let tabWithQueryParams = new this.Tab();
+        tabWithQueryParams.create(config, windowNameOverridden);
+        setTimeout(() => {
+          if (!tabWithQueryParams.wasSuccessfullyLoaded) {
+            this.closeTab(tabWithQueryParams.id);
             throw new Error(WarningTextEnum.ACROSS_TABS_UNAVAILABLE);
           }
-        }, 10000);
+        }, timeLimit);
       }
-    }, 10000);
+    }, timeLimit);
 
     // If polling is already there, don't set it again
     if (!heartBeat) {

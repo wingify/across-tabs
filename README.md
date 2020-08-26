@@ -205,7 +205,7 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
 - **`openNewTab`**
 
-  Saves `data` in specific `key` in sessionStorage. If the key is not provided, the library will warn.
+  Saves `data` in specific `key` in TabStorage.
   Following types of JavaScript objects are supported:
 
   | Parameter | Description                                   |
@@ -293,6 +293,19 @@ Refer [above section](#create-an-instance--reference-before-using) on how to cre
 
   ```
     parent.broadCastTo('57cd47da-d98e-4a2d-814c-9b07cb51059c', 'Hey! Can you run the script: worker.js? Thanks!');
+  ```
+
+  - **`sendStorageDataTo`**
+
+  Sends `data` (key:value) pairs to be stored at a particular opened tab.
+
+  | Parameter | Description                  |
+  | --------- | ---------------------------- |
+  | id        | id of the tab to send an msg |
+  | data      | Object to be stored          |
+
+  ```
+    parent.sendStorageDataTo('57cd47da-d98e-4a2d-814c-9b07cb51059c', { token : '1eab3f' });
   ```
 
 ##### New Tab(Child) Methods

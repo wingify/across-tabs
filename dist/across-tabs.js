@@ -599,6 +599,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var heartBeat = void 0,
     tab = void 0;
+var timeLimit = 10000;
 
 // Named Class expression
 
@@ -882,6 +883,8 @@ var Parent = function () {
   }, {
     key: 'openNewTab',
     value: function openNewTab(config) {
+      var _this3 = this;
+
       if (!config) {
         throw new Error(_WarningTextEnum2.default.CONFIG_REQUIRED);
       }
@@ -897,22 +900,21 @@ var Parent = function () {
 
       // to confirm if child tab was loaded properly with across-tabs
       setTimeout(function () {
-        var tabs = _tab4.default.getAll();
-        var newlyOpenedTab = tabs.find(function (tab) {
-          return tab.id === window.newlyTabOpened.id;
-        });
-        if (!newlyOpenedTab.wasSuccessfullyLoaded) {
+        if (!tab.wasSuccessfullyLoaded) {
+          var windowNameOverridden = true;
           // maybe window.name was overriden and across tabs could not be loaded
-          this.closeTab(newlyOpenedTab.id);
+          _this3.closeTab(tab.id);
           // open tab with query params
-          tab.create(config, true);
+          var tabWithQueryParams = new _this3.Tab();
+          tabWithQueryParams.create(config, windowNameOverridden);
           setTimeout(function () {
-            if (!newlyOpenedTab.wasSuccessfullyLoaded) {
+            if (!tabWithQueryParams.wasSuccessfullyLoaded) {
+              _this3.closeTab(tabWithQueryParams.id);
               throw new Error(_WarningTextEnum2.default.ACROSS_TABS_UNAVAILABLE);
             }
-          }, 10000);
+          }, timeLimit);
         }
-      }, 10000);
+      }, timeLimit);
 
       // If polling is already there, don't set it again
       if (!heartBeat) {
@@ -1231,7 +1233,9 @@ PostMessageListener._onLoad = function (data) {
       var newlyOpenedTab = tabs.find(function (tab) {
         return tab.id === window.newlyTabOpened.id;
       });
-      newlyOpenedTab.wasSuccessfullyLoaded = true;
+      if (newlyOpenedTab) {
+        newlyOpenedTab.wasSuccessfullyLoaded = true;
+      }
       dataToSend = _PostMessageEventNamesEnum2.default.HANDSHAKE_WITH_PARENT;
       dataToSend += _tab2.default.config.stringify({
         id: window.newlyTabOpened.id,
@@ -1428,7 +1432,7 @@ var Child = function () {
     this.tabName = window.name;
     this.tabId = null;
     this.tabParentName = null;
-    this.storage = new _tabStorage2.default();
+    this.tabStorage = new _tabStorage2.default(this._isWindowNameOverridden());
 
     _extends(this, config);
     this.config = config;
@@ -1465,7 +1469,6 @@ var Child = function () {
         this.tabId = actualData && actualData.id;
         this.tabName = actualData && actualData.name;
         this.tabParentName = actualData && actualData.parentName;
-        this.tabStorage = new _tabStorage2.default(this._isWindowNameOverridden());
         this.tabStorage.set(_TabDataEnum2.default.NEW_TAB_DATA, dataReceived);
       } catch (e) {
         throw new Error(_WarningTextEnum2.default.INVALID_DATA);
@@ -1563,6 +1566,10 @@ var Child = function () {
           });
         } catch (e) {
           throw new Error(_WarningTextEnum2.default.INVALID_JSON);
+        }
+
+        if (this.config.onParentCommunicatedStorageData) {
+          this.config.onParentCommunicatedStorageData();
         }
       }
     }
@@ -1707,9 +1714,9 @@ var TabStorage = function () {
 
     // Set name of Parent tab if not already defined
     if (!isWindowNameOverridden) {
-      this.storagePoint = _TabStorageLocationEnum2.default.WINDOW_NAME;
+      this.storageLocation = _TabStorageLocationEnum2.default.WINDOW_NAME;
     } else {
-      this.storagePoint = _TabStorageLocationEnum2.default.SESSION_STORAGE;
+      this.storageLocation = _TabStorageLocationEnum2.default.SESSION_STORAGE;
     }
   }
   /**
@@ -1722,10 +1729,12 @@ var TabStorage = function () {
   _createClass(TabStorage, [{
     key: 'get',
     value: function get(item) {
-      var result = void 0;
-      switch (this.storagePoint) {
+      var result = null;
+      switch (this.storageLocation) {
         case _TabStorageLocationEnum2.default.WINDOW_NAME:
-          result = JSON.parse(window.name)[item];
+          if (window.name) {
+            result = JSON.parse(window.name)[item];
+          }
           break;
         case _TabStorageLocationEnum2.default.SESSION_STORAGE:
           result = window.sessionStorage.getItem(item);
@@ -1742,9 +1751,12 @@ var TabStorage = function () {
   }, {
     key: 'set',
     value: function set(key, value) {
-      switch (this.storagePoint) {
+      switch (this.storageLocation) {
         case _TabStorageLocationEnum2.default.WINDOW_NAME:
-          var name = JSON.parse(window.name);
+          var name = {};
+          if (window.name) {
+            name = JSON.parse(window.name);
+          }
           name[key] = value;
           window.name = JSON.stringify(name);
           break;

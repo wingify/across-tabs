@@ -7,7 +7,7 @@ var postMessageEvents = [],
 
 function openNewTab(ev) {
   var config = {
-    url: 'http://localhost:3000/example/vanilla-js/child.html',
+    url: 'http://shaurya-kalia.glitch.me',
     windowName: 'Child - ' + ++i,
     windowFeatures: ''
   };

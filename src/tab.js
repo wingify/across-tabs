@@ -26,18 +26,13 @@ class Tab {
     this.wasSuccessfullyLoaded = false;
     // set new tab data to window.name
     let adjustedWindowName = {};
-    try {
-      let name = JSON.parse(config.windowName);
-      adjustedWindowName = name;
-      adjustedWindowName[TabDataTypesEnum.NEW_TAB_DATA] = '';
-    } catch (e) {
-      adjustedWindowName[TabDataTypesEnum.NEW_TAB_DATA] = config.windowName;
-    }
-    // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
+    adjustedWindowName[TabDataTypesEnum.ACROSS_TAB_CONFIG] = config.windowName;
+    // if window.name is overridden pass data via queryParams
     if (isWindowNameOverridden) {
       this.url = new URL(this.url);
-      this.url.searchParams.append(TabDataTypesEnum.NEW_TAB_DATA, config.windowName);
+      this.url.searchParams.append(TabDataTypesEnum.ACROSS_TAB_CONFIG, config.windowName);
     }
+    // Refere https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features for WindowFeatures
     this.ref = window.open(this.url, JSON.stringify(adjustedWindowName) || '_blank', config.windowFeatures);
 
     domUtils.disable('data-tab-opener');

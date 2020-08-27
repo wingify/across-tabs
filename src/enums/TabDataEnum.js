@@ -3,8 +3,8 @@
  * @type {Object}
  */
 const TabDataTypesEnum = {
-  NEW_TAB_DATA: '__NEW_TAB_DATA__',
-  CONNECTED_TAB_DATA: '__ACTIVE_TAB_DATA__'
+  NEW_TAB_INFO: '__NEW_TAB_INFO__',
+  ACROSS_TAB_CONFIG: '__ACROSS_TAB_CONFIG__'
 };
 
 export default TabDataTypesEnum;

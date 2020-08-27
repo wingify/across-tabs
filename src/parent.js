@@ -10,7 +10,6 @@ import PostMessageEventNamesEnum from './enums/PostMessageEventNamesEnum';
 import PostMessageListener from './event-listeners/postmessage';
 
 let heartBeat, tab;
-const timeLimit = 10000;
 
 // Named Class expression
 class Parent {
@@ -239,6 +238,7 @@ class Parent {
     }
 
     let url = config.url;
+    let timeLimit = config.timeLimit || 10000;
 
     if (!url) {
       throw new Error(WarningTextEnum.URL_REQUIRED);

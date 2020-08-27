@@ -44,7 +44,7 @@ class Child {
    * Check if window.name is overridden
    */
   _isWindowNameOverridden() {
-    return window.name.indexOf(TabDataTypesEnum.NEW_TAB_DATA) < 0;
+    return window.name.indexOf(TabDataTypesEnum.ACROSS_TAB_CONFIG) < 0;
   }
 
   /**

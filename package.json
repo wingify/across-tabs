@@ -54,7 +54,7 @@
     "istanbul": "^1.0.0-alpha.2",
     "jasmine": "^2.5.3",
     "jasmine-core": "^2.5.2",
-    "karma": "^2.0.0",
+    "karma": "^6.4.1",
     "karma-coverage": "^1.1.2",
     "karma-jasmine": "^2.0.1",
     "karma-phantomjs-launcher": "^1.0.4",

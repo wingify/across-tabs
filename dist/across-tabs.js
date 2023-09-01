@@ -1,6 +1,6 @@
 /*!
  * 
- * across-tabs "1.2.4"
+ * across-tabs "1.3.1"
  * https://github.com/wingify/across-tabs
  * MIT licensed
  * 
@@ -1341,10 +1341,14 @@ var Child = function () {
   _createClass(Child, [{
     key: '_isSessionStorage',
     value: function _isSessionStorage() {
-      if ('sessionStorage' in window && window.sessionStorage) {
-        return true;
+      try {
+        if ('sessionStorage' in window && window.sessionStorage) {
+          return true;
+        }
+        return false;
+      } catch (e) {
+        return false;
       }
-      return false;
     }
 
     /**

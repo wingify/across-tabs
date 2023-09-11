@@ -44,10 +44,14 @@ class Child {
    * @return {Boolean} [description]
    */
   _isSessionStorage() {
-    if ('sessionStorage' in window && window.sessionStorage) {
-      return true;
+    try {
+      if ('sessionStorage' in window && window.sessionStorage) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 
   /**

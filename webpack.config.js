@@ -20,7 +20,7 @@ var libraryHeaderComment =
   'https://github.com/wingify/across-tabs\n' +
   'MIT licensed\n' +
   '\n' +
-  'Copyright (C) 2017-2019 Wingify Pvt. Ltd. - Authored by Varun Malhotra(https://github.com/softvar)\n';
+  'Copyright (C) 2017-2023 Wingify Pvt. Ltd. - Authored by Varun Malhotra(https://github.com/softvar)\n';
 
 var plugins = [
   new webpack.BannerPlugin({

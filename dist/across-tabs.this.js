@@ -4,7 +4,7 @@
  * https://github.com/wingify/across-tabs
  * MIT licensed
  * 
- * Copyright (C) 2017-2019 Wingify Pvt. Ltd. - Authored by Varun Malhotra(https://github.com/softvar)
+ * Copyright (C) 2017-2023 Wingify Pvt. Ltd. - Authored by Varun Malhotra(https://github.com/softvar)
  * 
  */
 this["AcrossTabs"] =
